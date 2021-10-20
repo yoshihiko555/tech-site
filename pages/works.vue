@@ -4,7 +4,8 @@
     <div class="m-0 w-screen relative left-1/2 transform -translate-x-1/2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
       <work-card v-for="work in works" :key="work.name" :siteUrl="work.siteUrl" :sourceUrl="work.sourceUrl">
         <template #image>
-          <nuxt-img :src="work.img" :alt='work.name' format="webp" />
+          <img :src="work.img" :alt='work.name' />
+          <!-- <nuxt-img :src="work.img" :alt='work.name' format="webp" /> -->
         </template>
         <template #icon>
           <i class='bx' :class='work.sourceIcon' />
