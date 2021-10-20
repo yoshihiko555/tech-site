@@ -32,9 +32,9 @@
       }
     },
     {
-      "src": "/s/(.*)",
+      "src": "/works/(.*)",
       "headers": { "cache-control": "public, max-age=31536000" },
-      "dest": "/s/$1"
+      "dest": "/works/$1"
     },
     {
       "src": "/(.*)",
