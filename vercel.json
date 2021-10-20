@@ -37,6 +37,7 @@
     },
     {
       "source": "/sw.js",
+      "continue": true,
       "headers": [
         {
           "key": "Cache-Control",
