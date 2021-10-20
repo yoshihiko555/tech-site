@@ -24,18 +24,22 @@
       }
     },
     {
-      "src": "/(.+)\\.(png|jpg|jpeg|ico|txt)",
-      "headers": {
-        "Cache-Control":  "public, max-age=31557600"
-      }
-    },
-    {
       "src": "/sw.js",
       "continue": true,
       "headers": {
         "Cache-Control": "public, max-age=0, must-revalidate",
         "Service-Worker-Allowed": "/"
       }
+    },
+    {
+      "src": "/s/(.*)",
+      "headers": { "cache-control": "public, max-age=31536000" },
+      "dest": "/s/$1"
+    },
+    {
+      "src": "/(.*)",
+      "headers": { "cache-control": "s-maxage=1, stale-while-revalidate "},
+      "dest": "/"
     }
   ]
 }
