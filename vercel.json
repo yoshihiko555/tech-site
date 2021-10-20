@@ -18,36 +18,24 @@
   ],
   "routes": [
     {
-      "source": "/_nuxt/(.+)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "max-age=31557600"
-        }
-      ]
+      "src": "/_nuxt/.+",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000"
+      }
     },
     {
-      "source": "/(.+)\\.(png|jpg|jpeg|ico|txt)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31557600"
-        }
-      ]
+      "src": "/(.+)\\.(png|jpg|jpeg|ico|txt)",
+      "headers": {
+        "Cache-Control":  "public, max-age=31557600"
+      }
     },
     {
-      "source": "/sw.js",
+      "src": "/sw.js",
       "continue": true,
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=43200, immutable"
-        },
-        {
-          "key": "Service-Worker-Allowed",
-          "value": "/"
-        }
-      ]
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate",
+        "Service-Worker-Allowed": "/"
+      }
     }
   ]
 }
