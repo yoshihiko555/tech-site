@@ -1,34 +1,9 @@
 version: '3'
 services:
-  server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile-server
-    image: blog-drf
-    container_name: server
-    working_dir: /usr/src/
-    command: gunicorn server.wsgi:application --bind 0.0.0.0:8000
-    ports:
-      - '8000:8000'
-    volumes:
-      - ./server:/usr/src
-    tty: true
-
   client:
-    image: vue-base
-    container_name: client
-    working_dir: /usr/src
-    # command: yarn serve
-    ports:
-      - '8080:8080'
-    volumes:
-      - ./client:/usr/src
-    tty: true
-
-  nuxt:
-    build: ./nuxt
+    build: .
     image: node:14-alpine
-    container_name: nx-client
+    container_name: client
     working_dir: /usr/src
     ports:
       - '3000:3000'
@@ -37,5 +12,5 @@ services:
       # https://ichiki.me/blog/20200113_nextjs_debug
       - '9229:9229'
     volumes:
-      - ./nuxt:/usr/src
+      - .:/usr/src
     tty: true
