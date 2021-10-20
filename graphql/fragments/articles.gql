@@ -1,0 +1,23 @@
+# onの部分はContentfulで定義したschema名に対応している必要がある
+fragment articleFragment on Articles {
+  sys {
+    id
+    firstPublishedAt
+    publishedAt
+  }
+  title
+  content
+  slug
+  thumbnail {
+    url
+    description
+  }
+  category {
+    ...categoryFragment
+  }
+  tagsCollection {
+    items {
+      ...tagFragment
+    }
+  }
+}

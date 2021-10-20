@@ -1,0 +1,9 @@
+node_modules
+dist
+__pycache__
+media
+db.sqlite3
+*.env
+Dockerfile
+.vscode
+migrations/

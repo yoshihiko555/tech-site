@@ -1,0 +1,21 @@
+# サイト初期化時用のクエリー
+query appInit ($limit: Int!) {
+  # 最新記事一覧を取得
+	articlesCollection (limit: $limit, order: sys_firstPublishedAt_DESC) {
+    items {
+      ...articleFragment
+    }
+  }
+  # カテゴリー全件取得
+  categoriesCollection {
+    items {
+      ...categoryFragment
+    }
+  }
+  # タグ全件取得
+  tagsCollection {
+    items {
+      ...tagFragment
+    }
+  }
+}

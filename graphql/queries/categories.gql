@@ -1,0 +1,25 @@
+# Categoryの全件取得
+query getCategories {
+  categoriesCollection (order: sys_firstPublishedAt_DESC) {
+    items {
+      ...categoryFragment
+    }
+  }
+}
+
+# Categoryに紐づく記事を取得します
+query getArticleByCategory ($slug: String!, $limit: Int = 0, $skip: Int = 0) {
+  categoriesCollection (where: { slug: $slug }, limit: 1) {
+    items {
+      ...categoryFragment
+      linkedFrom {
+        articlesCollection (limit: $limit, skip: $skip) {
+          total
+          items {
+            ...articleFragment
+          }
+        }
+      }
+    }
+  }
+}

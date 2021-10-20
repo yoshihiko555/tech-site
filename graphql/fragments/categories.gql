@@ -1,0 +1,7 @@
+fragment categoryFragment on Categories {
+  sys {
+    id
+  }
+  name
+  slug
+}

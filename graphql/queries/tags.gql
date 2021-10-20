@@ -1,0 +1,25 @@
+# Tagの全件取得
+query getTags {
+  tagsCollection (order: sys_firstPublishedAt_DESC) {
+    items {
+      ...tagFragment
+    }
+  }
+}
+
+# Tagに紐づく記事を取得します
+query getArticleByTag ($slug: String!, $limit: Int = 0, $skip: Int = 0) {
+  tagsCollection (where: { slug: $slug }, limit: 1) {
+    items {
+      ...tagFragment
+      linkedFrom {
+        articlesCollection (limit: $limit, skip: $skip) {
+          total
+          items {
+            ...articleFragment
+          }
+        }
+      }
+    }
+  }
+}

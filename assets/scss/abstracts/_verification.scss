@@ -1,0 +1,67 @@
+// ***************************************
+// Sass検証用のファイル
+// Sassの使い方で試してみたことを記録しておく
+// ***************************************
+
+/**
+@import と @useの違いについて調べてた途中
+useを使えば動的に、functionを呼び出すことが可能っぽい
+**/
+// $functions: meta.module-functions(foo);
+// $functions2: meta.module-functions(functions);
+// @debug $functions;
+// @debug $functions2;
+// $function: map.get($functions, 'test');
+// @debug meta.call($function);
+// @debug foo.test();
+// @debug test();
+// @debug functions.func();
+// @debug func();
+
+// 動的に、ミックスインを呼び出して汎用的なアニメーションの使用を検討してみたけど、
+// なかなかうまくいかない。。。
+// 動的に関数を呼び出すことはできたけど。。。
+
+@function sample ($array: null) {
+	@debug 'デバッグ';
+	@warn 'わーん';
+	@if $array == null {
+		@return 'Not Args';
+	}
+	@else {
+		@return $array;
+	}
+}
+
+// 最終的な形は2次元配列で返却しなくてはいけない
+// それぞれのプロパティをマップで受け取って、指定が無ければデフォ値を設定
+// それを返却用のリストに詰める
+@function sample2 ($array: null) {
+	// $res: ();
+	// $transitionPropertys: 'property' 'duration' 'timing-function' 'delay';
+	// @if $array != null {
+	// 	@each $i in $array {
+	// 		// 最終的に追加するプロパティのリストを宣言
+	// 		$addData: ();
+	// 		// プロパティのマップを取得
+	// 		$map: nth($array, $i);
+	// 		@each $name in $transitionPropertys {
+	// 			@if map-get($map, $name) != null {
+	// 				// プロパティが指定されている
+	// 			}
+	// 			@else {
+	//
+	// 			}
+	// 		}
+	// 		// @each $key, $val in $map {
+	// 		//
+	// 		// }
+	// 		$test: map-get($first, a);
+	// 		$res: $test;
+	// 	}
+	// }
+	// @else {
+	// 	// デフォ値を設定
+	// }
+	// @return $res;
+}

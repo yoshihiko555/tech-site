@@ -1,0 +1,105 @@
+// **************************
+// 共通アニメーションを記述
+// **************************
+
+/** 右線の点滅 **/
+@mixin r-line-blink {
+    padding-right: 1em;
+	animation: blink .5s alternate infinite;
+
+	@keyframes blink {
+		from { box-shadow: inset -3px 0 0 #{$site-theme-color}; }
+		to { box-shadow: inset -3px 0 0 transparent; }
+	}
+}
+
+/** バウンド **/
+@mixin bound {
+    animation-name: bound;
+    animation-duration: 1s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+
+    @keyframes bound {
+        0% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-3px);
+        }
+
+        100% {
+            transform: translateY(0);
+        }
+    }
+}
+
+// **************************
+// Vueアニメーションを記述
+// **************************
+
+/** アニメーションのプロパティを定義 **/
+$anime-propertys: (
+    fade: (
+        anime-name: opacity,
+        property: 0,
+        time: .3s,
+        function: ease-in-out,
+        enter: true,
+        leave: true,
+    ),
+    down: (
+        anime-name: transform,
+        property: translateY(-20px),
+        time:  .6s,
+        function: linear,
+        enter: true,
+        leave: false,
+    ),
+    scale: (
+        anime-name: transform,
+        property: scale(0),
+        time:  .3s,
+        function: ease-in-out,
+        enter: true,
+        leave: true,
+    ),
+);
+
+@mixin animation ($tran-name, $anime-name) {
+
+    // 空のリストを作成
+    $transitions: ();
+
+    @each $var in $anime-name {
+        $transition: map-get($map: $anime-propertys, $key: $var);
+        $transitions: append(
+            $list: $transitions,
+            $val:
+                map-get($map: $transition, $key: 'anime-name')
+                + ' '
+                + map-get($map: $transition, $key: 'time')
+                + ' '
+                + map-get($map: $transition, $key: 'function'),
+            $separator: comma
+        );
+
+        @if map-get($map: $transition, $key: 'enter') {
+            .#{$tran-name}-enter {
+                #{map-get($map: $transition, $key: 'anime-name')}: map-get($map: $transition, $key: 'property');
+            }
+        }
+
+        @if map-get($map: $transition, $key: 'leave') {
+            .#{$tran-name}-leave-to {
+                #{map-get($map: $transition, $key: 'anime-name')}: map-get($map: $transition, $key: 'property');
+            }
+        }
+    }
+
+    .#{$tran-name}-enter-active,
+    .#{$tran-name}-leave-active {
+        transition: $transitions;
+    }
+}

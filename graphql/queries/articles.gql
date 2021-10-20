@@ -1,0 +1,25 @@
+# 全記事を取得します。
+query getArticles ($limit: Int = 0, $skip: Int = 0) {
+  articlesCollection (order: sys_firstPublishedAt_DESC, limit: $limit, skip: $skip) {
+    total
+    items {
+      ...articleFragment
+    }
+  }
+}
+
+# Idに紐づく記事を取得します。
+query getArticleById ($id: String!) {
+  articles (id: $id) {
+    ...articleFragment
+  }
+}
+
+# Slugに紐づく記事を取得します。
+query getArticleBySlug ($slug: String!) {
+  articlesCollection (where: { slug: $slug }, limit: 1) {
+    items {
+      ...articleFragment
+    }
+  }
+}

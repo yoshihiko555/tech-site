@@ -1,0 +1,17 @@
+// *********************************
+// サイト共通のベーススタイルの定義
+// *********************************
+html {
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+h1, h2, h3, h4, h5, h6, p {
+    font-family: 'Inconsolata', monospace;
+    color: $color-font;
+}
+a {
+  font-family: 'Roboto', sans-serif;
+  text-decoration: none;
+}
+img, svg, i { vertical-align: middle; }
+ol, ul { list-style: none; }
