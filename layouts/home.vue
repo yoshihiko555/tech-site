@@ -2,7 +2,7 @@
   <div>
     <Header />
     <transition name="fade">
-      <Nuxt class="root-wrapper container" />
+      <Nuxt class="root-wrapper container px-8" />
     </transition>
   </div>
 </template>

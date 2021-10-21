@@ -131,7 +131,7 @@ export default ():NuxtConfig => ({
     families: {
       Roboto: [100, 400, 500],
       Inconsolata: [200, 500],
-      'Noto+Sans+JP': [100, 400, 700],
+      'Noto+Sans+JP': [100, 400, 700, 900],
     },
     display: 'swap'
   },

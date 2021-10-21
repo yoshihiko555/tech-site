@@ -5,7 +5,6 @@
       <work-card v-for="work in works" :key="work.name" :siteUrl="work.siteUrl" :sourceUrl="work.sourceUrl">
         <template #image>
           <img :src="work.img" :alt='work.name' />
-          <!-- <nuxt-img :src="work.img" :alt='work.name' format="webp" /> -->
         </template>
         <template #icon>
           <i class='bx' :class='work.sourceIcon' />

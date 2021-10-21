@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div class="mb-10 grid grid-cols-1 lg:grid-cols-6" v-if="article">
+    <div
+      v-if="article && !loading"
+      class="mb-10 grid grid-cols-1 lg:grid-cols-6"
+    >
       <div class="article col-span-2 lg:col-span-4">
         <h2
           v-if="article.category"
@@ -25,10 +28,12 @@
         </div>
 
         <div class="mb-4 flex items-center justify-end text-xs sm:text-sm font-light text-gray-400">
+          <!-- 投稿日 -->
           <i class='bx bx-time-five px-1' />
           <span class="align-middle px-1 mr-1">
             {{ $moment(article.sys.firstPublishedAt).format('MMM Do YYYY') }}
           </span>
+          <!-- 更新日 -->
           <i
             v-show="article.sys.firstPublishedAt !== article.sys.publishedAt"
             class='bx bx-revision px-1'
@@ -41,13 +46,19 @@
           </span>
         </div>
 
-        <nuxt-img class="mb-10" v-if="article.thumbnail" :src='article.thumbnail.url' :alt='article.thumbnail.description' />
+        <!-- サムネイル -->
+        <nuxt-img class="mb-10" format="webp" v-if="article.thumbnail" :src='article.thumbnail.url' :alt='article.thumbnail.description' />
+        <!-- 記事内容 -->
         <div class="markdown-body line-numbers" v-html="parse(article.content)" v-interpolation/>
       </div>
+      <!-- 目次 -->
       <aside
         v-html="toc(article.content)"
         class="toc"
       />
+    </div>
+    <div v-else>
+      <h1 class="my-10 text-center text-2xl font-black">Now Loading...</h1>
     </div>
   </div>
 </template>
@@ -84,7 +95,7 @@ export default defineComponent({
     const { route, $md, $truncate, $log, $config, error } = useContext()
 
     // 記事情報取得
-    const { result, onResult } = useGetArticleBySlugQuery({ slug: route.value.params.slug })
+    const { result, onResult, loading } = useGetArticleBySlugQuery({ slug: route.value.params.slug })
     const article = useResult(result, null, data => data?.articlesCollection?.items[0])
     const tags = useResult(result, [], data => data?.articlesCollection?.items[0]?.tagsCollection?.items)
 
@@ -155,6 +166,7 @@ export default defineComponent({
     }
 
     return {
+      loading,
       article,
       tags,
       parse,
@@ -170,22 +182,22 @@ export default defineComponent({
   li > ul { padding-left: 1rem; }
   a {
     @apply block mb-1 px-3 py-2 text-sm font-bold rounded-md transition-colors duration-300 ease-in-out hover:bg-gray-200;
+    font-family: 'Noto Sans JP', sans-serif;
   }
 }
 .article::v-deep {
 
   .markdown-body {
-    // 文字
-    h1, h2, h3, h4, h5, h6 {
-      @apply my-8;
+    h1, h2, h3 {
+      @apply my-10 sm:my-14;
     }
 
-    p {
-      @apply mb-3 sm:mb-4 text-sm sm:text-base tracking-wider;
+    h1, h2, h3, p {
+      font-family: 'Noto Sans JP', sans-serif;
     }
 
     h1 {
-      @apply relative mt-10 sm:mt-14 pb-2 border-b text-xl sm:text-2xl border-site-theme-light;
+      @apply relative pb-2 border-b text-xl sm:text-2xl border-site-theme-light;
 
       &::after {
         @apply absolute left-0 z-10 w-1/5 h-1 bg-gray-700;
@@ -195,15 +207,23 @@ export default defineComponent({
     }
 
     h2 {
-      @apply mt-8 sm:mt-12 pb-1 text-lg sm:text-xl border-b border-gray-300;
+      @apply pb-1 text-lg sm:text-xl border-b border-gray-300;
     }
 
     h3 {
-      @apply mt-6 sm:mt-10 pl-3 text-base sm:text-lg border-l-4 border-gray-300;
+      @apply pl-3 text-base sm:text-lg border-l-4 border-gray-300;
+    }
+
+    p {
+      @apply my-4 sm:my-8 text-sm sm:text-base tracking-wide;
     }
 
     a {
       @apply text-blue-500 transition-colors hover:text-blue-300 hover:underline;
+    }
+
+    code {
+      @apply px-2 text-gray-50 bg-gray-700 rounded;
     }
 
     // 画像

@@ -25,7 +25,7 @@ export default Vue.extend({
 @include animation($tran-name: 'fade', $anime-name: ('fade'));
 
 .root-wrapper {
-  @apply container max-w-screen-xl;
+  @apply container px-8 max-w-screen-xl;
   padding-top: $header-h;
   min-height: calc(100vh - #{($header-h + $footer-h)}) !important;
 }
