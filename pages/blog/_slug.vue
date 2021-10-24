@@ -215,7 +215,7 @@ export default defineComponent({
     }
 
     p {
-      @apply my-4 sm:my-8 text-sm sm:text-base tracking-wide;
+      @apply my-4 sm:my-8 text-sm sm:text-base tracking-wide leading-6 sm:leading-8;
     }
 
     a {
@@ -235,7 +235,7 @@ export default defineComponent({
     %list-root {
       @apply mb-4 pl-4 sm:pl-8;
       li {
-        @apply mb-1 text-xs sm:text-base;
+        @apply mb-1 text-xs sm:text-base leading-6 sm:leading-8;
       }
     }
 

@@ -19,6 +19,9 @@ export default defineComponent({
       'composition-graphql',
       'store',
       'composition-async',
+      'event',
+      'sync',
+      'slot',
     ]
     return {
       varifications

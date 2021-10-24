@@ -1009,6 +1009,13 @@ export type GetArticleBySlugQueryVariables = Exact<{
 
 export type GetArticleBySlugQuery = { __typename?: 'Query', articlesCollection?: Maybe<{ __typename?: 'ArticlesCollection', items: Array<Maybe<{ __typename?: 'Articles', title?: Maybe<string>, content?: Maybe<string>, slug?: Maybe<string>, sys: { __typename?: 'Sys', id: string, firstPublishedAt?: Maybe<any>, publishedAt?: Maybe<any> }, thumbnail?: Maybe<{ __typename?: 'Asset', url?: Maybe<string>, description?: Maybe<string> }>, category?: Maybe<{ __typename?: 'Categories', name?: Maybe<string>, slug?: Maybe<string>, sys: { __typename?: 'Sys', id: string } }>, tagsCollection?: Maybe<{ __typename?: 'ArticlesTagsCollection', items: Array<Maybe<{ __typename?: 'Tags', name?: Maybe<string>, slug?: Maybe<string>, sys: { __typename?: 'Sys', id: string } }>> }> }>> }> };
 
+export type SearchArticlesQueryVariables = Exact<{
+  value: Scalars['String'];
+}>;
+
+
+export type SearchArticlesQuery = { __typename?: 'Query', articlesCollection?: Maybe<{ __typename?: 'ArticlesCollection', items: Array<Maybe<{ __typename?: 'Articles', title?: Maybe<string>, content?: Maybe<string>, slug?: Maybe<string>, sys: { __typename?: 'Sys', id: string, firstPublishedAt?: Maybe<any>, publishedAt?: Maybe<any> }, thumbnail?: Maybe<{ __typename?: 'Asset', url?: Maybe<string>, description?: Maybe<string> }>, category?: Maybe<{ __typename?: 'Categories', name?: Maybe<string>, slug?: Maybe<string>, sys: { __typename?: 'Sys', id: string } }>, tagsCollection?: Maybe<{ __typename?: 'ArticlesTagsCollection', items: Array<Maybe<{ __typename?: 'Tags', name?: Maybe<string>, slug?: Maybe<string>, sys: { __typename?: 'Sys', id: string } }>> }> }>> }> };
+
 export type GetCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1174,6 +1181,37 @@ export function useGetArticleBySlugQuery(variables: GetArticleBySlugQueryVariabl
   return VueApolloComposable.useQuery<GetArticleBySlugQuery, GetArticleBySlugQueryVariables>(GetArticleBySlugDocument, variables, options);
 }
 export type GetArticleBySlugQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<GetArticleBySlugQuery, GetArticleBySlugQueryVariables>;
+export const SearchArticlesDocument = gql`
+    query searchArticles($value: String!) {
+  articlesCollection(
+    where: {OR: [{title_contains: $value}, {content_contains: $value}]}
+  ) {
+    items {
+      ...articleFragment
+    }
+  }
+}
+    ${ArticleFragmentFragmentDoc}`;
+
+/**
+ * __useSearchArticlesQuery__
+ *
+ * To run a query within a Vue component, call `useSearchArticlesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchArticlesQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param variables that will be passed into the query
+ * @param options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useSearchArticlesQuery({
+ *   value: // value for 'value'
+ * });
+ */
+export function useSearchArticlesQuery(variables: SearchArticlesQueryVariables | VueCompositionApi.Ref<SearchArticlesQueryVariables> | ReactiveFunction<SearchArticlesQueryVariables>, options: VueApolloComposable.UseQueryOptions<SearchArticlesQuery, SearchArticlesQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<SearchArticlesQuery, SearchArticlesQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<SearchArticlesQuery, SearchArticlesQueryVariables>> = {}) {
+  return VueApolloComposable.useQuery<SearchArticlesQuery, SearchArticlesQueryVariables>(SearchArticlesDocument, variables, options);
+}
+export type SearchArticlesQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<SearchArticlesQuery, SearchArticlesQueryVariables>;
 export const GetCategoriesDocument = gql`
     query getCategories {
   categoriesCollection(order: sys_firstPublishedAt_DESC) {

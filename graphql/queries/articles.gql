@@ -23,3 +23,19 @@ query getArticleBySlug ($slug: String!) {
     }
   }
 }
+
+# 検索用クエリー
+query searchArticles ($value: String!) {
+  articlesCollection (where: {
+    OR : [
+      # タイトル
+      { title_contains: $value },
+      # 記事内容
+      { content_contains: $value },
+    ]
+  }) {
+    items {
+      ...articleFragment
+    }
+  }
+}

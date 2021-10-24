@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div>
     <h1 class='page-title'>Works</h1>
     <div class="m-0 w-screen relative left-1/2 transform -translate-x-1/2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
       <work-card v-for="work in works" :key="work.name" :siteUrl="work.siteUrl" :sourceUrl="work.sourceUrl">

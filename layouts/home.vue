@@ -2,7 +2,7 @@
   <div>
     <Header />
     <transition name="fade">
-      <Nuxt class="root-wrapper container px-8" />
+      <Nuxt class="root-wrapper" />
     </transition>
   </div>
 </template>
@@ -22,6 +22,7 @@ export default defineComponent({
 @include animation($tran-name: 'fade', $anime-name: ('fade'));
 
 .root-wrapper {
+  @apply container px-8;
   padding-top: $header-h;
   min-height: calc(100vh - #{$header-h});
 }

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class='py-5 text-center'>
-      <h3 class='mb-1 text-2xl tracking-wider'>Yoshihiko</h3>
+    <div class='mb-10 text-center' ref="root">
+      <h3 class='pt-20 pb-4 text-2xl tracking-wider'>Yoshihiko</h3>
       <p class='text-lg'>Engineer</p>
     </div>
     <div class='mb-10'>
@@ -12,8 +12,8 @@
         <p class='text'>2019年に某IT会社に転職。</p>
       </div>
     </div>
-    <div>
-      <h4 class='mb-2 text-xl'>Skill</h4>
+    <div class="mb-10">
+      <h4 class='mb-4 text-xl'>Skill</h4>
       <skill-list :skills="skills" />
     </div>
   </div>

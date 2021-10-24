@@ -52,6 +52,10 @@ export default ():NuxtConfig => ({
     '~/plugins/prism',
     '~/plugins/utils',
     '~/plugins/markdown-it',
+    {
+      src: '~/plugins/vue-shortkey.ts',
+      mode: 'client',
+    },
   ],
   buildModules: [
     '@nuxt/typescript-build',
