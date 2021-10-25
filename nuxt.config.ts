@@ -82,8 +82,8 @@ export default ():NuxtConfig => ({
     }
   },
   build: {
-    parallel: true,
-    cache: true,
+    // parallel: true,
+    // cache: true,
     // hardSource: true,
   },
   router: {
