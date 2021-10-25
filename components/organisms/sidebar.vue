@@ -1,61 +1,94 @@
 <template>
-  <vs-sidebar
-    v-model="active"
-    :open.sync="isOpen"
-    right
-  >
-    Sidebar
-  </vs-sidebar>
+  <div>
+    <vs-button
+      @click="open"
+      icon
+      transparent
+      color="#333333"
+    >
+      <i class="bx bx-menu" />
+    </vs-button>
+    <vs-sidebar
+      v-model="active"
+      :open.sync="isOpen"
+      right
+    >
+      <template #header>
+        <search-btn @click.native="openDialog" />
+      </template>
+      <vs-sidebar-item
+        v-for="site in sites"
+        :key="site.id"
+        :id="site.id"
+        :to="site.url"
+        @click.native="close"
+      >
+        <span>{{ site.title }}</span>
+      </vs-sidebar-item>
+      <template #footer>
+        <p class="text-center mb-2">Follow me!</p>
+        <div class="flex justify-center mb-4 w-full">
+          <vs-button icon href='https://twitter.com/yoshihiko5555' blank>
+            <i class="bx bxl-twitter" />
+          </vs-button>
+          <vs-button icon href='https://github.com/yoshihiko555' blank>
+            <i class="bx bxl-github" />
+          </vs-button>
+        </div>
+      </template>
+    </vs-sidebar>
+    <search-dialog v-if="isOpenDialog" :open.sync="isOpenDialog" />
+  </div>
 </template>
 
 <script lang='ts'>
-import { defineComponent, reactive, toRefs, onMounted, computed, SetupContext, watch, onUpdated } from '@nuxtjs/composition-api'
-type Props = {
-  isOpen: boolean
-}
-type State = {
-  active: string
-  open: boolean
-}
-// サイドバーを独立したコンポーネントにしたかったが、知識が足りず断念
-// 調査して再度挑戦したい。
-// この辺の記事参考に使用と思ったが、emitを送っても反応がなかった。
-// https://se-tomo.com/2018/11/10/vue-js-%E3%82%B3%E3%83%B3%E3%83%9D%E3%83%BC%E3%83%8D%E3%83%B3%E3%83%88%E3%81%AE%E9%96%93%E3%81%AE%E9%80%9A%E4%BF%A1%EF%BC%92/
-// ※現時点で使用していない
+import { defineComponent, useContext } from '@nuxtjs/composition-api'
+import { useSidebar, useDialog } from '~/utils/hooks'
+import { SITE_MAPS } from '~/utils/const'
+import SearchBtn from '~/components/atoms/search-btn.vue'
+import SearchDialog from '~/components/organisms/search-dialog.vue'
+
 export default defineComponent({
-  props: {
-    isOpen: {
-      type: Boolean
-    }
+  components: {
+    SearchBtn,
+    SearchDialog,
   },
-  setup (props: Props, ctx: SetupContext) {
-    const { isOpen } = toRefs<Props>(props)
-    const { active, open } = toRefs(reactive<State>({
-      active: 'home',
-      open: false,
-    }))
-    onMounted(() => {
-      // open.value = props.isOpen
-    })
-    onUpdated(() => {
-      console.log('update', props)
-    })
-    watch(isOpen, (now, old) => {
-      console.log('isOpen watch', now, old)
-      open.value = now
-    })
-    watch(open, (now, old) => {
-      console.log('open watch', now, old)
-      ctx.emit('input', now)
-    })
+  setup () {
+    const { route } = useContext()
+    const { active, isOpen, open, close } = useSidebar(route)
+    const {
+      isOpen: isOpenDialog,
+      open: openDialog,
+    } = useDialog()
     return {
+      sites: SITE_MAPS,
       active,
+      isOpen,
       open,
+      close,
+      isOpenDialog,
+      openDialog,
     }
   }
 })
 </script>
 
 <style lang='scss' scoped>
+.vs-sidebar-content::v-deep {
+
+  &.right {
+    border-radius: 30px 0 0 30px;
+  }
+
+  i {
+    @include sm {
+      font-size: 0.875em;
+    }
+  }
+
+  .vs-sidebar__footer {
+    @apply block;
+  }
+}
 
 </style>

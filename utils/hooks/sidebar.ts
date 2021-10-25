@@ -1,6 +1,6 @@
 import { ref, Ref } from '@nuxtjs/composition-api'
 import { Route } from 'vue-router'
-import { Maybe } from 'graphql/jsutils/Maybe'
+import { Maybe } from '../../generated/graphql'
 
 export type SidebarDataType = {
   isOpen: Ref<boolean>
@@ -9,6 +9,11 @@ export type SidebarDataType = {
   close: () => void
 }
 
+/**
+ * サイドバー用Hooks
+ * @param route Ref<Route>
+ * @returns
+ */
 export const useSidebar = (route: Ref<Route>): SidebarDataType => {
   const isOpen = ref<boolean>(false)
   const active = ref<Maybe<string>>('home')
