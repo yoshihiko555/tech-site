@@ -13,7 +13,7 @@
     "codegen": "graphql-codegen --require dotenv/config --config config/codegen.js dotenv_config_path=.env",
     "contentful-codegen": "contentful-typescript-codegen --output generated/contentful.d.ts",
     "clean": "rm -rf .nuxt",
-    "vercel-build": "yarn global add prebuild-install"
+    "vercel-build": "yarn global add node-gyp sharp"
   },
   "dependencies": {
     "@nuxtjs/apollo": "^4.0.1-rc.5",
@@ -32,6 +32,9 @@
     "nuxt": "^2.15.7",
     "prismjs": "^1.24.1",
     "vuesax": "^4.0.1-alpha.25",
+    "vue-shortkey": "^3.1.7"
+  },
+  "devDependencies": {
     "@babel/eslint-parser": "^7.14.7",
     "@contentful/rich-text-types": "^15.3.3",
     "@graphql-codegen/cli": "^2.2.0",
@@ -74,11 +77,6 @@
     "stylelint-config-prettier": "^8.0.2",
     "stylelint-config-standard": "^22.0.0",
     "stylelint-scss": "^3.20.1",
-    "vue-shortkey": "^3.1.7",
-    "vuex-module-decorators": "^1.0.1",
-    "sharp": "latest"
-
-  },
-  "devDependencies": {
+    "vuex-module-decorators": "^1.0.1"
   }
 }
