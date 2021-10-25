@@ -1,7 +1,6 @@
 <template>
   <vs-navbar
     fixed
-    hideScroll
     class="py-2"
   >
     <template #left>

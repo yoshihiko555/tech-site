@@ -178,7 +178,7 @@ export default defineComponent({
 
 <style lang='scss' scoped>
 .toc::v-deep {
-  @apply sticky top-10 ml-20 h-screen hidden col-span-2 lg:block;
+  @apply sticky top-14 ml-20 h-screen hidden col-span-2 lg:block;
   li > ul { padding-left: 1rem; }
   a {
     @apply block mb-1 px-3 py-2 text-sm font-bold rounded-md transition-colors duration-300 ease-in-out hover:bg-gray-200;

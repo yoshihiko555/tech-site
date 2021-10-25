@@ -91,4 +91,7 @@ export default defineComponent({
   }
 }
 
+.vs-dialog-content {
+  @apply h-screen w-screen;
+}
 </style>
