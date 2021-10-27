@@ -1,5 +1,5 @@
 <template>
-  <div class="grid sm:grid-cols-2">
+  <div class="grid sm:grid-cols-2 gap-8">
     <div
       v-for="skill in skills"
       :key="skill.name"

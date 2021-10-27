@@ -1,12 +1,14 @@
 <template>
-  <div class="mb-4 flex align-center h-20">
-    <div class='icon text-center h-full'>
-      <img v-if="$colorMode.value === 'light'" :src='skill.light' :alt='skill.name' class="p-2 inline-block max-h-full" />
+  <div class="flex items-center">
+    <div class='icon text-center h-12 sm:h-16'>
+      <img v-if="$colorMode.value === 'light'" :src='skill.light' :alt='skill.name' class="inline-block max-h-full" />
       <img v-else :src='skill.dark' :alt='skill.name' class="p-2 inline-block max-h-full" />
     </div>
-    <div class='root self-center'>
-      <h6 class='inline-block text-xl mr-2'>{{ skill.name }}</h6>
-      <span class='inline-block text-sm text-gray-300'>{{ skill.period }}year</span>
+    <div class='root'>
+      <div class="mb-1">
+        <h6 class='inline-block text-lg mr-2'>{{ skill.name }}</h6>
+        <span class='inline-block text-sm text-gray-300'>{{ skill.period }}year</span>
+      </div>
       <div class='progress-root'>
         <div
           class="bar"
@@ -42,6 +44,7 @@ export default defineComponent({
   }
 
   .root {
+    @apply pl-4 sm:pl-0;
     flex-basis: 80%;
   }
 

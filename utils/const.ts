@@ -22,7 +22,6 @@ export type SkillType = {
   name: string
   period: number
   percent: number
-  // icon: File
   light: File
   dark: File
 }
