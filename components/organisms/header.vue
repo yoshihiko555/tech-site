@@ -40,7 +40,6 @@
           @click.native="open"
           v-shortkey="{ windows: ['ctrl', 'k'], mac: ['meta', 'k'] }"
           @shortkey.native="open"
-
         />
       </div>
       <sidebar class="sm:hidden" />

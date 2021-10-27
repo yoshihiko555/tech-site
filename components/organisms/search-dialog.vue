@@ -1,9 +1,9 @@
 <template>
   <vs-dialog
     ref="root"
+    class="overflow-hidden"
     :value="open"
     @input="$emit('update:open', false)"
-    class="overflow-hidden"
   >
     <template #header>
       <h3 class="text-2xl">Search</h3>
@@ -13,6 +13,7 @@
       :loading="loading"
       ref="input"
       placeholder="Search articles..."
+      @keyup.esc="$emit('update:open', false)"
     >
       <template #icon>
         <i class="bx bx-search" />
@@ -73,10 +74,14 @@ export default defineComponent({
     const { result, loading } = useSearchArticlesQuery(variables)
     const articles = useResult(result, null, data => data?.articlesCollection?.items)
 
+    const test = () => {
+      console.log('test')
+    }
     return {
       loading,
       articles,
       variables,
+      test,
     }
   },
 })

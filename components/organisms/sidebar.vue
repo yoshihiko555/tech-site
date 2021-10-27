@@ -26,7 +26,7 @@
         <span>{{ site.title }}</span>
       </vs-sidebar-item>
       <template #footer>
-        <div class="flex items-end justify-between mb-4">
+        <div class="flex items-end justify-between mb-8">
           <div>
             <p class="text-center mb-2">Follow me!</p>
             <div class="flex justify-centerw-full">

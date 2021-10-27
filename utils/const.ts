@@ -161,12 +161,12 @@ export const WORKS: WorkType[] = [
     sourceUrl: 'https://github.com/yoshihiko555/myunsplash',
   },
   // Offbal
-  // {
-  //   name: 'Offbal',
-  //   description: 'タスク管理サービス',
-  //   img: '/works/offbal.png',
-  //   siteUrl: 'https://offbal.herokuapp.com/',
-  //   sourceIcon: 'bxl-github',
-  //   sourceUrl: 'https://github.com/yoshihiko555/offbal',
-  // },
+  {
+    name: 'Offbal',
+    description: 'タスク管理サービス',
+    img: '/works/offbal.png',
+    siteUrl: 'https://offbal.herokuapp.com/',
+    sourceIcon: 'bxl-github',
+    sourceUrl: 'https://github.com/yoshihiko555/offbal',
+  },
 ]
