@@ -9,15 +9,14 @@
 </template>
 
 <script lang='ts'>
-import Vue from 'vue'
+import { defineComponent } from '@nuxtjs/composition-api'
 import Header from '~/components/organisms/header.vue'
 import Footer from '~/components/organisms/footer.vue'
-
-export default Vue.extend({
+export default defineComponent({
   components: {
     Header,
-    Footer,
-  }
+    Footer
+  },
 })
 </script>
 

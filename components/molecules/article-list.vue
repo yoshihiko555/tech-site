@@ -49,19 +49,19 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-  .date {
-    @apply mb-1;
-  }
+.date {
+  @apply mb-1;
+}
 
-  .lead-text {
-    @apply mb-3;
-  }
+.lead-text {
+  @apply mb-3;
+}
 
-  .category {
-    @apply bg-opacity-50 bg-site-theme-light hover:bg-opacity-80;
-  }
+.category {
+  @apply bg-opacity-50 bg-site-theme-light hover:bg-opacity-80;
+}
 
-  .tag {
-    @apply p-1 text-site-theme-light transition-all duration-300 ease-in-out hover:text-site-theme;
-  }
+.tag {
+  @apply p-1 text-site-theme-light transition-all duration-300 ease-in-out hover:text-site-theme;
+}
 </style>

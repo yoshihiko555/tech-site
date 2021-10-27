@@ -27,12 +27,14 @@
     "types": [
       "@nuxt/types",
       "@types/node",
-      "@nuxtjs/moment"
+      "@nuxtjs/moment",
+      "@nuxtjs/color-mode"
     ]
   },
   "include": [
     "./utils/*.ts",
-    "./types/*.d.ts"
+    "./utils/**/*.ts",
+    "./@types/*.d.ts"
   ],
   "exclude": [
     "node_modules",

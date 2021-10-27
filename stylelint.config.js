@@ -15,5 +15,6 @@ module.exports = {
     'no-invalid-position-at-import-rule': null,
     'no-empty-source': null,
     'declaration-empty-line-before': null,
+    'at-rule-name-space-after': null,
   }
 }

@@ -4,16 +4,24 @@
       v-if="article && !loading"
       class="mb-10 grid grid-cols-1 lg:grid-cols-6"
     >
-      <div class="article col-span-2 lg:col-span-4">
+      <div class="article py-4 col-span-2 lg:col-span-4">
         <h2
           v-if="article.category"
           @click="$router.push(`/categories/${article && article.category && article.category.slug}`)"
-          class="inline-block cursor-pointer my-4 sm:my-5 px-2 py-1 sm:px-3 sm:py-2 text-sm sm:text-base font-thin bg-gray-100 rounded transition-colors duration-500 ease-in-out hover:text-gray-400"
+          class="
+            inline-block cursor-pointer
+            mb-4 sm:mb-5 px-2 py-1 sm:px-3 sm:py-2
+            text-sm sm:text-base font-thin hover:text-gray-400
+            bg-gray-100 dark:bg-site-black-theme
+            border border-gray-100
+            rounded
+            transition-colors duration-500 ease-in-out
+          "
         >
           {{ article.category.name }}
         </h2>
 
-        <h1 class="mb-3 text-xl sm:text-3xl text-center">{{ article.title }}</h1>
+        <h1 class="mb-4 text-xl sm:text-3xl text-center">{{ article.title }}</h1>
 
         <div
           v-if="tags"
@@ -178,22 +186,20 @@ export default defineComponent({
 
 <style lang='scss' scoped>
 .toc::v-deep {
-  @apply sticky top-14 ml-20 h-screen hidden col-span-2 lg:block;
+  @apply sticky top-24 ml-20 h-screen hidden col-span-2 lg:block;
   li > ul { padding-left: 1rem; }
   a {
-    @apply block mb-1 px-3 py-2 text-sm font-bold rounded-md transition-colors duration-300 ease-in-out hover:bg-gray-200;
+    @apply block mb-1 px-3 py-2 text-sm font-bold rounded-md transition-colors duration-300 ease-in-out hover:bg-gray-200 dark:hover:text-site-black-back;
     font-family: 'Noto Sans JP', sans-serif;
   }
 }
+
 .article::v-deep {
+  font-family: 'Noto Sans JP', sans-serif;
 
   .markdown-body {
     h1, h2, h3 {
       @apply my-10 sm:my-14;
-    }
-
-    h1, h2, h3, p {
-      font-family: 'Noto Sans JP', sans-serif;
     }
 
     h1 {
@@ -228,7 +234,7 @@ export default defineComponent({
 
     // 画像
     img {
-      @apply mb-8;
+      @apply mx-auto my-8;
     }
 
     // リスト
@@ -262,7 +268,7 @@ export default defineComponent({
         @apply mb-8 pt-10 bg-gray-700 overflow-x-auto rounded-md;
 
         code {
-          @apply text-gray-100;
+          @apply px-0 text-gray-100;
         }
       }
       .toolbar {

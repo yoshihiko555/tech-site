@@ -1,22 +1,19 @@
 <template>
-  <vs-navbar
-    fixed
-    class="py-2"
-  >
-    <template #left>
-      <nuxt-link to='/'>
-        <img src='~/assets/img/logo.svg' alt="logo" width="30" height="30" />
+  <div>
+    <header class="fixed flex w-full items-center justify-between px-4 py-2 h-16 z-50 bg-white dark:bg-site-black-theme rounded-b-3xl">
+      <nuxt-link to="/">
+        <img v-if="$colorMode.value === 'light'" src='~/assets/img/logo.svg' alt="logo" width="30" height="30" />
+        <img v-else src='~/assets/img/logo-dark.svg' alt="logo" width="30" height="30" />
       </nuxt-link>
-    </template>
-    <template #right>
-      <div class='hidden sm:flex items-center gap-4'>
-        <nuxt-link class='link' to='/about'>About</nuxt-link>
-        <nuxt-link class='link' to='/blog'>Blog</nuxt-link>
-        <nuxt-link class='link' to='/works'>Works</nuxt-link>
-        <!-- <nuxt-link class='link' to='/contact'>Contact</nuxt-link> -->
+
+      <div class="hidden sm:flex items-center gap-4">
+        <nuxt-link class='navi-link' to='/about'>About</nuxt-link>
+        <nuxt-link class='navi-link' to='/blog'>Blog</nuxt-link>
+        <nuxt-link class='navi-link' to='/works'>Works</nuxt-link>
+        <!-- <nuxt-link class='navi-link' to='/contact'>Contact</nuxt-link> -->
         <vs-tooltip bottom>
-          <vs-button icon href='https://twitter.com/yoshihiko5555' blank>
-            <i class="bx bxl-twitter" />
+          <vs-button icon href='https://twitter.com/yoshihiko5555' blank size="small">
+            <i class="bx bxl-twitter header-icon" />
           </vs-button>
           <template #tooltip>
             @yoshihiko5555
@@ -24,12 +21,20 @@
         </vs-tooltip>
         <vs-tooltip bottom>
           <vs-button icon href='https://github.com/yoshihiko555' blank>
-            <i class="bx bxl-github" />
+            <i class="bx bxl-github header-icon" />
           </vs-button>
           <template #tooltip>
             yoshihiko555
           </template>
         </vs-tooltip>
+        <vs-switch v-model="isDark">
+          <template #off>
+            <i class="bx bx-sun" />
+          </template>
+          <template #on>
+            <i class="bx bx-moon" />
+          </template>
+        </vs-switch>
         <!-- 検索 -->
         <search-btn
           @click.native="open"
@@ -37,28 +42,22 @@
           @shortkey.native="open"
 
         />
-        <search-dialog
-          v-if="isOpen"
-          :open.sync="isOpen"
-        />
       </div>
       <sidebar class="sm:hidden" />
-    </template>
-  </vs-navbar>
+    </header>
+    <search-dialog
+      v-if="isOpen"
+      :open.sync="isOpen"
+    />
+  </div>
 </template>
 
 <script lang='ts'>
-import { defineComponent, Ref } from '@nuxtjs/composition-api'
-import { useDialog } from '~/utils/hooks'
+import { defineComponent, useContext, ref, watch, onMounted } from '@nuxtjs/composition-api'
+import { useDialog, useTheme } from '~/utils/hooks'
 import Sidebar from '~/components/organisms/sidebar.vue'
 import SearchBtn from '~/components/atoms/search-btn.vue'
 import SearchDialog from '~/components/organisms/search-dialog.vue'
-
-type Data = {
-  isOpen: Ref<boolean>
-  open: () => void
-  close: () => void
-}
 
 export default defineComponent({
   components: {
@@ -66,44 +65,52 @@ export default defineComponent({
     SearchBtn,
     SearchDialog,
   },
-  setup (): Data {
+  setup () {
+    const { $colorMode } = useContext()
     const {
       isOpen,
       open,
       close,
     } = useDialog()
 
+    // この時点で渡すとcreatedなので、正しい変数が渡っていない。。。
+    // const { isDark } = useTheme($colorMode)
+
+    // Homeとそれ以外のページでレイアウトが違うため都度マウントされ、トグルが動くのが気持ち悪いので
+    // 後々Store管理するよう検討
+    // 一旦は、DarkMode時のデザインを適用する
+    const isDark = ref<boolean>(false)
+    onMounted(() => {
+      const preference = $colorMode.preference
+      // OSの設定値で判定
+      if (preference === 'system')
+        isDark.value = window.__NUXT_COLOR_MODE__.value === 'dark'
+      else
+        isDark.value = $colorMode.preference === 'dark'
+    })
+
+    watch(isDark, now => {
+      const body = document.body
+      if (now) {
+        $colorMode.preference = 'dark'
+        body.setAttribute('vs-theme', 'dark')
+      } else {
+        $colorMode.preference = 'light'
+        body.removeAttribute('vs-theme')
+      }
+    })
     return {
       isOpen,
       open,
       close,
+      isDark,
     }
   }
 })
 </script>
 
 <style lang="scss" scoped>
-.link {
-  @apply relative mx-2 font-medium;
-  transition: .3s;
-
-  &::after {
-    @apply absolute left-0 w-0 bg-gray-600 duration-300;
-    content: '';
-    height: 1.2px;
-    bottom: -4px;
-  }
-
-  &:hover::after {
-    width: 100%;
-  }
-}
-
-.vs-navbar-content {
-  @apply transition-transform;
-
-  &.hidden {
-    @apply block;
-  }
-}
+// .header-icon {
+//   @apply text-sm;
+// }
 </style>

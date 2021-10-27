@@ -4,3 +4,19 @@
 .page-title {
   @apply py-20 text-2xl text-center;
 }
+
+.navi-link {
+  @apply relative mx-2 font-medium transition-all;
+  font-family: 'Roboto', sans-serif;
+
+  &::after {
+    @apply absolute left-0 w-0 bg-site-black dark:bg-gray-50 duration-300 ease-in-out;
+    content: '';
+    height: 1px;
+    bottom: -4px;
+  }
+
+  &:hover::after {
+    width: 100%;
+  }
+}

@@ -7,3 +7,8 @@ export {
 export {
   useDialog,
 } from './dialog'
+
+/** Theme Hooks */
+export {
+  useTheme,
+} from './theme'

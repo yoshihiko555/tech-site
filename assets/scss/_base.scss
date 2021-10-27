@@ -5,13 +5,14 @@ html {
   overflow-y: scroll;
   overflow-x: hidden;
 }
-h1, h2, h3, h4, h5, h6, p {
-    font-family: 'Inconsolata', monospace;
-    color: $color-font;
+
+body {
+  @apply text-site-black dark:text-gray-50 bg-white dark:bg-site-black-back;
+  font-family: 'Inconsolata', monospace;
 }
+
 a {
-  font-family: 'Roboto', sans-serif;
-  text-decoration: none;
+  @apply no-underline;
 }
+
 img, svg, i { vertical-align: middle; }
-ol, ul { list-style: none; }

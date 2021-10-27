@@ -33,7 +33,15 @@ export default defineComponent({
 
 <style lang="scss" scoped>
   .tag {
-    @apply inline-block px-3 py-2 mr-2 text-sm text-gray-500 border border-gray-300 rounded-2xl transition-colors ease-in-out cursor-pointer hover:bg-gray-100;
+    @apply
+      inline-block
+      px-3 py-2 mr-2
+      cursor-pointer
+      text-sm text-gray-500 dark:text-gray-100 dark:hover:text-site-black-back
+      bg-white dark:bg-site-black-theme hover:bg-gray-100 dark:hover:bg-gray-50
+      border border-gray-300
+      rounded-2xl
+      transition-colors ease-in-out;
 
     &.small {
       @apply px-2 py-1 text-xs;

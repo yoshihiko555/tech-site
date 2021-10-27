@@ -82,8 +82,8 @@ export default ():NuxtConfig => ({
     }
   },
   build: {
-    // parallel: true,
-    // cache: true,
+    parallel: true,
+    cache: true,
     // hardSource: true,
   },
   router: {
@@ -161,25 +161,10 @@ export default ():NuxtConfig => ({
   //   configPath: '~/config/tailwind.config.js',
   //   purgeCSSInDev: false,
   // }
-  // markdownit: {
-  //   injected: true,
-  //   breaks: true, // Convert '\n' in paragraphs into <br>
-  //   use: [
-  //     'markdown-it-anchor',
-  //     'markdown-it-table-of-contents',
-  //     'markdown-it-collapsible',
-  //     [
-  //       'markdown-it-link-attributes',
-  //       {
-  //         attrs: {
-  //           target: '_blank',
-  //           rel: 'noopener noreferrer',
-  //         }
-  //       }
-  //     ]
-  //   ]
-  // },
   'google-gtag': {
     id: process.env.GTAG_ID
   },
+  colorMode: {
+    classSuffix: '',
+  }
 })

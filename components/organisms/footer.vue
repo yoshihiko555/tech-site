@@ -1,5 +1,5 @@
 <template>
-  <footer class="my-8 text-center">
+  <footer class="mt-20 mb-8 text-center">
     <div class="mb-8">
         <nuxt-link class='link' to='/about'>About</nuxt-link>
         <nuxt-link class='link' to='/blog'>Blog</nuxt-link>

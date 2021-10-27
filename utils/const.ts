@@ -22,81 +22,93 @@ export type SkillType = {
   name: string
   period: number
   percent: number
-  icon: File
+  // icon: File
+  light: File
+  dark: File
 }
+
+/**
+ * アイコンの取得
+ * @param name
+ * @returns
+ */
+const getIcon = (name: string): { light: File, dark: File } => ({
+  light: require(`~/assets/img/icon/light/${name}.svg`),
+  dark: require(`~/assets/img/icon/dark/${name}.svg`),
+})
 
 export const SKILLS: SkillType[] = [
   {
     name: 'HTML',
     period: 3,
     percent: 90,
-    icon: require('~/assets/img/icon/html5.svg'),
+    ...getIcon('html5'),
   },
   {
     name: 'CSS',
     period: 3,
     percent: 90,
-    icon: require('~/assets/img/icon/css3.svg'),
+    ...getIcon('css3'),
   },
   {
     name: 'SCSS',
     period: 2,
     percent: 50,
-    icon: require('~/assets/img/icon/sass.svg'),
+    ...getIcon('sass'),
   },
   {
     name: 'JavaScript',
     period: 3,
     percent: 90,
-    icon: require('~/assets/img/icon/javascript.svg'),
+    ...getIcon('javascript'),
   },
   {
     name: 'jQuery',
     period: 3,
     percent: 90,
-    icon: require('~/assets/img/icon/jquery.svg'),
+    ...getIcon('jquery'),
   },
   {
     name: 'Vue',
     period: 2,
     percent: 60,
-    icon: require('~/assets/img/icon/vue.svg'),
+    ...getIcon('vue'),
   },
   {
     name: 'React',
     period: 0.5,
     percent: 20,
-    icon: require('~/assets/img/icon/react.svg'),
+    ...getIcon('react'),
   },
   {
     name: 'TypeScript',
     period: 0.5,
     percent: 20,
-    icon: require('~/assets/img/icon/typescript.svg'),
+    ...getIcon('typescript'),
   },
   {
     name: 'Java',
     period: 2,
     percent: 50,
-    icon: require('~/assets/img/icon/java.svg'),
+    ...getIcon('java'),
   },
   {
     name: 'Python',
     period: 2,
     percent: 40,
-    icon: require('~/assets/img/icon/python.svg'),
+    ...getIcon('python'),
   },
   {
     name: 'Django',
     period: 2,
     percent: 40,
-    icon: require('~/assets/img/icon/django.svg'),
+    ...getIcon('django'),
   },
   {
     name: 'Docker',
     period: 1.5,
     percent: 50,
-    icon: require('~/assets/img/icon/docker.svg'),
+    ...getIcon('docker'),
   },
 ]
 
@@ -115,7 +127,6 @@ export const SITE_THEME_COLOR = {
 export type WorkType = {
   name: string
   description: string
-  // img: File
   img: string
   siteUrl: string
   sourceIcon: string
@@ -151,12 +162,12 @@ export const WORKS: WorkType[] = [
     sourceUrl: 'https://github.com/yoshihiko555/myunsplash',
   },
   // Offbal
-  {
-    name: 'Offbal',
-    description: 'タスク管理サービス',
-    img: '/works/offbal.png',
-    siteUrl: 'https://offbal.herokuapp.com/',
-    sourceIcon: 'bxl-github',
-    sourceUrl: 'https://github.com/yoshihiko555/offbal',
-  },
+  // {
+  //   name: 'Offbal',
+  //   description: 'タスク管理サービス',
+  //   img: '/works/offbal.png',
+  //   siteUrl: 'https://offbal.herokuapp.com/',
+  //   sourceIcon: 'bxl-github',
+  //   sourceUrl: 'https://github.com/yoshihiko555/offbal',
+  // },
 ]

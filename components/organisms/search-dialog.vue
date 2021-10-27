@@ -3,6 +3,7 @@
     ref="root"
     :value="open"
     @input="$emit('update:open', false)"
+    class="overflow-hidden"
   >
     <template #header>
       <h3 class="text-2xl">Search</h3>
@@ -18,9 +19,9 @@
       </template>
     </vs-input>
     <div v-show="variables.value">
-      <div v-if="articles && articles.length" class="my-4">
+      <div v-if="articles && articles.length" class="result-wrapper">
         <nuxt-link
-          class="card"
+          class="article-card"
           v-for="article in articles"
           :key="article && article.sys.id"
           :to="`/blog/${article.slug}`"
@@ -28,7 +29,7 @@
         >
           <h3 class="mb-8 text-lg">{{ article.title }}</h3>
           <div class="flex justify-between">
-            <p class="px-2 py-1 bg-gray-100 rounded">{{ article.category.name }}</p>
+            <p class="px-2 py-1 rounded bg-gray-100 dark:bg-site-black-back">{{ article.category.name }}</p>
             <p>{{ $moment(article.sys.publishedAt).format('MMM Do YYYY') }}</p>
           </div>
         </nuxt-link>
@@ -38,7 +39,7 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, reactive, onMounted } from '@nuxtjs/composition-api'
+import { defineComponent, reactive, onMounted, watch, toRefs } from '@nuxtjs/composition-api'
 import { useResult } from '@vue/apollo-composable'
 import { useSearchArticlesQuery, SearchArticlesQueryVariables } from '~/generated/graphql'
 export default defineComponent({
@@ -47,13 +48,23 @@ export default defineComponent({
       type: Boolean,
     }
   },
-  setup (_, { refs }) {
-
+  setup (props, { refs }) {
     onMounted(() => {
       const parent = refs.input as Vue
       const input = parent.$el.children[0].children[0] as HTMLInputElement
       input.focus()
     })
+
+    // TODO : v-ifで都度マウントしているため、Vuesaxのデザインが効いていない
+    // const { open } = toRefs(props)
+    // watch(open, now => {
+    //   console.log('now:', now, refs)
+    //   if (now) {
+    //     const parent = refs.input as Vue
+    //     const input = parent.$el.children[0].children[0] as HTMLInputElement
+    //     input.focus()
+    //   }
+    // })
 
     // 検索ロジック
     const variables = reactive<SearchArticlesQueryVariables>({
@@ -80,7 +91,22 @@ export default defineComponent({
   }
 }
 
-.card {
-  @apply block my-8 px-2 py-3 rounded-xl shadow transition-colors hover:bg-gray-50;
+.result-wrapper {
+  $outer-padding: 160px;
+  $innter-padding: 92px;
+  @apply my-4 overflow-y-auto;
+  max-height: calc(80vh - #{$outer-padding + $innter-padding});
+
+  .article-card {
+    @apply block mx-2 my-8 px-4 py-5 rounded-xl shadow transition-colors bg-white dark:bg-site-black hover:bg-gray-50 dark:hover:bg-site-black-theme;
+  }
+}
+
+::-webkit-scrollbar {
+  @apply w-2 h-2;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-50 rounded-md;
 }
 </style>

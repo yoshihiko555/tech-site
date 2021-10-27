@@ -1,7 +1,8 @@
 <template>
   <div class="mb-4 flex align-center h-20">
     <div class='icon text-center h-full'>
-      <img :src='skill.icon' :alt='skill.name' class="p-2 inline-block max-h-full" />
+      <img v-if="$colorMode.value === 'light'" :src='skill.light' :alt='skill.name' class="p-2 inline-block max-h-full" />
+      <img v-else :src='skill.dark' :alt='skill.name' class="p-2 inline-block max-h-full" />
     </div>
     <div class='root self-center'>
       <h6 class='inline-block text-xl mr-2'>{{ skill.name }}</h6>
