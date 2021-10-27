@@ -53,7 +53,7 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, useContext, ref, watch, onMounted } from '@nuxtjs/composition-api'
+import { defineComponent } from '@nuxtjs/composition-api'
 import { useDialog, useTheme } from '~/utils/hooks'
 import Sidebar from '~/components/organisms/sidebar.vue'
 import SearchBtn from '~/components/atoms/search-btn.vue'
@@ -66,39 +66,13 @@ export default defineComponent({
     SearchDialog,
   },
   setup () {
-    const { $colorMode } = useContext()
     const {
       isOpen,
       open,
       close,
     } = useDialog()
+    const { isDark } = useTheme()
 
-    // この時点で渡すとcreatedなので、正しい変数が渡っていない。。。
-    // const { isDark } = useTheme($colorMode)
-
-    // Homeとそれ以外のページでレイアウトが違うため都度マウントされ、トグルが動くのが気持ち悪いので
-    // 後々Store管理するよう検討
-    // 一旦は、DarkMode時のデザインを適用する
-    const isDark = ref<boolean>(false)
-    onMounted(() => {
-      const preference = $colorMode.preference
-      // OSの設定値で判定
-      if (preference === 'system')
-        isDark.value = window.__NUXT_COLOR_MODE__.value === 'dark'
-      else
-        isDark.value = $colorMode.preference === 'dark'
-    })
-
-    watch(isDark, now => {
-      const body = document.body
-      if (now) {
-        $colorMode.preference = 'dark'
-        body.setAttribute('vs-theme', 'dark')
-      } else {
-        $colorMode.preference = 'light'
-        body.removeAttribute('vs-theme')
-      }
-    })
     return {
       isOpen,
       open,
@@ -108,9 +82,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-// .header-icon {
-//   @apply text-sm;
-// }
-</style>

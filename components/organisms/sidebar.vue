@@ -4,7 +4,7 @@
       @click="open"
       icon
       transparent
-      color="#333333"
+      class="text-site-black dark:text-gray-50"
     >
       <i class="bx bx-menu" />
     </vs-button>
@@ -26,14 +26,28 @@
         <span>{{ site.title }}</span>
       </vs-sidebar-item>
       <template #footer>
-        <p class="text-center mb-2">Follow me!</p>
-        <div class="flex justify-center mb-4 w-full">
-          <vs-button icon href='https://twitter.com/yoshihiko5555' blank>
-            <i class="bx bxl-twitter" />
-          </vs-button>
-          <vs-button icon href='https://github.com/yoshihiko555' blank>
-            <i class="bx bxl-github" />
-          </vs-button>
+        <div class="flex items-end justify-between mb-4">
+          <div>
+            <p class="text-center mb-2">Follow me!</p>
+            <div class="flex justify-centerw-full">
+              <vs-button icon href='https://twitter.com/yoshihiko5555' blank>
+                <i class="bx bxl-twitter" />
+              </vs-button>
+              <vs-button icon href='https://github.com/yoshihiko555' blank>
+                <i class="bx bxl-github" />
+              </vs-button>
+            </div>
+          </div>
+          <div class="mb-2">
+            <vs-switch v-model="isDark">
+              <template #off>
+                <i class="bx bx-sun" />
+              </template>
+              <template #on>
+                <i class="bx bx-moon" />
+              </template>
+            </vs-switch>
+          </div>
         </div>
       </template>
     </vs-sidebar>
@@ -43,7 +57,7 @@
 
 <script lang='ts'>
 import { defineComponent, useContext } from '@nuxtjs/composition-api'
-import { useSidebar, useDialog } from '~/utils/hooks'
+import { useSidebar, useDialog, useTheme } from '~/utils/hooks'
 import { SITE_MAPS } from '~/utils/const'
 import SearchBtn from '~/components/atoms/search-btn.vue'
 import SearchDialog from '~/components/organisms/search-dialog.vue'
@@ -60,6 +74,7 @@ export default defineComponent({
       isOpen: isOpenDialog,
       open: openDialog,
     } = useDialog()
+    const { isDark } = useTheme()
     return {
       sites: SITE_MAPS,
       active,
@@ -68,6 +83,7 @@ export default defineComponent({
       close,
       isOpenDialog,
       openDialog,
+      isDark,
     }
   }
 })

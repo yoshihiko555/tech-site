@@ -18,8 +18,10 @@ export const useSidebar = (route: Ref<Route>): SidebarDataType => {
   const active = ref<string>('home')
   const open = () => {
     isOpen.value = true
-    if (!route.value.name) return
-    if (route.value.name === 'index') active.value = 'home'
+    if (!route.value.name || route.value.name === 'index') {
+      active.value = 'home'
+      return
+    }
     active.value = route.value.name
   }
 

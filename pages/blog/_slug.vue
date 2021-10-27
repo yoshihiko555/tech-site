@@ -57,7 +57,7 @@
         <!-- サムネイル -->
         <nuxt-img class="mb-10" format="webp" v-if="article.thumbnail" :src='article.thumbnail.url' :alt='article.thumbnail.description' />
         <!-- 記事内容 -->
-        <div class="markdown-body line-numbers" v-html="parse(article.content)" v-interpolation/>
+        <div class="markdown-body line-numbers" v-html="parse(article.content)" v-interpolation />
       </div>
       <!-- 目次 -->
       <aside
@@ -229,7 +229,7 @@ export default defineComponent({
     }
 
     code {
-      @apply px-2 text-gray-50 bg-gray-700 rounded;
+      @apply px-2 text-sm sm:text-base text-gray-50 bg-gray-700 rounded;
     }
 
     // 画像
@@ -268,9 +268,10 @@ export default defineComponent({
         @apply mb-8 pt-10 bg-gray-700 overflow-x-auto rounded-md;
 
         code {
-          @apply px-0 text-gray-100;
+          @apply px-0 text-sm sm:text-base;
         }
       }
+
       .toolbar {
         @apply flex flex-row-reverse justify-between top-2 right-0 w-full px-4 opacity-100;
         .toolbar-item {

@@ -1,34 +1,28 @@
-import { ColorModeInstance } from '@nuxtjs/color-mode/types/color-mode'
-import { ref, watch, onMounted, useContext, nextTick } from '@nuxtjs/composition-api'
+import { ref, watch, onMounted, useContext } from '@nuxtjs/composition-api'
 
-export const useTheme = (colorMode: ColorModeInstance) => {
+/**
+ * テーマ設定用Hooks
+ * @returns
+ */
+export const useTheme = () => {
+  const { $colorMode } = useContext()
   const isDark = ref<boolean>(false)
 
   onMounted(() => {
-    const prefrence = colorMode.preference
-    if (prefrence === 'system') {
-      // この中だとうまく型定義が読み込まれていない。。。
-      // useContextの方でもうまくいかなかった
-      // isDark.value = window
-    } else {
-
-    }
-    isDark.value = colorMode.preference === 'dark'
-    // const body = document.body
-    // if (isDark.value) {
-    //   body.setAttribute('vs-theme', 'dark')
-    // } else {
-    //   body.removeAttribute('vs-theme')
-    // }
+    const preference = $colorMode.preference
+    if (preference === 'system')
+      isDark.value = window.__NUXT_COLOR_MODE__.value === 'dark'
+    else
+      isDark.value = $colorMode.preference === 'dark'
   })
 
   watch(isDark, now => {
     const body = document.body
     if (now) {
-      colorMode.preference = 'dark'
+      $colorMode.preference = 'dark'
       body.setAttribute('vs-theme', 'dark')
     } else {
-      colorMode.preference = 'light'
+      $colorMode.preference = 'light'
       body.removeAttribute('vs-theme')
     }
   })

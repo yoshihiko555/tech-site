@@ -24,13 +24,13 @@
           class="article-card"
           v-for="article in articles"
           :key="article && article.sys.id"
-          :to="`/blog/${article.slug}`"
+          :to="`/blog/${article && article.slug}`"
           @click.native="$emit('update:open', false)"
         >
-          <h3 class="mb-8 text-lg">{{ article.title }}</h3>
+          <h3 class="mb-8 text-lg">{{ article && article.title }}</h3>
           <div class="flex justify-between">
-            <p class="px-2 py-1 rounded bg-gray-100 dark:bg-site-black-back">{{ article.category.name }}</p>
-            <p>{{ $moment(article.sys.publishedAt).format('MMM Do YYYY') }}</p>
+            <p class="px-2 py-1 rounded bg-gray-100 dark:bg-site-black-back">{{ article && article.category && article.category.name }}</p>
+            <p>{{ $moment(article && article.sys.publishedAt).format('MMM Do YYYY') }}</p>
           </div>
         </nuxt-link>
       </div>
