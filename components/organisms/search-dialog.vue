@@ -74,14 +74,10 @@ export default defineComponent({
     const { result, loading } = useSearchArticlesQuery(variables)
     const articles = useResult(result, null, data => data?.articlesCollection?.items)
 
-    const test = () => {
-      console.log('test')
-    }
     return {
       loading,
       articles,
       variables,
-      test,
     }
   },
 })

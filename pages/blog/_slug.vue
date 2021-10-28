@@ -87,8 +87,9 @@
  * - CSRとSSRでのレンダリングに差異が生まれて、エラーが発生してしまう（厳密にはVue.warn）
  * - コメント機能
  */
-import { defineComponent, useContext, ref, watch, useMeta } from '@nuxtjs/composition-api'
+import { defineComponent, useContext, ref, watch, useMeta, onMounted, useRouter } from '@nuxtjs/composition-api'
 import { useResult } from '@vue/apollo-composable'
+import { shiftFunc } from '~/utils'
 import { useGetArticleBySlugQuery } from '~/generated/graphql'
 import { Maybe } from 'graphql/jsutils/Maybe'
 import Prism from '~/plugins/prism'
@@ -172,6 +173,20 @@ export default defineComponent({
       if (!res) return ''
       return res[0]
     }
+
+    const router = useRouter()
+    onMounted(async () => {
+      await shiftFunc()
+      // https://koredana.info/blog/nuxtjs-router-push-alt-anchor
+      const tocs = document.querySelectorAll('.toc a[href^="#"]')
+      for (let i = 0; i < tocs.length; i++) {
+        tocs[i].addEventListener('click', e => {
+          e.preventDefault()
+          const target = e.target as HTMLAnchorElement
+          router.push({ path: target.hash })
+        })
+      }
+    })
 
     return {
       loading,
@@ -265,10 +280,10 @@ export default defineComponent({
     // コード
     .code-toolbar {
       pre {
-        @apply mb-8 pt-10 bg-gray-700 overflow-x-auto rounded-md;
+        @apply mb-8 pt-10 bg-gray-700 overflow-x-auto rounded-md text-sm sm:text-base;
 
         code {
-          @apply px-0 text-sm sm:text-base;
+          @apply px-0;
         }
       }
 
