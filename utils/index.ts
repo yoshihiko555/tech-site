@@ -4,6 +4,6 @@
  */
 export const shiftFunc = (): Promise<void> => {
   return new Promise(resolve => {
-    setTimeout(resolve, 100)
+    setTimeout(resolve, 500)
   })
 }

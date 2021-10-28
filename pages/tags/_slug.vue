@@ -2,7 +2,7 @@
   <div>
     <div v-if="tag && !loading">
       <h1 class="page-title">{{ tag.name }}</h1>
-      <div v-if="articles">
+      <div v-if="articles && articles.length">
         <article-list :articles="articles" />
         <div class="flex items-center justify-center mb-20">
           <vs-pagination

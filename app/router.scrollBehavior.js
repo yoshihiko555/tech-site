@@ -11,7 +11,7 @@ export default (to, from, prev) => {
     })()
     return {
       selector: hash,
-      offset: { x:0, y: -offset },
+      offset: { x:0, y: offset},
       behavior: 'smooth',
     }
   }
