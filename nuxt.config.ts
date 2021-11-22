@@ -1,4 +1,8 @@
 import { NuxtConfig } from '@nuxt/types'
+import MarkdownIt from 'markdown-it'
+import { truncate } from './plugins/utils'
+import { client } from './utils/contentful'
+import { IArticlesFields } from './generated/contentful'
 
 /** サイト名 */
 const siteName = 'Yoshihiko'
@@ -70,9 +74,9 @@ export default ():NuxtConfig => ({
     '@nuxtjs/pwa',
     '@nuxtjs/style-resources',
     '@nuxtjs/apollo',
-    // '@nuxtjs/markdownit',
     '@nuxtjs/moment',
     '@nuxtjs/google-gtag',
+    '@nuxtjs/feed',
     'nuxt-interpolation',
   ],
   pwa: {
@@ -166,5 +170,50 @@ export default ():NuxtConfig => ({
   },
   colorMode: {
     classSuffix: '',
+  },
+  feed: {
+    path: '/feed.xml',
+    async create (feed: any) {
+      feed.options = {
+        title: siteName,
+        link: `${process.env.ORIGIN}/feed.xml`,
+        description: desc,
+        favicon: `${process.env.ORIGIN}/favicon.ico`,
+        image: `${process.env.ORIGIN}/apple-touch-icon.png`
+      }
+
+      const md = new MarkdownIt({
+        html: true,
+        typographer: true,
+      })
+
+      const articles = await client().getEntries<IArticlesFields>({
+        content_type: 'articles',
+        order: '-sys.createdAt'
+      })
+
+      articles.items.forEach(article => {
+        feed.addItem({
+          id: article.fields.slug,
+          title: article.fields.title,
+          link: `${process.env.ORIGIN}/blog/${article.fields.slug}`,
+          description: truncate(article.fields.content && article.fields.content.replace(/\[\[toc\]\]\s/, '') || '', 60),
+          content: md.render(article.fields.content || ''),
+          published: new Date(article.sys.createdAt),
+          date: new Date(article.sys.updatedAt),
+          image: `https:${article.fields.thumbnail && article.fields.thumbnail.fields.file.url}`,
+        })
+      })
+
+      feed.addCategory('blog')
+      feed.addContributor({
+        name: 'Yoshihiko',
+        email: 'yoshihiko05410@gmail.com',
+        link: process.env.ORIGIN
+      })
+    },
+    cacheTime: 1000 * 60 * 15,
+    type: 'rss2',
+    // type: 'atom1',
   }
 })

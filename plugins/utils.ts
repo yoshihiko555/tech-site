@@ -7,7 +7,7 @@ import { Plugin } from '@nuxt/types'
  * @param suffix 接尾辞
  * @returns
  */
-const truncate = (value: string, max: number, suffix: string = '...') => {
+export const truncate = (value: string, max: number, suffix: string = '...') => {
   if (!value) return ''
   if (value.length >= max) return value.substr(0, max) + suffix
   return value
