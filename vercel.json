@@ -12,7 +12,8 @@
         "serverFiles": [
           "package.json",
           "static/**"
-        ]
+        ],
+        "generateStaticRoutes": true
       }
     }
   ],
