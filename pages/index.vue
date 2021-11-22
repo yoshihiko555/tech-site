@@ -30,7 +30,7 @@ export default defineComponent({
       { hid: 'description', name: 'description', content: 'yoshihiko home page' },
       { hid: 'og:title', property: 'og:title', content: 'Home | Yoshihiko' },
       { hid: 'og:description', property: 'og:description', content: 'yoshihiko home page' },
-      { hid: 'og:url', property: 'og:url', content: `${process.env.ORIGIN}` || 'http://localhost:3000' },
+      { hid: 'og:url', property: 'og:url', content: `${process.env.ORIGIN}/` || 'http://localhost:3000' },
       { hid: 'twitter:title', property: 'twitter:title', content: 'Home | Yoshihiko' },
       { hid: 'twitter:description', property: 'twitter:description', content: 'yoshihiko home page' },
     ]
