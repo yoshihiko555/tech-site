@@ -173,7 +173,7 @@ export default ():NuxtConfig => ({
   },
   feed: {
     path: '/feed.xml',
-    async create (feed) {
+    async create (feed: any) {
       feed.options = {
         title: siteName,
         link: `${process.env.ORIGIN}/feed.xml`,
@@ -197,11 +197,11 @@ export default ():NuxtConfig => ({
           id: article.fields.slug,
           title: article.fields.title,
           link: `${process.env.ORIGIN}/blog/${article.fields.slug}`,
-          description: truncate(article.fields.content.replace(/\[\[toc\]\]\s/, '') || '', 60),
-          content: md.render(article.fields.content),
+          description: truncate(article.fields.content && article.fields.content.replace(/\[\[toc\]\]\s/, '') || '', 60),
+          content: md.render(article.fields.content && article.fields.content),
           published: new Date(article.sys.createdAt),
           date: new Date(article.sys.updatedAt),
-          image: `https:${article.fields.thumbnail.fields.file.url}`,
+          image: `https:${article.fields.thumbnail && article.fields.thumbnail.fields.file.url}`,
         })
       })
 
