@@ -11,7 +11,9 @@
       "config": {
         "serverFiles": [
           "package.json",
-          "static/**"
+          "static/**",
+          "plugins/utils.ts",
+          "utils/**"
         ]
       }
     }
