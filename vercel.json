@@ -11,9 +11,7 @@
       "config": {
         "serverFiles": [
           "package.json",
-          "static/**",
-          "plugins/utils.ts",
-          "utils/**"
+          "static/**"
         ],
         "generateStaticRoutes": true
       }
@@ -41,7 +39,7 @@
     },
     {
       "src": "/feed.xml",
-      "headers": { "cache-control": "public, max-age=31536000" },
+      "headers": { "cache-control": "s-maxage=1, stale-while-revalidate "},
       "dest": "/feed.xml"
     },
     {

@@ -27,6 +27,9 @@
             yoshihiko555
           </template>
         </vs-tooltip>
+        <vs-button icon href='https://yoshihiko.tech/feed.xml' blank>
+          <i class="bx bx-rss" />
+        </vs-button>
         <vs-switch v-model="isDark">
           <template #off>
             <i class="bx bx-sun" />
