@@ -14,7 +14,8 @@
           "static/**",
           "plugins/utils.ts",
           "utils/**"
-        ]
+        ],
+        "generateStaticRoutes": true
       }
     }
   ],
