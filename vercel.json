@@ -38,6 +38,11 @@
       "dest": "/works/$1"
     },
     {
+      "src": "/feed.xml",
+      "headers": { "cache-control": "s-maxage=1, stale-while-revalidate "},
+      "dest": "/feed.xml"
+    },
+    {
       "src": "/(.*)",
       "headers": { "cache-control": "s-maxage=1, stale-while-revalidate "},
       "dest": "/"

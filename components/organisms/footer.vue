@@ -5,8 +5,8 @@
         <nuxt-link class='link' to='/blog'>Blog</nuxt-link>
         <nuxt-link class='link' to='/works'>Works</nuxt-link>
     </div>
-    <div class="mb-8">
-      <vs-tooltip bottom class="inline-block">
+    <div class="flex items-center justify-center mb-8 gap-4">
+      <vs-tooltip bottom>
         <vs-button icon href='https://twitter.com/yoshihiko5555' blank>
           <i class="bx bxl-twitter" />
         </vs-button>
@@ -14,7 +14,7 @@
           @yoshihiko5555
         </template>
       </vs-tooltip>
-      <vs-tooltip bottom class="inline-block">
+      <vs-tooltip bottom>
         <vs-button icon href='https://github.com/yoshihiko555' blank>
           <i class="bx bxl-github" />
         </vs-button>
@@ -22,6 +22,9 @@
           yoshihiko555
         </template>
       </vs-tooltip>
+      <vs-button icon href='https://yoshihiko.tech/feed.xml' blank>
+        <i class="bx bx-rss" />
+      </vs-button>
     </div>
     <small>&copy; 2021 Yoshihiko All Rights Reserved</small>
   </footer>

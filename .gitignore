@@ -3,6 +3,7 @@ _nuxt/
 bk/
 archives/
 tsconfig-in-comments.json
+*.http
 
 # REST server
 __pycache__
