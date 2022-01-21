@@ -79,7 +79,6 @@
  *     https://nishimura.club/nuxt-jest
  *     https://github.com/RyuNIshimura/next-blog/blob/b9368ae08cdf0029b24bb210676dc9aab689c064/lib/markdown-utils.ts#L42
  *   →一度のパースで内容と目次を生成するよう修正すべきである
- * - 404ページへの遷移 : OK
  * - 戻るボタンでページ内で遷移する（今だとURLは戻っているけど画面上は戻っていない）
  * - 自サイトのリンクと、外部サイトのリンクで処理を切り替え
  *     - https://izm51.com/posts/markdown-it-target-blank-anchor/
