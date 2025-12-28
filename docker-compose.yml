@@ -13,4 +13,5 @@ services:
       - '9229:9229'
     volumes:
       - .:/usr/src
+      - /usr/src/node_modules
     tty: true
