@@ -1,8 +1,10 @@
 <template>
-  <div class="grid sm:grid-cols-2 gap-8">
+  <div class="skills-grid">
     <div
-      v-for="skill in skills"
+      v-for="(skill, index) in skills"
       :key="skill.name"
+      class="skill-grid-item"
+      :style="{ '--delay': index * 0.1 + 's' }"
     >
       <skill-item :skill="skill" />
     </div>
@@ -32,3 +34,26 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="scss" scoped>
+  .skills-grid {
+    @apply grid sm:grid-cols-2 gap-4 md:gap-6;
+  }
+
+  .skill-grid-item {
+    animation: fadeInUp 0.6s ease-out forwards;
+    animation-delay: var(--delay, 0s);
+    opacity: 0;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

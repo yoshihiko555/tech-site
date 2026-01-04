@@ -138,7 +138,7 @@ export const WORKS: WorkType[] = [
     name: 'Coopy',
     description: 'ブログサービス',
     img: '/works/coopy.webp',
-    siteUrl: 'https://coopy.herokuapp.com/',
+    siteUrl: '',
     sourceIcon: 'bxl-github',
     sourceUrl: 'https://github.com/shutotakizawa/coopy',
   },
@@ -147,7 +147,7 @@ export const WORKS: WorkType[] = [
     name: 'Bandue',
     description: 'ソーシャルネットワークサービス',
     img: '/works/bandue.webp',
-    siteUrl: 'https://bandue.herokuapp.com/',
+    siteUrl: '',
     sourceIcon: 'bxl-github',
     sourceUrl: 'https://github.com/shutotakizawa/bandue',
   },
@@ -165,8 +165,17 @@ export const WORKS: WorkType[] = [
     name: 'Offbal',
     description: 'タスク管理サービス',
     img: '/works/offbal.png',
-    siteUrl: 'https://offbal.herokuapp.com/',
+    siteUrl: '',
     sourceIcon: 'bxl-github',
     sourceUrl: 'https://github.com/yoshihiko555/offbal',
   },
+  // Nudge
+  {
+    name: 'Nudge',
+    description: 'Notion管理アプリ',
+    img: '/works/nudge.png',
+    siteUrl: '',
+    sourceIcon: 'bxl-github',
+    sourceUrl: 'https://github.com/yoshihiko555/Nudge',
+  }
 ]
