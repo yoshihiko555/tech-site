@@ -2,7 +2,7 @@ version: '3'
 services:
   client:
     build: .
-    image: node:14-alpine
+    image: node:20-alpine
     container_name: client
     working_dir: /usr/src
     ports:
@@ -14,4 +14,6 @@ services:
     volumes:
       - .:/usr/src
       - /usr/src/node_modules
+    environment:
+      - NODE_OPTIONS=--openssl-legacy-provider
     tty: true
