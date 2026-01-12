@@ -309,7 +309,7 @@ export default defineComponent({
     }
 
     blockquote {
-      @apply p-4 bg-gray-100 border-l-4 border-gray-500 rounded;
+      @apply p-4 bg-gray-100 dark:bg-gray-800 border-l-4 border-gray-500 dark:border-gray-400 rounded;
       p { @apply m-0; }
     }
 
@@ -321,21 +321,53 @@ export default defineComponent({
     }
 
     table {
-      @apply mb-4 ml-4 border-collapse;
+      @apply mb-4 ml-4 w-full border-collapse rounded-lg overflow-hidden;
+      @apply bg-white dark:bg-gray-800;
+      @apply shadow-sm;
+
+      th,
+      td {
+        @apply py-3 px-4;
+        @apply border border-gray-200 dark:border-gray-600;
+      }
 
       thead {
-        @apply border-gray-100;
-        font-size: 1.1em;
-        border-bottom: .5px solid;
-      }
-      tbody {
-        tr:nth-child(odd) {
-          @apply bg-gray-100;
+        @apply bg-gray-50 dark:bg-gray-700;
+        @apply text-gray-700 dark:text-gray-200;
+        font-size: 1.05em;
+        font-weight: 600;
+
+        th {
+          @apply text-left;
+          @apply border-b-2 border-gray-200 dark:border-gray-600;
         }
       }
-      th, td {
-        padding: .5em;
-        border: .5px solid #e0e0e0;
+
+      tbody {
+        tr {
+          @apply transition-colors duration-150;
+          @apply border-b border-gray-100 dark:border-gray-700;
+
+          &:last-child {
+            @apply border-b-0;
+          }
+
+          &:nth-child(odd) {
+            @apply bg-gray-50 dark:bg-gray-900;
+          }
+
+          &:nth-child(even) {
+            @apply bg-white dark:bg-gray-800;
+          }
+
+          &:hover {
+            @apply bg-gray-100 dark:bg-gray-700;
+          }
+        }
+
+        td {
+          @apply text-gray-800 dark:text-gray-200;
+        }
       }
     }
   }
