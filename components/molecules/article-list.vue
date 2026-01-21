@@ -14,7 +14,7 @@
         <h3 class="title">{{ article.title }}</h3>
       </template>
       <template #text>
-        <p class="lead-text">{{ $truncate(article.content && article.content.replace(/\[\[toc\]\]\s/, '') || '', 60) }}</p>
+        <p class="lead-text">{{ article.description || $truncate(article.content && article.content.replace(/\[\[toc\]\]\s/, '') || '', 60) }}</p>
         <div v-if='article.tagsCollection && article.tagsCollection.items.length'>
           <span
             v-for='tag in article.tagsCollection.items'

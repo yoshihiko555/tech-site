@@ -1,69 +1,47 @@
 <template>
   <div>
-    <div
-      v-if="article && !loading"
-      class="mb-10 grid grid-cols-1 lg:grid-cols-6"
-    >
+    <div v-if="article && !loading" class="mb-10 grid grid-cols-1 lg:grid-cols-6">
       <div class="article py-4 col-span-2 lg:col-span-4">
         <h2
           v-if="article.category"
           @click="$router.push(`/categories/${article && article.category && article.category.slug}`)"
-          class="
-            inline-block cursor-pointer
-            mb-4 sm:mb-5 px-2 py-1 sm:px-3 sm:py-2
-            text-sm sm:text-base font-thin hover:text-gray-400
-            bg-gray-100 dark:bg-site-black-theme
-            border border-gray-100
-            rounded
-            transition-colors duration-500 ease-in-out
-          "
+          class="inline-block cursor-pointer mb-4 sm:mb-5 px-2 py-1 sm:px-3 sm:py-2 text-sm sm:text-base font-thin hover:text-gray-400 bg-gray-100 dark:bg-site-black-theme border border-gray-100 rounded transition-colors duration-500 ease-in-out"
         >
           {{ article.category.name }}
         </h2>
 
         <h1 class="mb-4 text-xl sm:text-3xl text-center">{{ article.title }}</h1>
 
-        <div
-          v-if="tags"
-          class="mb-6 text-center"
-        >
-          <tag
-            v-for="tag in tags"
-            :key="tag && tag.sys.id"
-            :tag="tag"
-            small
-          />
+        <div v-if="tags" class="mb-6 text-center">
+          <tag v-for="tag in tags" :key="tag && tag.sys.id" :tag="tag" small />
         </div>
 
         <div class="mb-4 flex items-center justify-end text-xs sm:text-sm font-light text-gray-400">
           <!-- 投稿日 -->
-          <i class='bx bx-time-five px-1' />
+          <i class="bx bx-time-five px-1" />
           <span class="align-middle px-1 mr-1">
             {{ $moment(article.sys.firstPublishedAt).format('MMM Do YYYY') }}
           </span>
           <!-- 更新日 -->
-          <i
-            v-show="article.sys.firstPublishedAt !== article.sys.publishedAt"
-            class='bx bx-revision px-1'
-          />
-          <span
-            v-show="article.sys.firstPublishedAt !== article.sys.publishedAt"
-            class=" align-middle px-1"
-          >
+          <i v-show="article.sys.firstPublishedAt !== article.sys.publishedAt" class="bx bx-revision px-1" />
+          <span v-show="article.sys.firstPublishedAt !== article.sys.publishedAt" class="align-middle px-1">
             {{ $moment(article.sys.publishedAt).format('MMM Do YYYY') }}
           </span>
         </div>
 
         <!-- サムネイル -->
-        <nuxt-img class="mb-10" format="webp" v-if="article.thumbnail" :src='article.thumbnail.url' :alt='article.thumbnail.description' />
+        <nuxt-img
+          class="mb-10"
+          format="webp"
+          v-if="article.thumbnail"
+          :src="article.thumbnail.url"
+          :alt="article.thumbnail.description"
+        />
         <!-- 記事内容 -->
         <div class="markdown-body line-numbers" v-html="parse(article.content)" v-interpolation />
       </div>
       <!-- 目次 -->
-      <aside
-        v-html="toc(article.content)"
-        class="toc"
-      />
+      <aside v-html="toc(article.content)" class="toc" />
     </div>
     <div v-else>
       <h1 class="my-10 text-center text-2xl font-black">Now Loading...</h1>
@@ -71,7 +49,7 @@
   </div>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 /**
  * TODO
  * - 目次 : OKだけどだいぶ無理やりやった感がある。。。
@@ -99,19 +77,17 @@ export default defineComponent({
     Tag,
   },
   head: {},
-  setup () {
+  setup() {
     const { route, $md, $truncate, $log, $config, error } = useContext()
 
     // 記事情報取得
     const { result, onResult, loading } = useGetArticleBySlugQuery({ slug: route.value.params.slug })
-    const article = useResult(result, null, data => data?.articlesCollection?.items[0])
-    const tags = useResult(result, [], data => data?.articlesCollection?.items[0]?.tagsCollection?.items)
+    const article = useResult(result, null, (data) => data?.articlesCollection?.items[0])
+    const tags = useResult(result, [], (data) => data?.articlesCollection?.items[0]?.tagsCollection?.items)
 
-    onResult(res => {
-      if (!res.data.articlesCollection?.items.length)
-        error({ statusCode: 404 })
-      else
-        setHead()
+    onResult((res) => {
+      if (!res.data.articlesCollection?.items.length) error({ statusCode: 404 })
+      else setHead()
     })
 
     // **********************
@@ -122,7 +98,9 @@ export default defineComponent({
     /** Headタグ設定処理 */
     const setHead = () => {
       const _title = article.value?.title || 'Article'
-      const _content = $truncate(article.value?.content?.replace(/\[\[toc\]\]\s/, '') || '', 60) || ''
+      const _description = article.value?.description?.trim()
+      const _fallback = $truncate(article.value?.content?.replace(/\[\[toc\]\]\s/, '') || '', 60) || ''
+      const _content = _description || _fallback
       const _thumbnail = article.value?.thumbnail?.url || `${$config.origin}/ogp-default.jpeg`
       title.value = _title
       meta.value = [
@@ -179,7 +157,7 @@ export default defineComponent({
       // https://koredana.info/blog/nuxtjs-router-push-alt-anchor
       const tocs = document.querySelectorAll('.toc a[href^="#"]')
       for (let i = 0; i < tocs.length; i++) {
-        tocs[i].addEventListener('click', e => {
+        tocs[i].addEventListener('click', (e) => {
           e.preventDefault()
           const target = e.target as HTMLAnchorElement
           router.push({ path: target.hash })
@@ -194,14 +172,16 @@ export default defineComponent({
       parse,
       toc,
     }
-  }
+  },
 })
 </script>
 
-<style lang='scss' scoped>
+<style lang="scss" scoped>
 .toc::v-deep {
   @apply sticky top-24 ml-20 h-screen hidden col-span-2 lg:block;
-  li > ul { padding-left: 1rem; }
+  li > ul {
+    padding-left: 1rem;
+  }
   a {
     @apply block mb-1 px-3 py-2 text-sm font-bold rounded-md transition-colors duration-300 ease-in-out hover:bg-gray-200 dark:hover:text-site-black-back;
     font-family: 'Noto Sans JP', sans-serif;
@@ -212,7 +192,9 @@ export default defineComponent({
   font-family: 'Noto Sans JP', sans-serif;
 
   .markdown-body {
-    h1, h2, h3 {
+    h1,
+    h2,
+    h3 {
       @apply my-10 sm:my-14;
     }
 
@@ -261,7 +243,9 @@ export default defineComponent({
 
     > ol {
       @extend %list-root;
-      li { list-style: decimal; }
+      li {
+        list-style: decimal;
+      }
     }
 
     > ul {
@@ -271,7 +255,9 @@ export default defineComponent({
 
         > ul {
           @apply pl-6;
-          li { list-style: circle; }
+          li {
+            list-style: circle;
+          }
         }
       }
     }
@@ -310,7 +296,9 @@ export default defineComponent({
 
     blockquote {
       @apply p-4 bg-gray-100 dark:bg-gray-800 border-l-4 border-gray-500 dark:border-gray-400 rounded;
-      p { @apply m-0; }
+      p {
+        @apply m-0;
+      }
     }
 
     details {

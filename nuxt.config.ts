@@ -198,7 +198,7 @@ export default ():NuxtConfig => ({
             id: article.fields.slug,
             title: article.fields.title,
             link: `${process.env.ORIGIN}/blog/${article.fields.slug}`,
-            description: truncate(article.fields.content && article.fields.content.replace(/\[\[toc\]\]\s/, '') || '', 60),
+            description: article.fields.description || truncate(article.fields.content && article.fields.content.replace(/\[\[toc\]\]\s/, '') || '', 60),
             content: md.render(article.fields.content || ''),
             published: new Date(article.sys.createdAt),
             date: new Date(article.sys.updatedAt),
