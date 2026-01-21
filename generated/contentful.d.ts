@@ -10,6 +10,9 @@ export interface IArticlesFields {
   /** Content */
   content?: string | undefined
 
+  /** 説明 */
+  description?: string | undefined
+
   /** Thumbnail */
   thumbnail?: Asset | undefined
 

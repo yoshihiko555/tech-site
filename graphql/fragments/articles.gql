@@ -7,6 +7,7 @@ fragment articleFragment on Articles {
   }
   title
   content
+  description
   slug
   thumbnail {
     url
