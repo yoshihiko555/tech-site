@@ -13,7 +13,7 @@
         <h1 class="hero-name">Yoshihiko</h1>
         <p class="hero-title">
           <span class="title-bracket">&lt;</span>
-          <span class="title-text">Engineer</span>
+          <span class="title-text">Engineer / Creator</span>
           <span class="title-bracket">/&gt;</span>
         </p>
         <div class="hero-decoration">
@@ -24,11 +24,36 @@
       </div>
     </section>
 
+    <!-- About Section -->
+    <section class="content-section summary-section">
+      <div class="section-header">
+        <span class="section-number">01</span>
+        <h2 class="section-title">Profile</h2>
+      </div>
+      <div class="summary-body">
+        <p class="summary-text" v-for="(text, index) in summaryTexts" :key="index">{{ text }}</p>
+      </div>
+    </section>
+
+    <!-- Interests Section -->
+    <section class="content-section strengths-section">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <h2 class="section-title">Interests</h2>
+      </div>
+      <div class="strength-grid">
+        <div class="strength-card" v-for="(item, index) in strengthItems" :key="index">
+          <h3 class="strength-title">{{ item.title }}</h3>
+          <p class="strength-text">{{ item.text }}</p>
+        </div>
+      </div>
+    </section>
+
     <!-- Career Section -->
     <section class="content-section career-section">
       <div class="section-header">
-        <span class="section-number">01</span>
-        <h2 class="section-title">Career</h2>
+        <span class="section-number">03</span>
+        <h2 class="section-title">Timeline</h2>
       </div>
       <div class="career-timeline">
         <div class="timeline-item" v-for="(item, index) in careerItems" :key="index">
@@ -47,10 +72,40 @@
     <!-- Skills Section -->
     <section class="content-section skills-section">
       <div class="section-header">
-        <span class="section-number">02</span>
-        <h2 class="section-title">Skills</h2>
+        <span class="section-number">04</span>
+        <h2 class="section-title">Toolkit</h2>
       </div>
       <skill-list :skills="skills" />
+    </section>
+
+    <!-- Projects Section -->
+    <section class="content-section projects-section">
+      <div class="section-header">
+        <span class="section-number">05</span>
+        <h2 class="section-title">Side Projects</h2>
+      </div>
+      <div class="project-list">
+        <div class="project-item" v-for="(project, index) in projectItems" :key="index">
+          <div class="project-header">
+            <h3 class="project-name">{{ project.name }}</h3>
+            <span class="project-stack">{{ project.stack }}</span>
+          </div>
+          <p class="project-text">{{ project.text }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Values Section -->
+    <section class="content-section values-section">
+      <div class="section-header">
+        <span class="section-number">06</span>
+        <h2 class="section-title">Values</h2>
+      </div>
+      <ul class="value-list">
+        <li class="value-item" v-for="(item, index) in valueItems" :key="index">
+          {{ item }}
+        </li>
+      </ul>
     </section>
 
     <!-- Background Decoration -->
@@ -71,9 +126,24 @@ type CareerItem = {
   text: string
 }
 
+type StrengthItem = {
+  title: string
+  text: string
+}
+
+type ProjectItem = {
+  name: string
+  stack: string
+  text: string
+}
+
 type Data = {
   skills: SkillType[]
+  summaryTexts: string[]
+  strengthItems: StrengthItem[]
   careerItems: CareerItem[]
+  projectItems: ProjectItem[]
+  valueItems: string[]
 }
 
 export default defineComponent({
@@ -83,24 +153,90 @@ export default defineComponent({
   head: {
     title: 'About',
     meta: [
-      { hid: 'description', name: 'description', content: 'yoshihiko about page' },
+      { hid: 'description', name: 'description', content: '個人開発や技術への関心、これまでの歩みをまとめたプロフィール' },
       { hid: 'og:title', property: 'og:title', content: 'About | Yoshihiko' },
-      { hid: 'og:description', property: 'og:description', content: 'yoshihiko about page' },
+      { hid: 'og:description', property: 'og:description', content: '個人開発や技術への関心、これまでの歩みをまとめたプロフィール' },
       { hid: 'og:url', property: 'og:url', content: `${process.env.ORIGIN}/about` || 'http://localhost:3000/about' },
       { hid: 'twitter:title', property: 'twitter:title', content: 'About | Yoshihiko' },
-      { hid: 'twitter:description', property: 'twitter:description', content: 'yoshihiko about page' },
+      { hid: 'twitter:description', property: 'twitter:description', content: '個人開発や技術への関心、これまでの歩みをまとめたプロフィール' },
     ]
   },
   setup (): Data {
+    const summaryTexts: string[] = [
+      'フルスタック寄りの開発を軸に、気になる技術はまず触ってみるタイプです。',
+      'フロントエンドからバックエンドまで一通り触り、作ったものが動き出す瞬間が好きです。',
+      '最近はAIエンジニアリング（RAG/AIエージェント）にハマっていて、試作と学習を続けています。',
+      '将来的には技術でチームを前に進められるテックリードを目指しています。'
+    ]
+
+    const strengthItems: StrengthItem[] = [
+      {
+        title: 'ものづくりの一連が好き',
+        text: 'アイデア出しから実装、改善まで自分で回すのが楽しいタイプです。小さく作って試すサイクルを大切にしています。'
+      },
+      {
+        title: '技術の幅と好奇心',
+        text: 'Vue/React/TypeScript、Go/Python/C#/Javaなど広く触れています。新しい技術はまず試してみます。'
+      },
+      {
+        title: 'AI/自動化の探究',
+        text: 'RAGやAIエージェント、Claude Codeの活用など、日々試行中です。'
+      },
+      {
+        title: 'チームへの目線',
+        text: 'レビューやドキュメントを丁寧に。チームが迷わず動ける状態を作るのが好きです。'
+      }
+    ]
+
     const careerItems: CareerItem[] = [
-      { year: '1994', text: '栃木県に生まれる' },
-      { year: '2015', text: '専門学校卒業後、業界の技術職として従事' },
-      { year: '2019', text: '某IT会社に転職、エンジニアとしてキャリアをスタート' },
+      {
+        year: '2015',
+        text: '専門学校卒業後、技術職としてキャリアをスタート。'
+      },
+      {
+        year: '2019',
+        text: 'Webアプリケーション開発へシフト。フロント〜バックエンドまで幅広く担当。'
+      },
+      {
+        year: '2022 - 2025',
+        text: '医療/金融/業務系の開発や運用に従事。設計・実装・レビューまで経験。'
+      },
+      { year: '2023 -', text: '業務外でもプロトタイプやツール制作を継続。' },
+      { year: '2024 -', text: 'AIエンジニアリングの学習と試作を継続中。' },
+    ]
+
+    const projectItems: ProjectItem[] = [
+      {
+        name: 'Nudge',
+        stack: 'Go / CLI / Notion',
+        text: 'Notionと連携する習慣化支援CLIツール。行動ログとリマインドを効率化。'
+      },
+      {
+        name: 'tech-site',
+        stack: 'TypeScript / Nuxt.js',
+        text: '技術ブログサイト。学習内容や検証結果を発信する場として運用中。'
+      },
+      {
+        name: 'bandue',
+        stack: 'Vue.js',
+        text: 'SNS系Webアプリのプロトタイプ。UI/UXと機能設計の検証が目的。'
+      }
+    ]
+
+    const valueItems: string[] = [
+      '小さく作って早く検証する',
+      '読みやすく、直しやすいコードを心がける',
+      'ユーザー価値に近いところから手を動かす',
+      '技術でチームの前進を支える'
     ]
 
     return {
       skills: SKILLS,
+      summaryTexts,
+      strengthItems,
       careerItems,
+      projectItems,
+      valueItems
     }
   }
 })
@@ -190,11 +326,27 @@ export default defineComponent({
   }
 
   .career-section {
-    animation-delay: 0.2s;
+    animation-delay: 0.3s;
   }
 
   .skills-section {
     animation-delay: 0.4s;
+  }
+
+  .summary-section {
+    animation-delay: 0.1s;
+  }
+
+  .strengths-section {
+    animation-delay: 0.2s;
+  }
+
+  .projects-section {
+    animation-delay: 0.5s;
+  }
+
+  .values-section {
+    animation-delay: 0.6s;
   }
 
   .section-header {
@@ -232,6 +384,8 @@ export default defineComponent({
   .timeline-item:nth-child(1) { animation-delay: 0.3s; }
   .timeline-item:nth-child(2) { animation-delay: 0.4s; }
   .timeline-item:nth-child(3) { animation-delay: 0.5s; }
+  .timeline-item:nth-child(4) { animation-delay: 0.6s; }
+  .timeline-item:nth-child(5) { animation-delay: 0.7s; }
 
   .timeline-marker {
     @apply flex flex-col items-center;
@@ -280,6 +434,112 @@ export default defineComponent({
 
   .dark .timeline-text {
     color: rgba(255, 255, 255, 0.8);
+  }
+
+  /* Summary */
+  .summary-body {
+    @apply space-y-4;
+  }
+
+  .summary-text {
+    @apply text-sm md:text-base tracking-wide;
+    color: rgba(51, 51, 51, 0.85);
+  }
+
+  .dark .summary-text {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  /* Strengths */
+  .strength-grid {
+    @apply grid gap-6 md:grid-cols-2;
+  }
+
+  .strength-card {
+    @apply rounded-lg border p-5;
+    border-color: rgba(84, 110, 122, 0.25);
+    background-color: rgba(144, 164, 174, 0.08);
+  }
+
+  .dark .strength-card {
+    border-color: rgba(144, 164, 174, 0.35);
+    background-color: rgba(38, 50, 56, 0.4);
+  }
+
+  .strength-title {
+    @apply text-base md:text-lg font-bold tracking-wide mb-2;
+    @apply text-site-black dark:text-white;
+  }
+
+  .strength-text {
+    @apply text-sm md:text-base tracking-wide;
+    color: rgba(51, 51, 51, 0.8);
+  }
+
+  .dark .strength-text {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  /* Projects */
+  .project-list {
+    @apply space-y-6;
+  }
+
+  .project-item {
+    @apply pb-4 border-b;
+    border-color: rgba(84, 110, 122, 0.2);
+  }
+
+  .dark .project-item {
+    border-color: rgba(144, 164, 174, 0.3);
+  }
+
+  .project-header {
+    @apply flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-2;
+  }
+
+  .project-name {
+    @apply text-lg font-bold tracking-wide;
+    @apply text-site-black dark:text-white;
+  }
+
+  .project-stack {
+    @apply text-xs font-mono px-2 py-1 rounded;
+    @apply text-site-theme dark:text-site-theme-light;
+    background-color: rgba(144, 164, 174, 0.2);
+  }
+
+  .dark .project-stack {
+    background-color: rgba(84, 110, 122, 0.2);
+  }
+
+  .project-text {
+    @apply text-sm md:text-base tracking-wide;
+    color: rgba(51, 51, 51, 0.8);
+  }
+
+  .dark .project-text {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  /* Values */
+  .value-list {
+    @apply grid gap-3 md:grid-cols-2;
+  }
+
+  .value-item {
+    @apply text-sm md:text-base tracking-wide relative pl-5;
+    color: rgba(51, 51, 51, 0.85);
+  }
+
+  .value-item::before {
+    content: '•';
+    @apply absolute left-0 top-0;
+    @apply text-site-theme dark:text-site-theme-light;
+  }
+
+  .dark .value-item {
+    color: rgba(255, 255, 255, 0.85);
   }
 
   /* Background Decorations */
