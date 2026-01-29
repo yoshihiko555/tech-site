@@ -208,8 +208,8 @@ export default defineComponent({
     const projectItems: ProjectItem[] = [
       {
         name: 'Nudge',
-        stack: 'Go / CLI / Notion',
-        text: 'Notionと連携する習慣化支援CLIツール。行動ログとリマインドを効率化。'
+        stack: 'Go / Wails / Notion',
+        text: 'Notionと簡易的にデータやり取りをするためのアプリ。タスク管理や習慣をNotionで管理する際に、日常的に素早くアクセスできる管理ツールを目指している。'
       },
       {
         name: 'tech-site',
