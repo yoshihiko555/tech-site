@@ -228,7 +228,7 @@ export default defineComponent({
       @apply text-blue-500 transition-colors hover:text-blue-300 hover:underline;
     }
 
-    code {
+    :not(pre) > code {
       @apply px-2 text-sm sm:text-base text-gray-50 bg-gray-700 rounded;
     }
 
@@ -266,7 +266,16 @@ export default defineComponent({
       }
     }
 
-    // コード
+    // コードブロック（Prism未適用時のフォールバック）
+    pre {
+      @apply mb-8 p-4 bg-gray-700 overflow-x-auto rounded-md text-sm sm:text-base;
+
+      code {
+        @apply text-gray-50 bg-transparent;
+      }
+    }
+
+    // コード（Prism適用時）
     .code-toolbar {
       pre {
         @apply mb-8 pt-10 bg-gray-700 overflow-x-auto rounded-md text-sm sm:text-base;
@@ -299,7 +308,7 @@ export default defineComponent({
     }
 
     blockquote {
-      @apply p-4 bg-gray-100 dark:bg-gray-700 border-l-4 border-blue-500 dark:border-blue-400 rounded;
+      @apply p-4 bg-gray-100 dark:bg-gray-700 border-l-4 border-gray-400 dark:border-gray-500 rounded;
       word-break: break-word;
       overflow-wrap: break-word;
       p {
