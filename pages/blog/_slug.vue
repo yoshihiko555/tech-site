@@ -216,6 +216,10 @@ export default defineComponent({
       @apply pl-3 text-base sm:text-lg border-l-4 border-gray-300;
     }
 
+    h4 {
+      @apply my-6 sm:my-8 pl-2 text-sm sm:text-base font-semibold border-l-2 border-gray-400;
+    }
+
     p {
       @apply my-4 sm:my-8 text-sm sm:text-base tracking-wide leading-6 sm:leading-8;
     }
