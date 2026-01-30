@@ -299,7 +299,9 @@ export default defineComponent({
     }
 
     blockquote {
-      @apply p-4 bg-gray-100 dark:bg-gray-800 border-l-4 border-gray-500 dark:border-gray-400 rounded;
+      @apply p-4 bg-gray-100 dark:bg-gray-700 border-l-4 border-blue-500 dark:border-blue-400 rounded;
+      word-break: break-word;
+      overflow-wrap: break-word;
       p {
         @apply m-0;
       }
