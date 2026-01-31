@@ -10,6 +10,16 @@ const plugins: Plugin = ({ $config }, inject) => {
     breaks: true,
   })
 
+  // 言語指定なしのコードブロックにも language-plaintext を付与（Prismツールバー表示用）
+  const defaultFence = md.renderer.rules.fence!
+  md.renderer.rules.fence = function (tokens, idx, options, env, self) {
+    const token = tokens[idx]
+    if (!token.info) {
+      token.info = 'plaintext'
+    }
+    return defaultFence(tokens, idx, options, env, self)
+  }
+
   // 目次生成
   md.use(toc)
   // 内部リンク
