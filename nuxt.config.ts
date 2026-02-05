@@ -89,6 +89,7 @@ export default ():NuxtConfig => ({
     parallel: true,
     cache: true,
     // hardSource: true,
+    transpile: ['mermaid'],
   },
   router: {
     extendRoutes (routes, resolve) {

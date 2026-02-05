@@ -64,7 +64,7 @@
  * - CSRとSSRでのレンダリングに差異が生まれて、エラーが発生してしまう（厳密にはVue.warn）
  * - コメント機能
  */
-import { defineComponent, useContext, ref, watch, useMeta, onMounted, useRouter } from '@nuxtjs/composition-api'
+import { defineComponent, useContext, ref, watch, useMeta, onMounted, useRouter, nextTick } from '@nuxtjs/composition-api'
 import { useResult } from '@vue/apollo-composable'
 import { shiftFunc } from '~/utils'
 import { useGetArticleBySlugQuery } from '~/generated/graphql'
@@ -121,8 +121,17 @@ export default defineComponent({
     // ********************
     /** ハイライト処理実行済みか否か */
     const isExecuteHighlight = ref(false)
-    watch(isExecuteHighlight, () => {
+    watch(isExecuteHighlight, async () => {
+      // DOM更新を待ってからハイライト・Mermaid処理を実行
+      await nextTick()
+
       Prism.highlightAll()
+
+      // Mermaid図をレンダリング
+      if (process.client) {
+        const { renderMermaidDiagrams } = await import('~/plugins/mermaid')
+        await renderMermaidDiagrams()
+      }
     })
 
     /** 目次項目抽出用の正規表現 */
@@ -370,6 +379,61 @@ export default defineComponent({
 
         td {
           @apply text-gray-800 dark:text-gray-200;
+        }
+      }
+    }
+
+    // Mermaid diagrams
+    .mermaid-container {
+      @apply my-8 flex justify-center;
+
+      .mermaid-diagram {
+        @apply w-full max-w-full overflow-x-auto;
+
+        .mermaid-fallback {
+          @apply bg-gray-100 dark:bg-gray-800 p-4 rounded-md text-sm;
+          @apply text-gray-700 dark:text-gray-300;
+
+          code {
+            @apply whitespace-pre-wrap break-words bg-transparent;
+            color: inherit;
+          }
+        }
+
+        &.mermaid-rendered {
+          svg {
+            @apply mx-auto max-w-full h-auto;
+
+            // テキストを確実に表示
+            text,
+            tspan,
+            .nodeLabel,
+            .edgeLabel,
+            .label {
+              fill: #333 !important;
+              color: #333 !important;
+            }
+          }
+
+          .mermaid-fallback {
+            @apply hidden;
+          }
+        }
+
+        // ダークモード時のテキスト色（neutralテーマのノード背景が明るい前提）
+        .dark & svg {
+          text,
+          tspan,
+          .nodeLabel,
+          .edgeLabel,
+          .label {
+            fill: #333 !important;
+            color: #333 !important;
+          }
+        }
+
+        &.mermaid-error .mermaid-fallback {
+          @apply border-l-4 border-red-400;
         }
       }
     }
