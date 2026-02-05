@@ -10,6 +10,7 @@ const siteName = 'Yoshihiko'
 const desc = 'Yoshihiko tech siteです。技術ブログ兼ポートフォリオにもなっています。'
 
 export default ():NuxtConfig => ({
+  target: 'static',
   // srcDir: 'src/',
   head: {
     title: siteName,
@@ -89,6 +90,7 @@ export default ():NuxtConfig => ({
     parallel: true,
     cache: true,
     // hardSource: true,
+    transpile: ['mermaid'],
   },
   router: {
     extendRoutes (routes, resolve) {

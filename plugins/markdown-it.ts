@@ -11,9 +11,27 @@ const plugins: Plugin = ({ $config }, inject) => {
   })
 
   // 言語指定なしのコードブロックにも language-plaintext を付与（Prismツールバー表示用）
+  // Mermaidコードブロックはプレースホルダーdivに変換
   const defaultFence = md.renderer.rules.fence!
   md.renderer.rules.fence = function (tokens, idx, options, env, self) {
     const token = tokens[idx]
+    const info = token.info.trim()
+
+    // Mermaidコードブロックの場合、プレースホルダーを返す
+    if (info === 'mermaid') {
+      const content = token.content
+      const escapedContent = md.utils.escapeHtml(content)
+      // HTML属性値として安全にエンコード
+      const encodedSource = encodeURIComponent(content)
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+      return `<div class="mermaid-container">
+  <div class="mermaid-diagram" data-mermaid-source="${encodedSource}">
+    <pre class="mermaid-fallback"><code>${escapedContent}</code></pre>
+  </div>
+</div>\n`
+    }
+
     if (!token.info) {
       token.info = 'plaintext'
     }
