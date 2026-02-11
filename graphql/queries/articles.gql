@@ -39,3 +39,27 @@ query searchArticles ($value: String!) {
     }
   }
 }
+
+# 関連記事候補を取得します（タグ or カテゴリ一致）
+query getRelatedArticles (
+  $currentSlug: String!,
+  $tagSlugs: [String!] = [],
+  $categorySlug: String = "",
+  $limit: Int = 12
+) {
+  articlesCollection(
+    order: sys_firstPublishedAt_DESC,
+    limit: $limit,
+    where: {
+      slug_not: $currentSlug,
+      OR: [
+        { tags: { slug_in: $tagSlugs } },
+        { category: { slug: $categorySlug } }
+      ]
+    }
+  ) {
+    items {
+      ...articleFragment
+    }
+  }
+}

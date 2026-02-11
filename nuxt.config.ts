@@ -80,6 +80,9 @@ export default ():NuxtConfig => ({
     '@nuxtjs/feed',
     'nuxt-interpolation',
   ],
+  image: {
+    domains: ['images.ctfassets.net'],
+  },
   pwa: {
     manifest: {
       name: 'yoshihiko',
