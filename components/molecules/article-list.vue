@@ -2,7 +2,20 @@
   <div class="mb-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
     <vs-card type='1' v-for="article in articles" :key="article.sys.id" class="mx-auto mb-8 px-4" @click="$router.push(`/blog/${article.slug}`)">
       <template #img>
-        <nuxt-img v-if="article.thumbnail" :src='article.thumbnail.url' />
+        <nuxt-img
+          v-if="hasImageUrl(article.thumbnail && article.thumbnail.url) && !isNuxtImageFailed(article.sys.id)"
+          :src='resolveImageUrl(article.thumbnail && article.thumbnail.url)'
+          :alt='resolveAlt(article)'
+          loading="lazy"
+          @error.native='markNuxtImageFailed(article.sys.id)'
+        />
+        <img
+          v-else-if="hasImageUrl(article.thumbnail && article.thumbnail.url)"
+          :src='resolveImageUrl(article.thumbnail && article.thumbnail.url)'
+          :alt='resolveAlt(article)'
+          loading="lazy"
+          @error='replaceWithFallback'
+        />
       </template>
       <template #interactions>
         <vs-button v-if="article.category" :to='`/categories/${article.category.slug}`' class="category" @click.stop>
@@ -30,7 +43,7 @@
 </template>
 
 <script lang='ts'>
-import { defineComponent, PropType } from '@nuxtjs/composition-api'
+import { defineComponent, PropType, ref } from '@nuxtjs/composition-api'
 import { Articles } from '~/generated/graphql'
 export default defineComponent({
   props: {
@@ -40,9 +53,46 @@ export default defineComponent({
     }
   },
   setup () {
+    const nuxtImageFailedMap = ref<Record<string, boolean>>({})
+
+    const resolveImageUrl = (url?: string | null) => {
+      if (!url) return ''
+      return url.startsWith('//') ? `https:${url}` : url
+    }
+
+    const resolveAlt = (article: Articles) => {
+      return article.thumbnail?.description || article.title || ''
+    }
+
+    const hasImageUrl = (url?: string | null) => {
+      return Boolean(resolveImageUrl(url))
+    }
+
+    const isNuxtImageFailed = (id: string) => {
+      return Boolean(nuxtImageFailedMap.value[id])
+    }
+
+    const markNuxtImageFailed = (id: string) => {
+      nuxtImageFailedMap.value = {
+        ...nuxtImageFailedMap.value,
+        [id]: true,
+      }
+    }
+
+    const replaceWithFallback = (event: Event) => {
+      const target = event.target as HTMLImageElement | null
+      if (!target) return
+      if (target.src.endsWith('/ogp-default.jpeg')) return
+      target.src = '/ogp-default.jpeg'
+    }
 
     return {
-
+      hasImageUrl,
+      isNuxtImageFailed,
+      markNuxtImageFailed,
+      replaceWithFallback,
+      resolveAlt,
+      resolveImageUrl,
     }
   }
 })

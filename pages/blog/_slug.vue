@@ -32,13 +32,24 @@
         <!-- サムネイル -->
         <nuxt-img
           class="mb-10"
+          v-if="hasImageUrl(article.thumbnail && article.thumbnail.url) && !isNuxtThumbnailFailed"
           format="webp"
-          v-if="article.thumbnail"
-          :src="article.thumbnail.url"
-          :alt="article.thumbnail.description"
+          :src="resolveImageUrl(article.thumbnail.url)"
+          :alt="resolveAlt(article)"
+          loading="lazy"
+          @error.native="markNuxtThumbnailFailed"
+        />
+        <img
+          class="mb-10"
+          v-else-if="hasImageUrl(article.thumbnail && article.thumbnail.url)"
+          :src="resolveImageUrl(article.thumbnail.url)"
+          :alt="resolveAlt(article)"
+          loading="lazy"
+          @error="replaceWithFallback"
         />
         <!-- 記事内容 -->
         <div class="markdown-body line-numbers" v-html="parse(article.content)" v-interpolation />
+        <related-article-list v-if="relatedArticles.length" :articles="relatedArticles" class="mt-14" />
       </div>
       <!-- 目次 -->
       <aside v-html="toc(article.content)" class="toc" />
@@ -64,26 +75,221 @@
  * - CSRとSSRでのレンダリングに差異が生まれて、エラーが発生してしまう（厳密にはVue.warn）
  * - コメント機能
  */
-import { defineComponent, useContext, ref, watch, useMeta, onMounted, useRouter, nextTick } from '@nuxtjs/composition-api'
-import { useResult } from '@vue/apollo-composable'
-import { shiftFunc } from '~/utils'
-import { useGetArticleBySlugQuery } from '~/generated/graphql'
+import { defineComponent, useContext, ref, watch, useMeta, onMounted, useRouter, nextTick, computed } from '@nuxtjs/composition-api'
+import { useResult, useQuery } from '@vue/apollo-composable'
 import { Maybe } from 'graphql/jsutils/Maybe'
+import graphqlTag from 'graphql-tag'
+import { useGetArticleBySlugQuery, useGetArticlesQuery, Articles } from '~/generated/graphql'
+import { shiftFunc } from '~/utils'
 import Prism from '~/plugins/prism'
 
 import Tag from '~/components/atoms/tag.vue'
+import RelatedArticleList from '~/components/molecules/related-article-list.vue'
+
+const RELATED_LIMIT = 3
+const RELATED_CANDIDATE_LIMIT = 12
+const NO_MATCH_TAG = '__no_related_tag__'
+const NO_MATCH_CATEGORY = '__no_related_category__'
+
+const GET_RELATED_ARTICLES = graphqlTag`
+  query getRelatedArticles(
+    $currentSlug: String!
+    $tagSlugs: [String!] = []
+    $categorySlug: String = ""
+    $limit: Int = 12
+  ) {
+    articlesCollection(
+      order: sys_firstPublishedAt_DESC
+      limit: $limit
+      where: {
+        slug_not: $currentSlug
+        OR: [{ tags: { slug_in: $tagSlugs } }, { category: { slug: $categorySlug } }]
+      }
+    ) {
+      items {
+        sys {
+          id
+          firstPublishedAt
+          publishedAt
+        }
+        title
+        content
+        description
+        slug
+        thumbnail {
+          url
+          description
+        }
+        category {
+          sys {
+            id
+          }
+          name
+          slug
+        }
+        tagsCollection {
+          items {
+            sys {
+              id
+            }
+            name
+            slug
+          }
+        }
+      }
+    }
+  }
+`
+
+type RelatedArticlesQuery = {
+  articlesCollection?: {
+    items: Array<Articles | null>
+  } | null
+}
+
+type RelatedArticlesQueryVariables = {
+  currentSlug: string
+  tagSlugs: string[]
+  categorySlug: string
+  limit: number
+}
+
+const normalizeArticles = (items: Array<Articles | null | undefined>): Articles[] => {
+  return items.filter((item): item is Articles => Boolean(item && item.slug))
+}
+
+const toPublishedTime = (target: Articles): number => {
+  const value = target.sys.firstPublishedAt || target.sys.publishedAt
+  if (!value) return 0
+  return new Date(value).getTime() || 0
+}
+
+const extractTagSlugs = (target: Articles): string[] => {
+  return (target.tagsCollection?.items || [])
+    .map((tag) => tag?.slug || '')
+    .filter((slug): slug is string => Boolean(slug))
+}
+
+const resolveImageUrl = (url?: string | null): string => {
+  if (!url) return ''
+  return url.startsWith('//') ? `https:${url}` : url
+}
+
+const hasImageUrl = (url?: string | null): boolean => {
+  return Boolean(resolveImageUrl(url))
+}
+
+const resolveAlt = (target: Articles): string => {
+  return target.thumbnail?.description || target.title || ''
+}
+
+const replaceWithFallback = (event: Event): void => {
+  const target = event.target as HTMLImageElement | null
+  if (!target) return
+  if (target.src.endsWith('/ogp-default.jpeg')) return
+  target.src = '/ogp-default.jpeg'
+}
+
 export default defineComponent({
   components: {
     Tag,
+    RelatedArticleList,
   },
-  head: {},
   setup() {
-    const { route, $md, $truncate, $log, $config, error } = useContext()
+    const { route, $md, $truncate, $config, error } = useContext()
+    const isNuxtThumbnailFailed = ref(false)
+
+    const markNuxtThumbnailFailed = () => {
+      isNuxtThumbnailFailed.value = true
+    }
 
     // 記事情報取得
     const { result, onResult, loading } = useGetArticleBySlugQuery({ slug: route.value.params.slug })
     const article = useResult(result, null, (data) => data?.articlesCollection?.items[0])
     const tags = useResult(result, [], (data) => data?.articlesCollection?.items[0]?.tagsCollection?.items)
+
+    watch(
+      () => article.value?.sys.id,
+      () => {
+        isNuxtThumbnailFailed.value = false
+      }
+    )
+
+    const currentTagSlugs = computed(() => {
+      if (!article.value) return []
+      return extractTagSlugs(article.value)
+    })
+
+    const relatedQueryVariables = computed<RelatedArticlesQueryVariables>(() => {
+      return {
+        currentSlug: article.value?.slug || route.value.params.slug || '',
+        tagSlugs: currentTagSlugs.value.length ? currentTagSlugs.value : [NO_MATCH_TAG],
+        categorySlug: article.value?.category?.slug || NO_MATCH_CATEGORY,
+        limit: RELATED_CANDIDATE_LIMIT,
+      }
+    })
+
+    const { result: relatedResult } = useQuery<RelatedArticlesQuery, RelatedArticlesQueryVariables>(
+      GET_RELATED_ARTICLES,
+      relatedQueryVariables,
+    )
+    const relatedCandidates = useResult(relatedResult, [], (data) => data?.articlesCollection?.items || [])
+
+    const { result: latestResult } = useGetArticlesQuery({ limit: RELATED_CANDIDATE_LIMIT, skip: 0 })
+    const latestCandidates = useResult(latestResult, [], (data) => data?.articlesCollection?.items || [])
+
+    const relatedArticles = computed<Articles[]>(() => {
+      if (!article.value?.slug) return []
+
+      const currentSlug = article.value.slug
+      const currentCategorySlug = article.value.category?.slug || ''
+      const currentTagSet = new Set(currentTagSlugs.value)
+
+      const scored = normalizeArticles(relatedCandidates.value as Array<Articles | null | undefined>)
+        .filter((candidate) => candidate.slug !== currentSlug)
+        .map((candidate) => {
+          const tagMatchCount = extractTagSlugs(candidate).reduce((count, slug) => {
+            return currentTagSet.has(slug) ? count + 1 : count
+          }, 0)
+          const categoryMatch = Boolean(currentCategorySlug && candidate.category?.slug === currentCategorySlug)
+          return {
+            candidate,
+            tagMatchCount,
+            categoryMatch,
+          }
+        })
+        .sort((a, b) => {
+          if (a.tagMatchCount !== b.tagMatchCount) return b.tagMatchCount - a.tagMatchCount
+          if (a.categoryMatch !== b.categoryMatch) return Number(b.categoryMatch) - Number(a.categoryMatch)
+          return toPublishedTime(b.candidate) - toPublishedTime(a.candidate)
+        })
+
+      const selected: Articles[] = []
+      const seen = new Set<string>()
+
+      const pushIfNeeded = (candidate: Articles) => {
+        if (!candidate.slug) return
+        if (candidate.slug === currentSlug) return
+        if (selected.length >= RELATED_LIMIT) return
+        if (seen.has(candidate.sys.id)) return
+        selected.push(candidate)
+        seen.add(candidate.sys.id)
+      }
+
+      scored.forEach((entry) => {
+        pushIfNeeded(entry.candidate)
+      })
+
+      if (selected.length < RELATED_LIMIT) {
+        normalizeArticles(latestCandidates.value as Array<Articles | null | undefined>)
+          .sort((a, b) => toPublishedTime(b) - toPublishedTime(a))
+          .forEach((candidate) => {
+            pushIfNeeded(candidate)
+          })
+      }
+
+      return selected
+    })
 
     onResult((res) => {
       if (!res.data.articlesCollection?.items.length) error({ statusCode: 404 })
@@ -135,7 +341,7 @@ export default defineComponent({
     })
 
     /** 目次項目抽出用の正規表現 */
-    const regx = new RegExp(/^<p><div class="table-of-contents">.*<\/div><\/p>/)
+    const regx = /^<p><div class="table-of-contents">.*<\/div><\/p>/
 
     /**
      * 本文用解析処理
@@ -178,10 +384,18 @@ export default defineComponent({
       loading,
       article,
       tags,
+      relatedArticles,
+      hasImageUrl,
+      isNuxtThumbnailFailed,
+      markNuxtThumbnailFailed,
+      replaceWithFallback,
+      resolveAlt,
+      resolveImageUrl,
       parse,
       toc,
     }
   },
+  head: {},
 })
 </script>
 
