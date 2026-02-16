@@ -102,21 +102,22 @@ yarn clean
 
 ---
 
-## Current Project: 検索モーダルデザイン修正
+## Current Project: サイトマップ + robots.txt 追加
 
 ### Context
 
-- Goal: 検索モーダルの見た目をモダンに改善し、レスポンシブ対応を強化する
-- Key files: `components/organisms/search-dialog.vue`, `components/atoms/search-btn.vue`, `components/organisms/header.vue`, `components/organisms/sidebar.vue`
-- Dependencies: Vuesax (vs-dialog, vs-input), Tailwind CSS, SCSS mixins
+- Goal: SEO 改善のため sitemap.xml と robots.txt を追加する
+- Key files: `nuxt.config.ts`, `static/robots.txt`, `utils/contentful.ts`
+- Dependencies: @nuxtjs/sitemap@2.4.0, Contentful CDA
 
 ### Decisions
 
-- v-if → v-show: Vuesax のスタイリングが正しく適用されるよう、search-dialog を常時マウントに変更
-- GraphQL skip: v-show に変更したため、検索文字列が空の間はクエリを実行しないよう `enabled` オプションを追加
-- vs-dialog 維持: カスタムモーダルへの置換ではなく、既存の vs-dialog を `::v-deep` でスタイルカスタマイズ
+- @nuxtjs/sitemap v2.4.0: Nuxt 2 互換の最新版を使用（v3+ は Nuxt 3 専用）
+- modules 末尾配置: 全ルートを収集するため @nuxtjs/sitemap は modules 配列の最後に追加
+- 動的ルート取得: feed 設定と同じ client() パターンで Contentful から articles/categories/tags を取得
+- ページネーション除外: /blog/page/**, /categories/page/**, /tags/page/** を sitemap から除外
 
 ### Notes
 
-- Vuesax の vs-dialog 内部クラス（`.vs-dialog`, `.vs-dialog__overlay` 等）は `::v-deep` でのみカスタマイズ可能
-- レスポンシブ幅: モバイル 90vw → sm 80vw → md 640px
+- 静的生成のため、記事追加時は再デプロイで sitemap 更新
+- ORIGIN 環境変数: https://yoshihiko.tech
