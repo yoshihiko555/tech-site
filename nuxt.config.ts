@@ -2,12 +2,39 @@ import { NuxtConfig } from '@nuxt/types'
 import MarkdownIt from 'markdown-it'
 import { truncate } from './plugins/utils'
 import { client } from './utils/contentful'
-import { IArticlesFields } from './generated/contentful'
+import { IArticlesFields, ICategoriesFields, ITagsFields } from './generated/contentful'
 
 /** サイト名 */
 const siteName = 'Yoshihiko'
 /** Description */
 const desc = 'Yoshihiko tech siteです。技術ブログ兼ポートフォリオにもなっています。'
+
+/** ビルド時の Contentful データキャッシュ（feed / sitemap 間で共有） */
+let contentfulCache: {
+  articles: Awaited<ReturnType<ReturnType<typeof client>['getEntries']>>
+  categories: Awaited<ReturnType<ReturnType<typeof client>['getEntries']>>
+  tags: Awaited<ReturnType<ReturnType<typeof client>['getEntries']>>
+} | null = null
+
+async function fetchContentfulData () {
+  if (contentfulCache) return contentfulCache
+
+  const [articles, categories, tags] = await Promise.all([
+    client().getEntries<IArticlesFields>({
+      content_type: 'articles',
+      order: '-sys.createdAt',
+    }),
+    client().getEntries<ICategoriesFields>({
+      content_type: 'categories',
+    }),
+    client().getEntries<ITagsFields>({
+      content_type: 'tags',
+    }),
+  ])
+
+  contentfulCache = { articles, categories, tags }
+  return contentfulCache
+}
 
 export default ():NuxtConfig => ({
   target: 'static',
@@ -79,6 +106,7 @@ export default ():NuxtConfig => ({
     '@nuxtjs/google-gtag',
     '@nuxtjs/feed',
     'nuxt-interpolation',
+    '@nuxtjs/sitemap',
   ],
   image: {
     domains: ['images.ctfassets.net'],
@@ -193,10 +221,7 @@ export default ():NuxtConfig => ({
           typographer: true,
         })
 
-        const articles = await client().getEntries<IArticlesFields>({
-          content_type: 'articles',
-          order: '-sys.createdAt'
-        })
+        const { articles } = await fetchContentfulData()
 
         articles.items.forEach(article => {
           feed.addItem({
@@ -221,5 +246,45 @@ export default ():NuxtConfig => ({
       cacheTime: 1000 * 60 * 15,
       type: 'rss2',
     }
-  ]
+  ],
+  sitemap: {
+    hostname: process.env.ORIGIN || 'http://localhost:3000',
+    gzip: true,
+    exclude: [
+      '/blog/page/**',
+      '/categories/page/**',
+      '/tags/page/**',
+    ],
+    defaults: {
+      changefreq: 'monthly',
+      priority: 0.7,
+    },
+    routes: async () => {
+      try {
+        const { articles, categories, tags } = await fetchContentfulData()
+
+        return [
+          ...articles.items.map(article => ({
+            url: `/blog/${article.fields.slug}`,
+            lastmod: article.sys.updatedAt,
+            changefreq: 'monthly',
+            priority: 0.8,
+          })),
+          ...categories.items.map(category => ({
+            url: `/categories/${category.fields.slug}`,
+            changefreq: 'weekly',
+            priority: 0.6,
+          })),
+          ...tags.items.map(tag => ({
+            url: `/tags/${tag.fields.slug}`,
+            changefreq: 'weekly',
+            priority: 0.5,
+          })),
+        ]
+      } catch (error) {
+        console.error('[sitemap] Failed to fetch entries:', error)
+        return []
+      }
+    },
+  },
 })
