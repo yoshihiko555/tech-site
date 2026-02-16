@@ -99,3 +99,24 @@ yarn clean
 - Nuxt 2 + Composition API を使用
 - Contentful からブログ記事を取得
 - Vercel でホスティング
+
+---
+
+## Current Project: 検索モーダルデザイン修正
+
+### Context
+
+- Goal: 検索モーダルの見た目をモダンに改善し、レスポンシブ対応を強化する
+- Key files: `components/organisms/search-dialog.vue`, `components/atoms/search-btn.vue`, `components/organisms/header.vue`, `components/organisms/sidebar.vue`
+- Dependencies: Vuesax (vs-dialog, vs-input), Tailwind CSS, SCSS mixins
+
+### Decisions
+
+- v-if → v-show: Vuesax のスタイリングが正しく適用されるよう、search-dialog を常時マウントに変更
+- GraphQL skip: v-show に変更したため、検索文字列が空の間はクエリを実行しないよう `enabled` オプションを追加
+- vs-dialog 維持: カスタムモーダルへの置換ではなく、既存の vs-dialog を `::v-deep` でスタイルカスタマイズ
+
+### Notes
+
+- Vuesax の vs-dialog 内部クラス（`.vs-dialog`, `.vs-dialog__overlay` 等）は `::v-deep` でのみカスタマイズ可能
+- レスポンシブ幅: モバイル 90vw → sm 80vw → md 640px
