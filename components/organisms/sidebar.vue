@@ -51,7 +51,7 @@
         </div>
       </template>
     </vs-sidebar>
-    <search-dialog v-if="isOpenDialog" :open.sync="isOpenDialog" />
+    <search-dialog v-show="isOpenDialog" :open.sync="isOpenDialog" />
   </div>
 </template>
 

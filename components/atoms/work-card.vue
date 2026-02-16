@@ -21,7 +21,7 @@
         </vs-button>
       </div>
       <p class="card-description"><slot name="description" /></p>
-      <div class="card-footer">
+      <div v-if="siteUrl && siteUrl !== '/'" class="card-footer">
         <a :href="siteUrl" target="_blank" rel="noopener" class="view-link">
           <span>View Project</span>
           <i class="bx bx-right-arrow-alt"></i>

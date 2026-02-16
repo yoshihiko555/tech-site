@@ -48,7 +48,7 @@
       <sidebar class="sm:hidden" />
     </header>
     <search-dialog
-      v-if="isOpen"
+      v-show="isOpen"
       :open.sync="isOpen"
     />
   </div>
