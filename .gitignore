@@ -129,3 +129,7 @@ sw.*
 *.swp
 
 pages/verifications/
+
+.claude/logs/
+.claude/docs/
+.claude/state/

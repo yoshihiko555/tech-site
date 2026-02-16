@@ -1,0 +1,9 @@
+{
+  "installed_packages": [
+    "agent-routing",
+    "core",
+    "quality-gates"
+  ],
+  "orchestra_dir": "/Users/yoshihiko/ghq/github.com/yoshihiko555/ai-orchestra",
+  "last_sync": "2026-02-16T05:24:59.795175+00:00"
+}
