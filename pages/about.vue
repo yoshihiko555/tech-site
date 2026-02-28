@@ -217,9 +217,9 @@ export default defineComponent({
         text: '技術ブログサイト。学習内容や検証結果を発信する場として運用中。'
       },
       {
-        name: 'bandue',
-        stack: 'Vue.js',
-        text: 'SNS系Webアプリのプロトタイプ。UI/UXと機能設計の検証が目的。'
+        name: 'CC Usage',
+        stack: 'Swift / SwiftUI',
+        text: 'Claude Codeのトークン使用量とレートリミット状況をmacOSメニューバーでリアルタイム監視するネイティブアプリ。'
       }
     ]
 

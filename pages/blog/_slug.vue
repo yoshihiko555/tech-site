@@ -1,14 +1,14 @@
 <template>
   <div>
     <div v-if="article && !loading" class="mb-10 grid grid-cols-1 lg:grid-cols-6">
-      <div class="article py-4 col-span-2 lg:col-span-4">
-        <h2
+      <div class="article py-4 min-w-0 col-span-1 lg:col-span-4">
+        <nuxt-link
           v-if="article.category"
-          @click="$router.push(`/categories/${article && article.category && article.category.slug}`)"
-          class="inline-block cursor-pointer mb-4 sm:mb-5 px-2 py-1 sm:px-3 sm:py-2 text-sm sm:text-base font-thin hover:text-gray-400 bg-gray-100 dark:bg-site-black-theme border border-gray-100 rounded transition-colors duration-500 ease-in-out"
+          :to="`/categories/${article && article.category && article.category.slug}`"
+          class="inline-block cursor-pointer mb-4 sm:mb-5 px-2 py-1 sm:px-3 sm:py-2 text-sm sm:text-base font-thin hover:text-gray-400 bg-gray-100 dark:bg-site-black-theme border border-gray-100 rounded transition-colors duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-site-theme focus:ring-offset-2"
         >
           {{ article.category.name }}
-        </h2>
+        </nuxt-link>
 
         <h1 class="mb-4 text-xl sm:text-3xl text-center">{{ article.title }}</h1>
 
@@ -374,7 +374,8 @@ export default defineComponent({
       for (let i = 0; i < tocs.length; i++) {
         tocs[i].addEventListener('click', (e) => {
           e.preventDefault()
-          const target = e.target as HTMLAnchorElement
+          const target = e.currentTarget as HTMLAnchorElement | null
+          if (!target?.hash) return
           router.push({ path: target.hash })
         })
       }
@@ -406,7 +407,7 @@ export default defineComponent({
     padding-left: 1rem;
   }
   a {
-    @apply block mb-1 px-3 py-2 text-sm font-bold rounded-md transition-colors duration-300 ease-in-out hover:bg-gray-200 dark:hover:text-site-black-back;
+    @apply block mb-1 px-3 py-2 text-sm font-bold rounded-md transition-colors duration-300 ease-in-out hover:bg-gray-200 dark:hover:text-site-black-back focus:outline-none focus:ring-2 focus:ring-site-theme focus:ring-offset-2;
     font-family: 'Noto Sans JP', sans-serif;
   }
 }
@@ -448,7 +449,7 @@ export default defineComponent({
     }
 
     a {
-      @apply text-blue-500 transition-colors hover:text-blue-300 hover:underline;
+      @apply text-blue-500 transition-colors hover:text-blue-300 hover:underline focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 rounded-sm;
     }
 
     :not(pre) > code {
@@ -547,14 +548,18 @@ export default defineComponent({
     }
 
     table {
-      @apply mb-4 ml-4 w-full border-collapse rounded-lg overflow-hidden;
+      @apply mb-4 w-full max-w-full border-collapse rounded-lg overflow-hidden;
       @apply bg-white dark:bg-gray-800;
       @apply shadow-sm;
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
 
       th,
       td {
-        @apply py-3 px-4;
+        @apply py-2 px-3 sm:py-3 sm:px-4;
         @apply border border-gray-200 dark:border-gray-600;
+        word-break: break-word;
       }
 
       thead {
@@ -593,6 +598,31 @@ export default defineComponent({
 
         td {
           @apply text-gray-800 dark:text-gray-200;
+        }
+      }
+    }
+
+    @media (max-width: 430px) {
+      table {
+        border-radius: 0.5rem;
+
+        th,
+        td {
+          padding: 0.5rem 0.625rem;
+          font-size: 0.8rem;
+          line-height: 1.5;
+          overflow-wrap: anywhere;
+        }
+      }
+    }
+
+    @media (max-width: 375px) {
+      table {
+        th,
+        td {
+          padding: 0.45rem 0.55rem;
+          font-size: 0.75rem;
+          line-height: 1.45;
         }
       }
     }
