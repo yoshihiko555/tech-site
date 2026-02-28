@@ -171,5 +171,14 @@ export const WORKS: WorkType[] = [
     siteUrl: '',
     sourceIcon: 'bxl-github',
     sourceUrl: 'https://github.com/yoshihiko555/Nudge',
+  },
+  // CC Usage
+  {
+    name: 'CC Usage',
+    description: 'Claude Code Usage 監視アプリ',
+    img: '/works/cc-usage.png',
+    siteUrl: '',
+    sourceIcon: 'bxl-github',
+    sourceUrl: 'https://github.com/yoshihiko555/cc-usage',
   }
 ]
