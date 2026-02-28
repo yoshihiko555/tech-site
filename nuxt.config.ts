@@ -163,7 +163,12 @@ export default ():NuxtConfig => ({
   // 環境変数の設定
   // *******************
   publicRuntimeConfig: {
-    origin: process.env.ORIGIN || 'http://localhost:3000'
+    origin: process.env.ORIGIN || 'http://localhost:3000',
+    giscusRepo: process.env.GISCUS_REPO || '',
+    giscusRepoId: process.env.GISCUS_REPO_ID || '',
+    giscusCategory: process.env.GISCUS_CATEGORY || '',
+    giscusCategoryId: process.env.GISCUS_CATEGORY_ID || '',
+    giscusTheme: process.env.GISCUS_THEME || 'preferred_color_scheme',
   },
   // *******************
   // 各モジュールの設定

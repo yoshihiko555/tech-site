@@ -50,6 +50,7 @@
         <!-- 記事内容 -->
         <div class="markdown-body line-numbers" v-html="parse(article.content)" v-interpolation />
         <related-article-list v-if="relatedArticles.length" :articles="relatedArticles" class="mt-14" />
+        <comment-section v-if="article.slug" :key="article.slug" :slug="article.slug" />
       </div>
       <!-- 目次 -->
       <aside v-html="toc(article.content)" class="toc" />
@@ -85,6 +86,7 @@ import Prism from '~/plugins/prism'
 
 import Tag from '~/components/atoms/tag.vue'
 import RelatedArticleList from '~/components/molecules/related-article-list.vue'
+import CommentSection from '~/components/molecules/comment.vue'
 
 const RELATED_LIMIT = 3
 const RELATED_CANDIDATE_LIMIT = 12
@@ -194,6 +196,7 @@ export default defineComponent({
   components: {
     Tag,
     RelatedArticleList,
+    CommentSection,
   },
   setup() {
     const { route, $md, $truncate, $config, error } = useContext()
