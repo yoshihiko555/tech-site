@@ -18,10 +18,17 @@ metadata:
 
 このスキルはマルチエージェント協調で、プロジェクト開始から実装後レビューまでをカバーする。
 
+### 運用メモ（v2）
+
+- `/plan` で事前計画済みの場合は、Phase 2 で差分確認を中心に進める
+- Phase 6 完了時点で **最小テストゲート**（changed tests + smoke）を通す
+- `/tdd` は軽量必須（最低 1 サイクル）。Phase 7 前後で実施する
+- セッションが重い場合は `/checkpointing --full` を実行してからレビューへ進む
+
 ## Workflow
 
 ```
-Phase 1: Research (Gemini via Subagent)
+Phase 1: Research (Config-Driven)
     ↓
 Phase 2: Requirements & Planning (Claude)
     ↓
@@ -29,11 +36,11 @@ Phase 3: Design Review (architect)
     ↓
 Phase 4: Task Creation (Claude)
     ↓
-Phase 5: CLAUDE.md Update (Claude)
+Phase 5: Plans.md Update (Claude)
     ↓
-[Implementation...]
+Phase 6: Implementation (Implementation Agents via Subagent)
     ↓
-Phase 6: Multi-Session Review (code-reviewer / security-reviewer)
+Phase 7: Multi-Session Review (code-reviewer / security-reviewer)
 ```
 
 ---
@@ -45,37 +52,49 @@ Phase 6: Multi-Session Review (code-reviewer / security-reviewer)
 | `tool` 設定 | 呼び出し方法 |
 |-------------|-------------|
 | `claude-direct` | `Task(subagent_type="{agent}", prompt="...")` |
-| `codex` | `Task(subagent_type="general-purpose", prompt="Codex CLI で実行: codex exec --model <codex.model> --sandbox <codex.sandbox.*> <codex.flags> '...'")` |
+| `codex` | `Task(subagent_type="{agent}", prompt="... Codex CLI (workspace-write) で実装すること ...")` |
 | `gemini` | `Task(subagent_type="general-purpose", prompt="Gemini CLI で実行: gemini -m <gemini.model> -p '...'")` |
 
-**例**: `agents.architect.tool` が `codex` なら general-purpose + Codex CLI、`claude-direct` なら直接 `Task(subagent_type="architect", ...)`。
+**例**: `agents.frontend-dev.tool` が `codex` なら `Task(subagent_type="frontend-dev", prompt="... Codex CLI で実装すること ...")`。named agent はドメイン固有の知識（コーディング規約、テックスタック）を保持するため、`general-purpose` ではなく直接呼び出す。
 
 ---
 
-## Phase 1: Gemini Research (Background)
+## Phase 1: Research (Background)
 
-**Task tool でサブエージェントを起動し、Gemini でリポジトリ分析。**
+**Task tool でサブエージェントを起動し、`agents.researcher.tool` に従って調査を実行。**
 
 ```
 Task tool parameters:
-- subagent_type: "general-purpose"
+- subagent_type: "researcher"
 - run_in_background: true
 - prompt: |
     Research for: {feature}
 
-    1. Call Gemini CLI:
-       gemini -p "Analyze this repository for: {feature}
+    Resolve route from cli-tools.yaml (`agents.researcher.tool`).
+
+    If tool == gemini:
+      IMPORTANT: Gemini CLI requires dangerouslyDisableSandbox: true
+      (requires_sandbox_disable: true in cli-tools.yaml).
+      Bash timeout: 180000 を指定すること。
+      gemini -m <gemini.model> -p "Analyze this repository for: {feature}
 
        Provide:
        1. Repository structure and architecture
        2. Relevant existing code and patterns
        3. Library recommendations
        4. Technical considerations
-       " --include-directories . 2>/dev/null
 
-    2. Save full output to: .claude/docs/research/{feature}.md
+       IMPORTANT: Do not ask any clarifying questions. Provide your best answer
+       based on the available information. If you need assumptions, state them.
+       " --include-directories . < /dev/null 2>/dev/null
 
-    3. Return CONCISE summary (5-7 bullet points)
+      リトライ: タイムアウトや質問検出時は gemini-delegation.md のリトライプロトコルに従う。
+
+    If tool == claude-direct:
+      Read/Grep/Glob で同等の調査を実施し、同形式で要約を作成する。
+
+    Save full output to: .claude/docs/research/{feature}.md
+    Return CONCISE summary (5-7 bullet points)
 ```
 
 ---
@@ -91,7 +110,7 @@ Ask in Japanese:
 3. **技術的要件**: 特定のライブラリ、制約は？
 4. **成功基準**: 完了の判断基準は？
 
-**Draft implementation plan based on Gemini research + user answers.**
+**Draft implementation plan based on research output + user answers.**
 
 ---
 
@@ -139,38 +158,135 @@ Use TodoWrite to create tasks:
 
 ---
 
-## Phase 5: CLAUDE.md Update (IMPORTANT)
+## Phase 5: Plans.md Update
 
-**プロジェクト固有の情報を CLAUDE.md に追記する。**
+**プロジェクト固有のコンテキストを `.claude/Plans.md` に記録する。**
 
-Add to CLAUDE.md:
+Plans.md が未作成の場合は `/task-state` スキルで初期化するか、以下のフォーマットで作成する。
+既に Plans.md が存在する場合は、該当セクションに追記する。
+
+Update `.claude/Plans.md`:
 
 ```markdown
+# Plans
+
+## Project: {feature}
+
+### Phase 1: {フェーズ名} `cc:TODO`
+
+#### {タスクグループ名}
+
+- `cc:TODO` {タスク}
+
 ---
 
-## Current Project: {feature}
+## Decisions
 
-### Context
+- {YYYY-MM-DD}: {Decision 1} — 理由: {rationale}
+- {YYYY-MM-DD}: {Decision 2} — 理由: {rationale}
+
+## Notes
 
 - Goal: {1-2 sentences}
 - Key files: {list}
 - Dependencies: {list}
-
-### Decisions
-
-- {Decision 1}: {rationale}
-- {Decision 2}: {rationale}
-
-### Notes
-
 - {Important constraints or considerations}
 ```
 
-**This ensures context persists across sessions.**
+**SessionStart はタスク行（`cc:` マーカー付き）のみ自動抽出する。**
+Decisions / Notes のコンテキストは Plans.md を直接読むか、`.claude/docs/research/{feature}.md` を参照すること。
 
 ---
 
-## Phase 6: Multi-Session Review (Post-Implementation)
+## Phase 6: Implementation (Implementation Agents)
+
+**タスクリストの各タスクを implementation agents にサブエージェント経由で委譲する。**
+
+> **重要: オーケストレーターは実装コードを直接 Edit/Write しない。**
+> タスクリストの管理とサブエージェント呼び出しに専念する。
+
+### 原則
+
+1. **Phase 4 で作成したタスクリストを順に処理する**
+2. **各タスクを適切な implementation agent に委譲する**（`frontend-dev`, `backend-python-dev`, `backend-go-dev`, `ai-dev`, `tester` 等）
+3. **オーケストレーター自身は Edit/Write で実装コードを書かない** — サブエージェントに全て任せる
+4. **implementation agents は `cli-tools.yaml` の `agents.{name}.tool` 設定に従い、自動的に Codex CLI 経由で実装する**
+
+### 実行パターン
+
+```
+# 1. タスクリストから次のタスクを取得
+# 2. 適切な implementation agent を選定
+
+# ルーティング: agents.{name}.tool の値に基づき、Agent Routing セクションの方法で呼び出す
+
+# 例: Python バックエンド実装
+Task(subagent_type="backend-python-dev", prompt="""
+タスク: {タスク内容}
+
+コンテキスト:
+- プロジェクト: {feature}
+- 関連ファイル: {files}
+- 設計方針: {design decisions from Phase 3}
+
+IMPORTANT: cli-tools.yaml の設定に従い、Codex CLI (workspace-write) で実装すること。
+dangerouslyDisableSandbox: true で実行すること。
+
+実装してください。
+""")
+
+# 例: フロントエンド実装
+Task(subagent_type="frontend-dev", prompt="""
+タスク: {タスク内容}
+
+コンテキスト:
+- プロジェクト: {feature}
+- 関連ファイル: {files}
+
+IMPORTANT: cli-tools.yaml の設定に従い、Codex CLI (workspace-write) で実装すること。
+dangerouslyDisableSandbox: true で実行すること。
+
+実装してください。
+""")
+
+# 例: テスト作成
+Task(subagent_type="tester", prompt="""
+タスク: {タスク内容}
+
+コンテキスト:
+- 関連ファイル: {files}
+
+IMPORTANT: cli-tools.yaml の設定に従い実装すること。
+
+テストを作成してください。
+""")
+```
+
+### 禁止事項
+
+- オーケストレーターが直接 `Edit` / `Write` で実装コードを変更すること
+- 「軽微な変更」を理由にサブエージェント委譲をスキップすること
+- implementation agent を経由せずに Codex CLI を直接呼び出すこと（Agent Routing に従う）
+
+### 許容事項
+
+- 設定ファイルの軽微な修正（`.env.example` 等）はオーケストレーターが直接行ってよい
+- タスクリストの更新（TaskCreate/TaskUpdate）はオーケストレーターが行う
+- サブエージェントの結果確認と次タスクへの遷移判断
+
+### Phase 6 Gate（追加）
+
+実装完了後、最低限以下を確認する:
+
+1. changed tests が成功
+2. 主要導線の smoke テストが成功
+
+失敗がある場合は修正して再実行する。
+その後 `/tdd {feature}` で最低 1 サイクル（Red → Green → Refactor）を実施する。
+
+---
+
+## Phase 7: Multi-Session Review (Post-Implementation)
 
 **実装完了後、別セッションでレビューを実施。**
 
@@ -231,7 +347,7 @@ Present final plan to user (in Japanese):
 ```markdown
 ## プロジェクト計画: {feature}
 
-### 調査結果 (Gemini)
+### 調査結果 (Research)
 
 {Key findings - 3-5 bullet points}
 
@@ -263,9 +379,8 @@ Present final plan to user (in Japanese):
 
 | File                         | Purpose                      |
 | ---------------------------- | ---------------------------- |
-| `docs/research/{feature}.md` | Gemini research output       |
-| `CLAUDE.md`                  | Updated with project context |
-| Task list (internal)         | Progress tracking            |
+| `.claude/docs/research/{feature}.md` | Research output (config-driven) |
+| `.claude/Plans.md`           | Project context & task tracking |
 
 ---
 
@@ -273,6 +388,6 @@ Present final plan to user (in Japanese):
 
 - **All external CLI / review work through subagents** to preserve main context
 - **Agent routing is config-driven** — `cli-tools.yaml` の変更が自動的に反映される
-- **Update CLAUDE.md** to persist context across sessions
+- **Update Plans.md** to persist context across sessions
 - **Use multi-session review** for better quality assurance
 - **Ctrl+T**: Toggle task list visibility
