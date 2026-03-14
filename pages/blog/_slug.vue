@@ -31,7 +31,7 @@
 
         <!-- サムネイル -->
         <nuxt-img
-          class="mb-10"
+          class="mb-10 w-full"
           v-if="hasImageUrl(article.thumbnail && article.thumbnail.url) && !isNuxtThumbnailFailed"
           format="webp"
           :src="resolveImageUrl(article.thumbnail.url)"
@@ -40,7 +40,7 @@
           @error.native="markNuxtThumbnailFailed"
         />
         <img
-          class="mb-10"
+          class="mb-10 w-full"
           v-else-if="hasImageUrl(article.thumbnail && article.thumbnail.url)"
           :src="resolveImageUrl(article.thumbnail.url)"
           :alt="resolveAlt(article)"

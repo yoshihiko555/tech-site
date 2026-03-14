@@ -215,11 +215,6 @@ export default defineComponent({
         name: 'tech-site',
         stack: 'TypeScript / Nuxt.js',
         text: '技術ブログサイト。学習内容や検証結果を発信する場として運用中。'
-      },
-      {
-        name: 'CC Usage',
-        stack: 'Swift / SwiftUI',
-        text: 'Claude Codeのトークン使用量とレートリミット状況をmacOSメニューバーでリアルタイム監視するネイティブアプリ。'
       }
     ]
 
