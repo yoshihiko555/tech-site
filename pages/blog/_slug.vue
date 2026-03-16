@@ -76,12 +76,14 @@
  * - CSRとSSRでのレンダリングに差異が生まれて、エラーが発生してしまう（厳密にはVue.warn）
  * - コメント機能
  */
-import { defineComponent, useContext, ref, watch, useMeta, onMounted, useRouter, nextTick, computed } from '@nuxtjs/composition-api'
+import { defineComponent, useContext, ref, watch, onMounted, useRouter, nextTick, computed } from '@nuxtjs/composition-api'
 import { useResult, useQuery } from '@vue/apollo-composable'
 import { Maybe } from 'graphql/jsutils/Maybe'
 import graphqlTag from 'graphql-tag'
 import { useGetArticleBySlugQuery, useGetArticlesQuery, Articles } from '~/generated/graphql'
 import { shiftFunc } from '~/utils'
+import { client as contentfulClient } from '~/utils/contentful'
+import { IArticlesFields } from '~/generated/contentful'
 import Prism from '~/plugins/prism'
 
 import Tag from '~/components/atoms/tag.vue'
@@ -198,8 +200,55 @@ export default defineComponent({
     RelatedArticleList,
     CommentSection,
   },
+  async asyncData({ route, $config }) {
+    const slug = route.params.slug
+    try {
+      const entries = await contentfulClient().getEntries<IArticlesFields>({
+        content_type: 'articles',
+        'fields.slug': slug,
+        limit: 1,
+      })
+      const item = entries.items[0]
+      if (!item) return { ogMeta: null }
+      const thumbnailUrl = item.fields.thumbnail?.fields?.file?.url
+        ? (item.fields.thumbnail.fields.file.url.startsWith('//')
+          ? `https:${item.fields.thumbnail.fields.file.url}`
+          : item.fields.thumbnail.fields.file.url)
+        : `${$config.origin}/ogp-default.jpeg`
+      return {
+        ogMeta: {
+          title: item.fields.title || 'Article',
+          description: item.fields.description?.trim() || '',
+          thumbnail: thumbnailUrl,
+          url: `${$config.origin}${route.path}`,
+        },
+      }
+    } catch {
+      return { ogMeta: null }
+    }
+  },
+  head() {
+    const og = (this as any).ogMeta
+    if (!og) return {}
+    const fullTitle = `${og.title} | Yoshihiko`
+    return {
+      title: og.title,
+      meta: [
+        { hid: 'description', name: 'description', content: og.description },
+        { hid: 'og:type', property: 'og:type', content: 'article' },
+        { hid: 'og:title', property: 'og:title', content: fullTitle },
+        { hid: 'og:description', property: 'og:description', content: og.description },
+        { hid: 'og:url', property: 'og:url', content: og.url },
+        { hid: 'og:image', property: 'og:image', content: og.thumbnail },
+        { hid: 'twitter:card', name: 'twitter:card', content: 'summary_large_image' },
+        { hid: 'twitter:title', name: 'twitter:title', content: fullTitle },
+        { hid: 'twitter:description', name: 'twitter:description', content: og.description },
+        { hid: 'twitter:image', name: 'twitter:image', content: og.thumbnail },
+      ],
+    }
+  },
   setup() {
-    const { route, $md, $truncate, $config, error } = useContext()
+    const { route, $md, $config, error } = useContext()
     const isNuxtThumbnailFailed = ref(false)
 
     const markNuxtThumbnailFailed = () => {
@@ -296,34 +345,7 @@ export default defineComponent({
 
     onResult((res) => {
       if (!res.data.articlesCollection?.items.length) error({ statusCode: 404 })
-      else setHead()
     })
-
-    // **********************
-    // Headタグ設定
-    // **********************
-    const { title, meta } = useMeta()
-
-    /** Headタグ設定処理 */
-    const setHead = () => {
-      const _title = article.value?.title || 'Article'
-      const _description = article.value?.description?.trim()
-      const _fallback = $truncate(article.value?.content?.replace(/\[\[toc\]\]\s/, '') || '', 60) || ''
-      const _content = _description || _fallback
-      const _thumbnail = article.value?.thumbnail?.url || `${$config.origin}/ogp-default.jpeg`
-      title.value = _title
-      meta.value = [
-        { hid: 'description', name: 'description', content: _content },
-        { hid: 'og:type', name: 'og:type', content: 'article' },
-        { hid: 'og:title', property: 'og:title', content: `${_title} | Yoshihiko` },
-        { hid: 'og:description', property: 'og:description', content: _content },
-        { hid: 'og:url', property: 'og:url', content: `${$config.origin}${route.value.path}` },
-        { hid: 'og:image', property: 'og:image', content: _thumbnail },
-        { hid: 'twitter:title', property: 'twitter:title', content: `${_title} | Yoshihiko` },
-        { hid: 'twitter:description', property: 'twitter:description', content: _content },
-        { hid: 'twitter:image', property: 'twitter:image', content: _thumbnail },
-      ]
-    }
 
     // ********************
     // Markdown解析処理
@@ -399,7 +421,6 @@ export default defineComponent({
       toc,
     }
   },
-  head: {},
 })
 </script>
 
