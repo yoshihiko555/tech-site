@@ -80,8 +80,10 @@ import { defineComponent, useContext, ref, watch, onMounted, useRouter, nextTick
 import { useResult, useQuery } from '@vue/apollo-composable'
 import { Maybe } from 'graphql/jsutils/Maybe'
 import graphqlTag from 'graphql-tag'
-import { useGetArticleBySlugQuery, useGetArticlesQuery, Articles, GetArticleBySlugDocument } from '~/generated/graphql'
+import { useGetArticleBySlugQuery, useGetArticlesQuery, Articles } from '~/generated/graphql'
 import { shiftFunc } from '~/utils'
+import { client as contentfulClient } from '~/utils/contentful'
+import { IArticlesFields } from '~/generated/contentful'
 import Prism from '~/plugins/prism'
 
 import Tag from '~/components/atoms/tag.vue'
@@ -198,23 +200,25 @@ export default defineComponent({
     RelatedArticleList,
     CommentSection,
   },
-  async asyncData({ app, route, $config }) {
-    const client = app.apolloProvider.defaultClient
+  async asyncData({ route, $config }) {
     const slug = route.params.slug
     try {
-      const { data } = await client.query({
-        query: GetArticleBySlugDocument,
-        variables: { slug },
+      const entries = await contentfulClient().getEntries<IArticlesFields>({
+        content_type: 'articles',
+        'fields.slug': slug,
+        limit: 1,
       })
-      const item = data?.articlesCollection?.items?.[0]
+      const item = entries.items[0]
       if (!item) return { ogMeta: null }
-      const thumbnailUrl = item.thumbnail?.url
-        ? (item.thumbnail.url.startsWith('/') ? `https:${item.thumbnail.url}` : item.thumbnail.url)
+      const thumbnailUrl = item.fields.thumbnail?.fields?.file?.url
+        ? (item.fields.thumbnail.fields.file.url.startsWith('//')
+          ? `https:${item.fields.thumbnail.fields.file.url}`
+          : item.fields.thumbnail.fields.file.url)
         : `${$config.origin}/ogp-default.jpeg`
       return {
         ogMeta: {
-          title: item.title || 'Article',
-          description: item.description?.trim() || '',
+          title: item.fields.title || 'Article',
+          description: item.fields.description?.trim() || '',
           thumbnail: thumbnailUrl,
           url: `${$config.origin}${route.path}`,
         },
