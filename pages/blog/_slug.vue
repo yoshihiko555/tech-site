@@ -296,7 +296,6 @@ export default defineComponent({
 
     onResult((res) => {
       if (!res.data.articlesCollection?.items.length) error({ statusCode: 404 })
-      else setHead()
     })
 
     // **********************
@@ -325,6 +324,11 @@ export default defineComponent({
         { hid: 'twitter:image', name: 'twitter:image', content: _thumbnail },
       ]
     }
+
+    // SSR/SSG 時にもメタタグが反映されるよう article の変更を監視
+    watch(article, (val) => {
+      if (val) setHead()
+    }, { immediate: true })
 
     // ********************
     // Markdown解析処理
