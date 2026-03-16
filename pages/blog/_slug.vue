@@ -319,9 +319,10 @@ export default defineComponent({
         { hid: 'og:description', property: 'og:description', content: _content },
         { hid: 'og:url', property: 'og:url', content: `${$config.origin}${route.value.path}` },
         { hid: 'og:image', property: 'og:image', content: _thumbnail },
-        { hid: 'twitter:title', property: 'twitter:title', content: `${_title} | Yoshihiko` },
-        { hid: 'twitter:description', property: 'twitter:description', content: _content },
-        { hid: 'twitter:image', property: 'twitter:image', content: _thumbnail },
+        { hid: 'twitter:card', name: 'twitter:card', content: 'summary_large_image' },
+        { hid: 'twitter:title', name: 'twitter:title', content: `${_title} | Yoshihiko` },
+        { hid: 'twitter:description', name: 'twitter:description', content: _content },
+        { hid: 'twitter:image', name: 'twitter:image', content: _thumbnail },
       ]
     }
 
