@@ -148,6 +148,20 @@ export default ():NuxtConfig => ({
     }
   },
   // *******************
+  // 静的サイト生成の設定
+  // *******************
+  generate: {
+    async routes () {
+      const { articles, categories, tags } = await fetchContentfulData()
+      return [
+        ...articles.items.map((article: any) => `/blog/${article.fields.slug}`),
+        ...categories.items.map((category: any) => `/categories/${category.fields.slug}`),
+        ...tags.items.map((tag: any) => `/tags/${tag.fields.slug}`),
+      ]
+    },
+    fallback: true,
+  },
+  // *******************
   // DevServerの設定
   // *******************
   server: {
