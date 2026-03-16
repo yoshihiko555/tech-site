@@ -310,7 +310,7 @@ export default defineComponent({
       const _description = article.value?.description?.trim()
       const _fallback = $truncate(article.value?.content?.replace(/\[\[toc\]\]\s/, '') || '', 60) || ''
       const _content = _description || _fallback
-      const _thumbnail = article.value?.thumbnail?.url || `${$config.origin}/ogp-default.jpeg`
+      const _thumbnail = resolveImageUrl(article.value?.thumbnail?.url) || `${$config.origin}/ogp-default.jpeg`
       title.value = _title
       meta.value = [
         { hid: 'description', name: 'description', content: _content },
