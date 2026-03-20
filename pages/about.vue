@@ -212,6 +212,11 @@ export default defineComponent({
         text: 'Notionと簡易的にデータやり取りをするためのアプリ。タスク管理や習慣をNotionで管理する際に、日常的に素早くアクセスできる管理ツールを目指している。'
       },
       {
+        name: 'Baton',
+        stack: 'Go / bubbletea / tmux',
+        text: 'tmux上のAIコーディングセッション（Claude Code, Codex, Gemini）をリアルタイム監視するTUIダッシュボード。'
+      },
+      {
         name: 'tech-site',
         stack: 'TypeScript / Nuxt.js',
         text: '技術ブログサイト。学習内容や検証結果を発信する場として運用中。'

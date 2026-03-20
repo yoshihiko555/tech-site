@@ -171,5 +171,14 @@ export const WORKS: WorkType[] = [
     siteUrl: '',
     sourceIcon: 'bxl-github',
     sourceUrl: 'https://github.com/yoshihiko555/Nudge',
+  },
+  // Baton
+  {
+    name: 'Baton',
+    description: 'AIコーディングセッションモニター',
+    img: '/works/baton.png',
+    siteUrl: '',
+    sourceIcon: 'bxl-github',
+    sourceUrl: 'https://github.com/yoshihiko555/baton',
   }
 ]
