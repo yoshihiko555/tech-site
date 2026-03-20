@@ -133,3 +133,8 @@ pages/verifications/
 .claude/logs/
 .claude/docs/
 .claude/state/
+.claude/checkpoints/
+.claude/context/
+.claude/logs/
+.claude/Plans.md
+.claude/Plans.archive.md
