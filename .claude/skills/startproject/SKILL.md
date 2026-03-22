@@ -1,10 +1,51 @@
 ---
 name: startproject
-description: |
-  Start a new project/feature implementation with multi-agent collaboration.
+description: 'Start a new project/feature implementation with multi-agent collaboration.
+
   Includes multi-session review workflow for quality assurance.
+
+  '
 metadata:
   short-description: Project kickoff with multi-agent collaboration
+---
+
+# CLI Language Policy
+
+**外部 CLI（Codex CLI / Gemini CLI）と連携するスキルで守るべき共通ルール。**
+
+## 言語プロトコル
+
+| 対象 | 言語 |
+|------|------|
+| Codex / Gemini への質問 | **英語** |
+| Codex / Gemini からの回答 | **英語** |
+| ユーザーへの報告 | **日本語** |
+
+## Config-Driven ルーティング
+
+CLI ツールの利用可否と設定は `cli-tools.yaml` で一元管理する。
+
+### 読み込み手順
+
+1. `.claude/config/agent-routing/cli-tools.yaml` を読み込む
+2. `.claude/config/agent-routing/cli-tools.local.yaml` があれば上書きを適用する
+3. `{tool}.enabled` を確認する（`false` なら `claude-direct` にフォールバック）
+4. `agents.{name}.tool` で実行先を決定する
+
+### ルーティング規則
+
+| `agents.{name}.tool` | 動作 |
+|----------------------|------|
+| `codex` | Codex CLI を使用 |
+| `gemini` | Gemini CLI を使用 |
+| `claude-direct` | 外部 CLI を呼ばず Claude で処理 |
+| `auto` | タスク種別に応じて選択（深い推論 → Codex、調査 → Gemini、単純作業 → Claude） |
+
+## サンドボックス実行
+
+外部 CLI（Codex / Gemini）は sandbox 内で直接実行する。
+エラー時は `claude-direct` にフォールバックする。
+
 ---
 
 # Start Project
@@ -73,8 +114,7 @@ Task tool parameters:
     Resolve route from cli-tools.yaml (`agents.researcher.tool`).
 
     If tool == gemini:
-      まず sandbox 内で gemini を実行する。sandbox エラーが出たら
-      dangerouslyDisableSandbox: true で再試行。それも拒否されたら claude-direct にフォールバック。
+      sandbox 内で gemini を実行する。エラー時は claude-direct にフォールバック。
       Bash timeout: 180000 を指定すること。
       gemini -m <gemini.model> -p "Analyze this repository for: {feature}
 
@@ -230,7 +270,7 @@ Task(subagent_type="backend-python-dev", prompt="""
 - 設計方針: {design decisions from Phase 3}
 
 IMPORTANT: cli-tools.yaml の設定に従い、Codex CLI (workspace-write) で実装すること。
-sandbox エラーが出たら dangerouslyDisableSandbox: true で再試行。それも拒否されたら claude-direct にフォールバック。
+エラー時は claude-direct にフォールバック。
 
 実装してください。
 """)
@@ -244,7 +284,7 @@ Task(subagent_type="frontend-dev", prompt="""
 - 関連ファイル: {files}
 
 IMPORTANT: cli-tools.yaml の設定に従い、Codex CLI (workspace-write) で実装すること。
-sandbox エラーが出たら dangerouslyDisableSandbox: true で再試行。それも拒否されたら claude-direct にフォールバック。
+エラー時は claude-direct にフォールバック。
 
 実装してください。
 """)
