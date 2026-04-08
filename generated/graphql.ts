@@ -42,6 +42,7 @@ export type Articles = Entry & _Node & {
   slug?: Maybe<Scalars['String']>;
   sys: Sys;
   tagsCollection?: Maybe<ArticlesTagsCollection>;
+  tagsCursorCollection?: Maybe<ArticlesTagsCursorCollection>;
   thumbnail?: Maybe<Asset>;
   title?: Maybe<Scalars['String']>;
 };
@@ -96,6 +97,19 @@ export type ArticlesTagsCollectionArgs = {
 
 
 /** [See type definition](https://app.contentful.com/spaces/d3b1looh8iwg/content_types/articles) */
+export type ArticlesTagsCursorCollectionArgs = {
+  limit?: Maybe<Scalars['Int']>;
+  locale?: Maybe<Scalars['String']>;
+  order?: Maybe<Array<Maybe<ArticlesTagsCursorCollectionOrder>>>;
+  pageNext?: Maybe<Scalars['String']>;
+  pagePrev?: Maybe<Scalars['String']>;
+  preview?: Maybe<Scalars['Boolean']>;
+  useFallbackLocale?: Maybe<Scalars['Boolean']>;
+  where?: Maybe<TagsFilter>;
+};
+
+
+/** [See type definition](https://app.contentful.com/spaces/d3b1looh8iwg/content_types/articles) */
 export type ArticlesThumbnailArgs = {
   locale?: Maybe<Scalars['String']>;
   preview?: Maybe<Scalars['Boolean']>;
@@ -115,6 +129,13 @@ export type ArticlesCollection = {
   limit: Scalars['Int'];
   skip: Scalars['Int'];
   total: Scalars['Int'];
+};
+
+export type ArticlesCursorCollection = {
+  __typename?: 'ArticlesCursorCollection';
+  items: Array<Maybe<Articles>>;
+  limit: Scalars['Int'];
+  pages: CursorPages;
 };
 
 export type ArticlesFilter = {
@@ -160,7 +181,9 @@ export type ArticlesFilter = {
 export type ArticlesLinkingCollections = {
   __typename?: 'ArticlesLinkingCollections';
   commentsCollection?: Maybe<CommentsCollection>;
+  commentsCursorCollection?: Maybe<CommentsCursorCollection>;
   entryCollection?: Maybe<EntryCollection>;
+  entryCursorCollection?: Maybe<EntryCursorCollection>;
 };
 
 
@@ -174,6 +197,17 @@ export type ArticlesLinkingCollectionsCommentsCollectionArgs = {
 };
 
 
+export type ArticlesLinkingCollectionsCommentsCursorCollectionArgs = {
+  limit?: Maybe<Scalars['Int']>;
+  locale?: Maybe<Scalars['String']>;
+  order?: Maybe<Array<Maybe<ArticlesLinkingCollectionsCommentsCursorCollectionOrder>>>;
+  pageNext?: Maybe<Scalars['String']>;
+  pagePrev?: Maybe<Scalars['String']>;
+  preview?: Maybe<Scalars['Boolean']>;
+  useFallbackLocale?: Maybe<Scalars['Boolean']>;
+};
+
+
 export type ArticlesLinkingCollectionsEntryCollectionArgs = {
   limit?: Maybe<Scalars['Int']>;
   locale?: Maybe<Scalars['String']>;
@@ -182,7 +216,32 @@ export type ArticlesLinkingCollectionsEntryCollectionArgs = {
   useFallbackLocale?: Maybe<Scalars['Boolean']>;
 };
 
+
+export type ArticlesLinkingCollectionsEntryCursorCollectionArgs = {
+  limit?: Maybe<Scalars['Int']>;
+  locale?: Maybe<Scalars['String']>;
+  pageNext?: Maybe<Scalars['String']>;
+  pagePrev?: Maybe<Scalars['String']>;
+  preview?: Maybe<Scalars['Boolean']>;
+  useFallbackLocale?: Maybe<Scalars['Boolean']>;
+};
+
 export enum ArticlesLinkingCollectionsCommentsCollectionOrder {
+  EmailAsc = 'email_ASC',
+  EmailDesc = 'email_DESC',
+  NameAsc = 'name_ASC',
+  NameDesc = 'name_DESC',
+  SysFirstPublishedAtAsc = 'sys_firstPublishedAt_ASC',
+  SysFirstPublishedAtDesc = 'sys_firstPublishedAt_DESC',
+  SysIdAsc = 'sys_id_ASC',
+  SysIdDesc = 'sys_id_DESC',
+  SysPublishedAtAsc = 'sys_publishedAt_ASC',
+  SysPublishedAtDesc = 'sys_publishedAt_DESC',
+  SysPublishedVersionAsc = 'sys_publishedVersion_ASC',
+  SysPublishedVersionDesc = 'sys_publishedVersion_DESC'
+}
+
+export enum ArticlesLinkingCollectionsCommentsCursorCollectionOrder {
   EmailAsc = 'email_ASC',
   EmailDesc = 'email_DESC',
   NameAsc = 'name_ASC',
@@ -223,6 +282,28 @@ export type ArticlesTagsCollection = {
 };
 
 export enum ArticlesTagsCollectionOrder {
+  NameAsc = 'name_ASC',
+  NameDesc = 'name_DESC',
+  SlugAsc = 'slug_ASC',
+  SlugDesc = 'slug_DESC',
+  SysFirstPublishedAtAsc = 'sys_firstPublishedAt_ASC',
+  SysFirstPublishedAtDesc = 'sys_firstPublishedAt_DESC',
+  SysIdAsc = 'sys_id_ASC',
+  SysIdDesc = 'sys_id_DESC',
+  SysPublishedAtAsc = 'sys_publishedAt_ASC',
+  SysPublishedAtDesc = 'sys_publishedAt_DESC',
+  SysPublishedVersionAsc = 'sys_publishedVersion_ASC',
+  SysPublishedVersionDesc = 'sys_publishedVersion_DESC'
+}
+
+export type ArticlesTagsCursorCollection = {
+  __typename?: 'ArticlesTagsCursorCollection';
+  items: Array<Maybe<Tags>>;
+  limit: Scalars['Int'];
+  pages: CursorPages;
+};
+
+export enum ArticlesTagsCursorCollectionOrder {
   NameAsc = 'name_ASC',
   NameDesc = 'name_DESC',
   SlugAsc = 'slug_ASC',
@@ -324,6 +405,13 @@ export type AssetCollection = {
   total: Scalars['Int'];
 };
 
+export type AssetCursorCollection = {
+  __typename?: 'AssetCursorCollection';
+  items: Array<Maybe<Asset>>;
+  limit: Scalars['Int'];
+  pages: CursorPages;
+};
+
 export type AssetFilter = {
   AND?: Maybe<Array<Maybe<AssetFilter>>>;
   OR?: Maybe<Array<Maybe<AssetFilter>>>;
@@ -396,7 +484,9 @@ export type AssetFilter = {
 export type AssetLinkingCollections = {
   __typename?: 'AssetLinkingCollections';
   articlesCollection?: Maybe<ArticlesCollection>;
+  articlesCursorCollection?: Maybe<ArticlesCursorCollection>;
   entryCollection?: Maybe<EntryCollection>;
+  entryCursorCollection?: Maybe<EntryCursorCollection>;
 };
 
 
@@ -409,11 +499,31 @@ export type AssetLinkingCollectionsArticlesCollectionArgs = {
 };
 
 
+export type AssetLinkingCollectionsArticlesCursorCollectionArgs = {
+  limit?: Maybe<Scalars['Int']>;
+  locale?: Maybe<Scalars['String']>;
+  pageNext?: Maybe<Scalars['String']>;
+  pagePrev?: Maybe<Scalars['String']>;
+  preview?: Maybe<Scalars['Boolean']>;
+  useFallbackLocale?: Maybe<Scalars['Boolean']>;
+};
+
+
 export type AssetLinkingCollectionsEntryCollectionArgs = {
   limit?: Maybe<Scalars['Int']>;
   locale?: Maybe<Scalars['String']>;
   preview?: Maybe<Scalars['Boolean']>;
   skip?: Maybe<Scalars['Int']>;
+  useFallbackLocale?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type AssetLinkingCollectionsEntryCursorCollectionArgs = {
+  limit?: Maybe<Scalars['Int']>;
+  locale?: Maybe<Scalars['String']>;
+  pageNext?: Maybe<Scalars['String']>;
+  pagePrev?: Maybe<Scalars['String']>;
+  preview?: Maybe<Scalars['Boolean']>;
   useFallbackLocale?: Maybe<Scalars['Boolean']>;
 };
 
@@ -479,6 +589,13 @@ export type CategoriesCollection = {
   total: Scalars['Int'];
 };
 
+export type CategoriesCursorCollection = {
+  __typename?: 'CategoriesCursorCollection';
+  items: Array<Maybe<Categories>>;
+  limit: Scalars['Int'];
+  pages: CursorPages;
+};
+
 export type CategoriesFilter = {
   AND?: Maybe<Array<Maybe<CategoriesFilter>>>;
   OR?: Maybe<Array<Maybe<CategoriesFilter>>>;
@@ -503,7 +620,9 @@ export type CategoriesFilter = {
 export type CategoriesLinkingCollections = {
   __typename?: 'CategoriesLinkingCollections';
   articlesCollection?: Maybe<ArticlesCollection>;
+  articlesCursorCollection?: Maybe<ArticlesCursorCollection>;
   entryCollection?: Maybe<EntryCollection>;
+  entryCursorCollection?: Maybe<EntryCursorCollection>;
 };
 
 
@@ -517,6 +636,17 @@ export type CategoriesLinkingCollectionsArticlesCollectionArgs = {
 };
 
 
+export type CategoriesLinkingCollectionsArticlesCursorCollectionArgs = {
+  limit?: Maybe<Scalars['Int']>;
+  locale?: Maybe<Scalars['String']>;
+  order?: Maybe<Array<Maybe<CategoriesLinkingCollectionsArticlesCursorCollectionOrder>>>;
+  pageNext?: Maybe<Scalars['String']>;
+  pagePrev?: Maybe<Scalars['String']>;
+  preview?: Maybe<Scalars['Boolean']>;
+  useFallbackLocale?: Maybe<Scalars['Boolean']>;
+};
+
+
 export type CategoriesLinkingCollectionsEntryCollectionArgs = {
   limit?: Maybe<Scalars['Int']>;
   locale?: Maybe<Scalars['String']>;
@@ -525,7 +655,34 @@ export type CategoriesLinkingCollectionsEntryCollectionArgs = {
   useFallbackLocale?: Maybe<Scalars['Boolean']>;
 };
 
+
+export type CategoriesLinkingCollectionsEntryCursorCollectionArgs = {
+  limit?: Maybe<Scalars['Int']>;
+  locale?: Maybe<Scalars['String']>;
+  pageNext?: Maybe<Scalars['String']>;
+  pagePrev?: Maybe<Scalars['String']>;
+  preview?: Maybe<Scalars['Boolean']>;
+  useFallbackLocale?: Maybe<Scalars['Boolean']>;
+};
+
 export enum CategoriesLinkingCollectionsArticlesCollectionOrder {
+  DescriptionAsc = 'description_ASC',
+  DescriptionDesc = 'description_DESC',
+  SlugAsc = 'slug_ASC',
+  SlugDesc = 'slug_DESC',
+  SysFirstPublishedAtAsc = 'sys_firstPublishedAt_ASC',
+  SysFirstPublishedAtDesc = 'sys_firstPublishedAt_DESC',
+  SysIdAsc = 'sys_id_ASC',
+  SysIdDesc = 'sys_id_DESC',
+  SysPublishedAtAsc = 'sys_publishedAt_ASC',
+  SysPublishedAtDesc = 'sys_publishedAt_DESC',
+  SysPublishedVersionAsc = 'sys_publishedVersion_ASC',
+  SysPublishedVersionDesc = 'sys_publishedVersion_DESC',
+  TitleAsc = 'title_ASC',
+  TitleDesc = 'title_DESC'
+}
+
+export enum CategoriesLinkingCollectionsArticlesCursorCollectionOrder {
   DescriptionAsc = 'description_ASC',
   DescriptionDesc = 'description_DESC',
   SlugAsc = 'slug_ASC',
@@ -614,6 +771,13 @@ export type CommentsCollection = {
   total: Scalars['Int'];
 };
 
+export type CommentsCursorCollection = {
+  __typename?: 'CommentsCursorCollection';
+  items: Array<Maybe<Comments>>;
+  limit: Scalars['Int'];
+  pages: CursorPages;
+};
+
 export type CommentsFilter = {
   AND?: Maybe<Array<Maybe<CommentsFilter>>>;
   OR?: Maybe<Array<Maybe<CommentsFilter>>>;
@@ -647,6 +811,7 @@ export type CommentsFilter = {
 export type CommentsLinkingCollections = {
   __typename?: 'CommentsLinkingCollections';
   entryCollection?: Maybe<EntryCollection>;
+  entryCursorCollection?: Maybe<EntryCursorCollection>;
 };
 
 
@@ -655,6 +820,16 @@ export type CommentsLinkingCollectionsEntryCollectionArgs = {
   locale?: Maybe<Scalars['String']>;
   preview?: Maybe<Scalars['Boolean']>;
   skip?: Maybe<Scalars['Int']>;
+  useFallbackLocale?: Maybe<Scalars['Boolean']>;
+};
+
+
+export type CommentsLinkingCollectionsEntryCursorCollectionArgs = {
+  limit?: Maybe<Scalars['Int']>;
+  locale?: Maybe<Scalars['String']>;
+  pageNext?: Maybe<Scalars['String']>;
+  pagePrev?: Maybe<Scalars['String']>;
+  preview?: Maybe<Scalars['Boolean']>;
   useFallbackLocale?: Maybe<Scalars['Boolean']>;
 };
 
@@ -715,6 +890,12 @@ export type ContentfulTag = {
   name?: Maybe<Scalars['String']>;
 };
 
+export type CursorPages = {
+  __typename?: 'CursorPages';
+  next?: Maybe<Scalars['String']>;
+  prev?: Maybe<Scalars['String']>;
+};
+
 export type Entry = {
   contentfulMetadata: ContentfulMetadata;
   sys: Sys;
@@ -726,6 +907,13 @@ export type EntryCollection = {
   limit: Scalars['Int'];
   skip: Scalars['Int'];
   total: Scalars['Int'];
+};
+
+export type EntryCursorCollection = {
+  __typename?: 'EntryCursorCollection';
+  items: Array<Maybe<Entry>>;
+  limit: Scalars['Int'];
+  pages: CursorPages;
 };
 
 export type EntryFilter = {
@@ -848,15 +1036,21 @@ export type Query = {
   _nodes: Array<Maybe<_Node>>;
   articles?: Maybe<Articles>;
   articlesCollection?: Maybe<ArticlesCollection>;
+  articlesCursorCollection?: Maybe<ArticlesCursorCollection>;
   asset?: Maybe<Asset>;
   assetCollection?: Maybe<AssetCollection>;
+  assetCursorCollection?: Maybe<AssetCursorCollection>;
   categories?: Maybe<Categories>;
   categoriesCollection?: Maybe<CategoriesCollection>;
+  categoriesCursorCollection?: Maybe<CategoriesCursorCollection>;
   comments?: Maybe<Comments>;
   commentsCollection?: Maybe<CommentsCollection>;
+  commentsCursorCollection?: Maybe<CommentsCursorCollection>;
   entryCollection?: Maybe<EntryCollection>;
+  entryCursorCollection?: Maybe<EntryCursorCollection>;
   tags?: Maybe<Tags>;
   tagsCollection?: Maybe<TagsCollection>;
+  tagsCursorCollection?: Maybe<TagsCursorCollection>;
 };
 
 
@@ -895,6 +1089,18 @@ export type QueryArticlesCollectionArgs = {
 };
 
 
+export type QueryArticlesCursorCollectionArgs = {
+  limit?: Maybe<Scalars['Int']>;
+  locale?: Maybe<Scalars['String']>;
+  order?: Maybe<Array<Maybe<ArticlesOrder>>>;
+  pageNext?: Maybe<Scalars['String']>;
+  pagePrev?: Maybe<Scalars['String']>;
+  preview?: Maybe<Scalars['Boolean']>;
+  useFallbackLocale?: Maybe<Scalars['Boolean']>;
+  where?: Maybe<ArticlesFilter>;
+};
+
+
 export type QueryAssetArgs = {
   id: Scalars['String'];
   locale?: Maybe<Scalars['String']>;
@@ -909,6 +1115,18 @@ export type QueryAssetCollectionArgs = {
   order?: Maybe<Array<Maybe<AssetOrder>>>;
   preview?: Maybe<Scalars['Boolean']>;
   skip?: Maybe<Scalars['Int']>;
+  useFallbackLocale?: Maybe<Scalars['Boolean']>;
+  where?: Maybe<AssetFilter>;
+};
+
+
+export type QueryAssetCursorCollectionArgs = {
+  limit?: Maybe<Scalars['Int']>;
+  locale?: Maybe<Scalars['String']>;
+  order?: Maybe<Array<Maybe<AssetOrder>>>;
+  pageNext?: Maybe<Scalars['String']>;
+  pagePrev?: Maybe<Scalars['String']>;
+  preview?: Maybe<Scalars['Boolean']>;
   useFallbackLocale?: Maybe<Scalars['Boolean']>;
   where?: Maybe<AssetFilter>;
 };
@@ -933,6 +1151,18 @@ export type QueryCategoriesCollectionArgs = {
 };
 
 
+export type QueryCategoriesCursorCollectionArgs = {
+  limit?: Maybe<Scalars['Int']>;
+  locale?: Maybe<Scalars['String']>;
+  order?: Maybe<Array<Maybe<CategoriesOrder>>>;
+  pageNext?: Maybe<Scalars['String']>;
+  pagePrev?: Maybe<Scalars['String']>;
+  preview?: Maybe<Scalars['Boolean']>;
+  useFallbackLocale?: Maybe<Scalars['Boolean']>;
+  where?: Maybe<CategoriesFilter>;
+};
+
+
 export type QueryCommentsArgs = {
   id: Scalars['String'];
   locale?: Maybe<Scalars['String']>;
@@ -952,12 +1182,36 @@ export type QueryCommentsCollectionArgs = {
 };
 
 
+export type QueryCommentsCursorCollectionArgs = {
+  limit?: Maybe<Scalars['Int']>;
+  locale?: Maybe<Scalars['String']>;
+  order?: Maybe<Array<Maybe<CommentsOrder>>>;
+  pageNext?: Maybe<Scalars['String']>;
+  pagePrev?: Maybe<Scalars['String']>;
+  preview?: Maybe<Scalars['Boolean']>;
+  useFallbackLocale?: Maybe<Scalars['Boolean']>;
+  where?: Maybe<CommentsFilter>;
+};
+
+
 export type QueryEntryCollectionArgs = {
   limit?: Maybe<Scalars['Int']>;
   locale?: Maybe<Scalars['String']>;
   order?: Maybe<Array<Maybe<EntryOrder>>>;
   preview?: Maybe<Scalars['Boolean']>;
   skip?: Maybe<Scalars['Int']>;
+  useFallbackLocale?: Maybe<Scalars['Boolean']>;
+  where?: Maybe<EntryFilter>;
+};
+
+
+export type QueryEntryCursorCollectionArgs = {
+  limit?: Maybe<Scalars['Int']>;
+  locale?: Maybe<Scalars['String']>;
+  order?: Maybe<Array<Maybe<EntryOrder>>>;
+  pageNext?: Maybe<Scalars['String']>;
+  pagePrev?: Maybe<Scalars['String']>;
+  preview?: Maybe<Scalars['Boolean']>;
   useFallbackLocale?: Maybe<Scalars['Boolean']>;
   where?: Maybe<EntryFilter>;
 };
@@ -977,6 +1231,18 @@ export type QueryTagsCollectionArgs = {
   order?: Maybe<Array<Maybe<TagsOrder>>>;
   preview?: Maybe<Scalars['Boolean']>;
   skip?: Maybe<Scalars['Int']>;
+  useFallbackLocale?: Maybe<Scalars['Boolean']>;
+  where?: Maybe<TagsFilter>;
+};
+
+
+export type QueryTagsCursorCollectionArgs = {
+  limit?: Maybe<Scalars['Int']>;
+  locale?: Maybe<Scalars['String']>;
+  order?: Maybe<Array<Maybe<TagsOrder>>>;
+  pageNext?: Maybe<Scalars['String']>;
+  pagePrev?: Maybe<Scalars['String']>;
+  preview?: Maybe<Scalars['Boolean']>;
   useFallbackLocale?: Maybe<Scalars['Boolean']>;
   where?: Maybe<TagsFilter>;
 };
@@ -1069,6 +1335,13 @@ export type TagsCollection = {
   total: Scalars['Int'];
 };
 
+export type TagsCursorCollection = {
+  __typename?: 'TagsCursorCollection';
+  items: Array<Maybe<Tags>>;
+  limit: Scalars['Int'];
+  pages: CursorPages;
+};
+
 export type TagsFilter = {
   AND?: Maybe<Array<Maybe<TagsFilter>>>;
   OR?: Maybe<Array<Maybe<TagsFilter>>>;
@@ -1093,7 +1366,9 @@ export type TagsFilter = {
 export type TagsLinkingCollections = {
   __typename?: 'TagsLinkingCollections';
   articlesCollection?: Maybe<ArticlesCollection>;
+  articlesCursorCollection?: Maybe<ArticlesCursorCollection>;
   entryCollection?: Maybe<EntryCollection>;
+  entryCursorCollection?: Maybe<EntryCursorCollection>;
 };
 
 
@@ -1107,6 +1382,17 @@ export type TagsLinkingCollectionsArticlesCollectionArgs = {
 };
 
 
+export type TagsLinkingCollectionsArticlesCursorCollectionArgs = {
+  limit?: Maybe<Scalars['Int']>;
+  locale?: Maybe<Scalars['String']>;
+  order?: Maybe<Array<Maybe<TagsLinkingCollectionsArticlesCursorCollectionOrder>>>;
+  pageNext?: Maybe<Scalars['String']>;
+  pagePrev?: Maybe<Scalars['String']>;
+  preview?: Maybe<Scalars['Boolean']>;
+  useFallbackLocale?: Maybe<Scalars['Boolean']>;
+};
+
+
 export type TagsLinkingCollectionsEntryCollectionArgs = {
   limit?: Maybe<Scalars['Int']>;
   locale?: Maybe<Scalars['String']>;
@@ -1115,7 +1401,34 @@ export type TagsLinkingCollectionsEntryCollectionArgs = {
   useFallbackLocale?: Maybe<Scalars['Boolean']>;
 };
 
+
+export type TagsLinkingCollectionsEntryCursorCollectionArgs = {
+  limit?: Maybe<Scalars['Int']>;
+  locale?: Maybe<Scalars['String']>;
+  pageNext?: Maybe<Scalars['String']>;
+  pagePrev?: Maybe<Scalars['String']>;
+  preview?: Maybe<Scalars['Boolean']>;
+  useFallbackLocale?: Maybe<Scalars['Boolean']>;
+};
+
 export enum TagsLinkingCollectionsArticlesCollectionOrder {
+  DescriptionAsc = 'description_ASC',
+  DescriptionDesc = 'description_DESC',
+  SlugAsc = 'slug_ASC',
+  SlugDesc = 'slug_DESC',
+  SysFirstPublishedAtAsc = 'sys_firstPublishedAt_ASC',
+  SysFirstPublishedAtDesc = 'sys_firstPublishedAt_DESC',
+  SysIdAsc = 'sys_id_ASC',
+  SysIdDesc = 'sys_id_DESC',
+  SysPublishedAtAsc = 'sys_publishedAt_ASC',
+  SysPublishedAtDesc = 'sys_publishedAt_DESC',
+  SysPublishedVersionAsc = 'sys_publishedVersion_ASC',
+  SysPublishedVersionDesc = 'sys_publishedVersion_DESC',
+  TitleAsc = 'title_ASC',
+  TitleDesc = 'title_DESC'
+}
+
+export enum TagsLinkingCollectionsArticlesCursorCollectionOrder {
   DescriptionAsc = 'description_ASC',
   DescriptionDesc = 'description_DESC',
   SlugAsc = 'slug_ASC',
@@ -1281,6 +1594,16 @@ export type SearchArticlesQueryVariables = Exact<{
 
 
 export type SearchArticlesQuery = { __typename?: 'Query', articlesCollection?: Maybe<{ __typename?: 'ArticlesCollection', items: Array<Maybe<{ __typename?: 'Articles', title?: Maybe<string>, content?: Maybe<string>, description?: Maybe<string>, slug?: Maybe<string>, sys: { __typename?: 'Sys', id: string, firstPublishedAt?: Maybe<any>, publishedAt?: Maybe<any> }, thumbnail?: Maybe<{ __typename?: 'Asset', url?: Maybe<string>, description?: Maybe<string> }>, category?: Maybe<{ __typename?: 'Categories', name?: Maybe<string>, slug?: Maybe<string>, sys: { __typename?: 'Sys', id: string } }>, tagsCollection?: Maybe<{ __typename?: 'ArticlesTagsCollection', items: Array<Maybe<{ __typename?: 'Tags', name?: Maybe<string>, slug?: Maybe<string>, sys: { __typename?: 'Sys', id: string } }>> }> }>> }> };
+
+export type GetRelatedArticlesQueryVariables = Exact<{
+  currentSlug: Scalars['String'];
+  tagSlugs?: Maybe<Array<Scalars['String']> | Scalars['String']>;
+  categorySlug?: Maybe<Scalars['String']>;
+  limit?: Maybe<Scalars['Int']>;
+}>;
+
+
+export type GetRelatedArticlesQuery = { __typename?: 'Query', articlesCollection?: Maybe<{ __typename?: 'ArticlesCollection', items: Array<Maybe<{ __typename?: 'Articles', title?: Maybe<string>, content?: Maybe<string>, description?: Maybe<string>, slug?: Maybe<string>, sys: { __typename?: 'Sys', id: string, firstPublishedAt?: Maybe<any>, publishedAt?: Maybe<any> }, thumbnail?: Maybe<{ __typename?: 'Asset', url?: Maybe<string>, description?: Maybe<string> }>, category?: Maybe<{ __typename?: 'Categories', name?: Maybe<string>, slug?: Maybe<string>, sys: { __typename?: 'Sys', id: string } }>, tagsCollection?: Maybe<{ __typename?: 'ArticlesTagsCollection', items: Array<Maybe<{ __typename?: 'Tags', name?: Maybe<string>, slug?: Maybe<string>, sys: { __typename?: 'Sys', id: string } }>> }> }>> }> };
 
 export type GetCategoriesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1479,6 +1802,42 @@ export function useSearchArticlesQuery(variables: SearchArticlesQueryVariables |
   return VueApolloComposable.useQuery<SearchArticlesQuery, SearchArticlesQueryVariables>(SearchArticlesDocument, variables, options);
 }
 export type SearchArticlesQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<SearchArticlesQuery, SearchArticlesQueryVariables>;
+export const GetRelatedArticlesDocument = gql`
+    query getRelatedArticles($currentSlug: String!, $tagSlugs: [String!] = [], $categorySlug: String = "", $limit: Int = 12) {
+  articlesCollection(
+    order: sys_firstPublishedAt_DESC
+    limit: $limit
+    where: {slug_not: $currentSlug, OR: [{tags: {slug_in: $tagSlugs}}, {category: {slug: $categorySlug}}]}
+  ) {
+    items {
+      ...articleFragment
+    }
+  }
+}
+    ${ArticleFragmentFragmentDoc}`;
+
+/**
+ * __useGetRelatedArticlesQuery__
+ *
+ * To run a query within a Vue component, call `useGetRelatedArticlesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetRelatedArticlesQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param variables that will be passed into the query
+ * @param options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useGetRelatedArticlesQuery({
+ *   currentSlug: // value for 'currentSlug'
+ *   tagSlugs: // value for 'tagSlugs'
+ *   categorySlug: // value for 'categorySlug'
+ *   limit: // value for 'limit'
+ * });
+ */
+export function useGetRelatedArticlesQuery(variables: GetRelatedArticlesQueryVariables | VueCompositionApi.Ref<GetRelatedArticlesQueryVariables> | ReactiveFunction<GetRelatedArticlesQueryVariables>, options: VueApolloComposable.UseQueryOptions<GetRelatedArticlesQuery, GetRelatedArticlesQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetRelatedArticlesQuery, GetRelatedArticlesQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetRelatedArticlesQuery, GetRelatedArticlesQueryVariables>> = {}) {
+  return VueApolloComposable.useQuery<GetRelatedArticlesQuery, GetRelatedArticlesQueryVariables>(GetRelatedArticlesDocument, variables, options);
+}
+export type GetRelatedArticlesQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<GetRelatedArticlesQuery, GetRelatedArticlesQueryVariables>;
 export const GetCategoriesDocument = gql`
     query getCategories {
   categoriesCollection(order: sys_firstPublishedAt_DESC) {
@@ -1511,7 +1870,7 @@ export const GetArticleByCategoryDocument = gql`
     items {
       ...categoryFragment
       linkedFrom {
-        articlesCollection(limit: $limit, skip: $skip) {
+        articlesCollection(order: sys_firstPublishedAt_DESC, limit: $limit, skip: $skip) {
           total
           items {
             ...articleFragment
@@ -1618,7 +1977,7 @@ export const GetArticleByTagDocument = gql`
     items {
       ...tagFragment
       linkedFrom {
-        articlesCollection(limit: $limit, skip: $skip) {
+        articlesCollection(order: sys_firstPublishedAt_DESC, limit: $limit, skip: $skip) {
           total
           items {
             ...articleFragment
