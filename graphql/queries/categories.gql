@@ -13,7 +13,7 @@ query getArticleByCategory ($slug: String!, $limit: Int = 0, $skip: Int = 0) {
     items {
       ...categoryFragment
       linkedFrom {
-        articlesCollection (limit: $limit, skip: $skip) {
+        articlesCollection (order: sys_firstPublishedAt_DESC, limit: $limit, skip: $skip) {
           total
           items {
             ...articleFragment
