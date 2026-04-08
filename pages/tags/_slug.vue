@@ -36,7 +36,6 @@ export default defineComponent({
     Categories,
     Tags,
   },
-  head: {},
   setup () {
     const { route, $config, error } = useContext()
     const router = useRouter()
@@ -45,7 +44,7 @@ export default defineComponent({
     const page = ref<number>(Number(route.value.params.page) || 1)
     const limit = 8
     const skip = (page.value - 1) * limit
-    const pageChange = () => router.push(`/tags/page/${page.value}`)
+    const pageChange = () => router.push(`/tags/${route.value.params.slug}/page/${page.value}`)
 
     const { result, onResult, loading } = useGetArticleByTagQuery({
       slug: route.value.params.slug,
@@ -91,7 +90,8 @@ export default defineComponent({
       totalPages,
       pageChange,
     }
-  }
+  },
+  head: {}
 })
 </script>
 
