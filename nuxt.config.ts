@@ -134,16 +134,16 @@ export default ():NuxtConfig => ({
 
       // Categoryページネーション
       routes.push({
-        path: '/categories/page/:page',
+        path: '/categories/:slug/page/:page',
         component: resolve(__dirname, 'pages/categories/_slug.vue'),
-        name: 'categories-page',
+        name: 'categories-slug-page',
       })
 
       // Tagページネーション
       routes.push({
-        path: '/tags/page/:page',
+        path: '/tags/:slug/page/:page',
         component: resolve(__dirname, 'pages/tags/_slug.vue'),
-        name: 'tags-page',
+        name: 'tags-slug-page',
       })
     }
   },
@@ -271,8 +271,8 @@ export default ():NuxtConfig => ({
     gzip: true,
     exclude: [
       '/blog/page/**',
-      '/categories/page/**',
-      '/tags/page/**',
+      '/categories/*/page/**',
+      '/tags/*/page/**',
     ],
     defaults: {
       changefreq: 'monthly',
@@ -301,6 +301,8 @@ export default ():NuxtConfig => ({
           })),
         ]
       } catch (error) {
+        // ビルド時のみ実行されるため console 出力を許可（診断情報を残す）
+        // eslint-disable-next-line no-console
         console.error('[sitemap] Failed to fetch entries:', error)
         return []
       }
