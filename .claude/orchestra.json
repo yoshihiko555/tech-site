@@ -1,12 +1,14 @@
 {
   "installed_packages": [
+    "agency-agents",
     "agent-routing",
     "core",
     "quality-gates"
   ],
   "orchestra_dir": "/Users/yoshihiko/ghq/github.com/yoshihiko555/ai-orchestra",
-  "last_sync": "2026-04-08T11:10:21.706873+00:00",
+  "last_sync": "2026-11-01T04:55:32.837042+00:00",
   "synced_files": [
+    "agents/adversarial-reviewer.md",
     "agents/ai-architect.md",
     "agents/ai-dev.md",
     "agents/api-designer.md",
@@ -19,6 +21,12 @@
     "agents/data-modeler.md",
     "agents/debugger.md",
     "agents/docs-writer.md",
+    "agents/engineering-database-reliability-engineer.md",
+    "agents/engineering-identity-access-engineer.md",
+    "agents/engineering-minimal-change-engineer.md",
+    "agents/engineering-payments-billing-engineer.md",
+    "agents/engineering-privacy-engineer.md",
+    "agents/finding-verifier.md",
     "agents/frontend-dev.md",
     "agents/general-purpose.md",
     "agents/performance-reviewer.md",
@@ -36,6 +44,58 @@
     "agents/testing-reality-checker.md",
     "agents/ux-reviewer.md",
     "config/agent-routing/cli-tools.yaml",
-    "config/core/task-memory.yaml"
-  ]
+    "config/core/task-memory.yaml",
+    "config/quality-gates/evaluation-set-mapping.yaml",
+    "config/quality-gates/quality-gates.json"
+  ],
+  "file_hashes": {
+    "agent-routing": {
+      "agents/adversarial-reviewer.md": "bc1747da5f84cfca2c45d51c9c45e9878ca285aae06259a6e676b29a4be9a960",
+      "agents/ai-architect.md": "d04bcb1017752f8bd3e1f6ffc5b7f292809357fa3c0b6c807617ebdc480ed446",
+      "agents/ai-dev.md": "f1c53f1064c0fe7be172f235837dc511597fe169678f06e102e66c3562a8dd30",
+      "agents/api-designer.md": "bb81a221c98b8a0b88513c1c040e844aae7b317679c8f7e6952168108b511a2b",
+      "agents/architect.md": "e01416309b10f6579856a61d75d192aae4206db3d467013ef906d7de3ae5aa99",
+      "agents/architecture-reviewer.md": "272ce8be8a0f83c8da58a46a9c6cc73928834e61b190748a2f11d92b4f34286f",
+      "agents/auth-designer.md": "105a02485834df45b8c43144c48cb3aeeba6f44c06f0f0ea4f3b7a451726716d",
+      "agents/backend-go-dev.md": "e225840c78136102f99f55d7e6b67d53d965a0660845ee8c6c9a888fea254c47",
+      "agents/backend-python-dev.md": "f1ade146112f56a91e33f1f97b0556d04a1ce211be58523ebf0846c8bcd71b0e",
+      "agents/code-reviewer.md": "d09b80b81a8da9cdbdb4a944ab5a97b8a2d6a170b19defe422c14962924b7f46",
+      "agents/data-modeler.md": "7ea023eb2b83ea66ef2b19833767bcb4e5fc9a135a00609e00e82ffa8df05c82",
+      "agents/debugger.md": "bd772d779561b701e3bee73ff78fdfd12cc30b30cc6167c5c350b637a71033da",
+      "agents/finding-verifier.md": "6c2622006f2179a4a9d214e0b053013206248599b59aaf16b0455539829efcfa",
+      "agents/frontend-dev.md": "6874d8292180a204d7e9f891bc6b38affde690c6ea0aa55cc3ba789c8e0bb57f",
+      "agents/general-purpose.md": "3c452337d1e74bd9172bda078b94b56fdb9b92541275878255eed3a0bd83a250",
+      "agents/performance-reviewer.md": "bb3e0d227fd27971158168dc96cec003688a353f7cbe2c1a6009865a3dadf4eb",
+      "agents/rag-engineer.md": "79e53050901369c5e632eb5bc3ad0dee5736b9620c72fed03a0f458eb674978b",
+      "agents/researcher.md": "8991379bf322028d281aa523a8399ced200a5a3c312a21e1298b13637ed2904f",
+      "agents/security-reviewer.md": "d77159767829a1d767e996a204308bca5437755853982e4a01a16c9164628108",
+      "agents/spec-reviewer.md": "5b7a399d83b4470eb638ed67cd3a964aaaa4e94e503040ea8f92aeab410f1d93",
+      "agents/spec-writer.md": "398fff232122039a6c261ce5c6e57ca17cfc6af4facc71b897cfae870fc654ed",
+      "agents/specialized-mcp-builder.md": "3f8f1734b882d95b4fcd84b95e3334016fd80e147180bd80cad6587297a9fe37",
+      "agents/tester.md": "5f7f7acf7ffaf98f590dd5e60a8e470cfe75425aeedb4b2ee5ef2f9d3e9383a4",
+      "agents/testing-reality-checker.md": "999f8925e2f27680e4d36a6818fe644c0f473c44bcc29b693b0557ac5217eb27",
+      "agents/ux-reviewer.md": "7add48f0d79497fe701ca97f642c5c346ce69657442a35a8a716e81369a4cbf1",
+      "agents/docs-writer.md": "387b272ccefd506197562f9da9b10de3f360355e2ae8dd07754e5dca8f2d0d95",
+      "agents/planner.md": "e820cc5b6e9e42b106edad324ab927edc9b53b13dc1dde62c456620736ac4079",
+      "agents/prompt-engineer.md": "ad9b55d225805b47a50160c9ea4095dc11ff02466c56a1f934b44b135bb27148",
+      "agents/requirements.md": "4caaa703214dd3ddd0f68f76038a238860df61bf29131e71485794e4c03033db",
+      "config/agent-routing/cli-tools.yaml": "e4faa061b5150a9e1594ee2fb6533d399fe97fcab927f9e48f672dc9e43c6f2f"
+    },
+    "agency-agents": {
+      "agents/engineering-database-reliability-engineer.md": "b5ce83bef3616184e116046e53571ccd8bd3dc67285ce24f435f046d047230ef",
+      "agents/engineering-identity-access-engineer.md": "04df59cf81f2784e379da9d50c669ddcc52761c9fa71e6b050caed9af9c80881",
+      "agents/engineering-minimal-change-engineer.md": "d805db14d2ba3e22e7ca936467c08d33e9d36295670bf38876446ea6d053b376",
+      "agents/engineering-payments-billing-engineer.md": "56fdc1ffa32c03c97aec0a44e4fca7b167db27c9d4ea261e5065b76507791f38",
+      "agents/engineering-privacy-engineer.md": "f824ec2b45dcd077556a75aca0baa3adf8252a3b718ec2d53b110994ce636381",
+      "agents/specialized-mcp-builder.md": "25a791df57e5e770254c32667cf029eb8d47edb216f7981ad2f9d4e515408613",
+      "agents/support-executive-summary-generator.md": "002da3b51d632067ee5aed6a137af548328cc2b01e4142ad6d29e831b6b777ea"
+    },
+    "core": {
+      "config/core/task-memory.yaml": "c059d1d84cd186fcf7f20bb9ffcb7475b3355784a3a0c890f1a39312f4ffe9b1"
+    },
+    "quality-gates": {
+      "config/quality-gates/quality-gates.json": "6efbb1c0c84106d598a8019808f50b2af99189b0617b7aaa49801d3e5c8a6a43"
+    }
+  },
+  "codex_file_hashes": {}
 }

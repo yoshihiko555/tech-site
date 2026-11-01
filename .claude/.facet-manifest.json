@@ -1,0 +1,23 @@
+{
+  "skills": [
+    "checkpointing",
+    "design",
+    "design-tracker",
+    "handoff",
+    "preflight",
+    "release-readiness",
+    "review",
+    "startproject",
+    "task-state",
+    "tdd"
+  ],
+  "rules": [
+    "agent-routing-policy",
+    "coding-principles",
+    "config-loading",
+    "context-sharing",
+    "orchestra-usage",
+    "skill-review-policy",
+    "task-memory-usage"
+  ]
+}
