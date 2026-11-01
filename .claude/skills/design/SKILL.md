@@ -1,21 +1,19 @@
 ---
 name: design
-description: 'Interactive design skill for software projects — covers requirements
+description:
+  'Interactive design skill for software projects — covers requirements
   definition,
 
   basic design, and detailed design through dialogue with the user.
 
   Use this skill when the user wants to define requirements, design architecture,
 
-  plan screens/API/database, or any pre-implementation design work.
+  plan screens/API/database, or otherwise decide what to build before implementation
 
-  Trigger on: "設計", "要件定義", "基本設計", "詳細設計", "画面設計", "API設計",
+  (設計・要件定義・アーキテクチャ検討など、実装前に何を作るかを決める作業).
 
-  "アーキテクチャ", "design", "requirements", "system design",
-
-  or when the user discusses what to build before implementation.
-
-  This skill produces design documents that feed into /preflight and /startproject.
+  This skill produces design documents that /order references when writing the work
+  order.
 
   '
 ---
@@ -77,9 +75,9 @@ description: 'Interactive design skill for software projects — covers requirem
 
 ### フェーズ間の境界
 
-| 境界 | 基準 |
-|------|------|
-| 要件定義 → 基本設計 | 「何を作るか」が確定した（機能一覧・要件が合意済み） |
+| 境界                | 基準                                                         |
+| ------------------- | ------------------------------------------------------------ |
+| 要件定義 → 基本設計 | 「何を作るか」が確定した（機能一覧・要件が合意済み）         |
 | 基本設計 → 詳細設計 | 「どう作るか」の方針が確定した（一覧レベルの設計が合意済み） |
 
 基本設計は「一覧」と「方針」を決めるフェーズ。詳細設計は一覧の各項目を「個別の設計書」に展開するフェーズ。
@@ -89,37 +87,103 @@ description: 'Interactive design skill for software projects — covers requirem
 ```
 /design → 設計ドキュメント（docs/）
     ↓
-/preflight → タスク分解（Plans.md）
+/order → 発注書（plan ファイルまたは GitHub Issue）
     ↓
-/startproject → 実装
+実行エンジン（/goal・Codex 直接・/loop-issue・TAKT）→ 実装
 ```
+
+実運用では grill-me 等の対話を起点にし、正式な設計書が要ると判断したときだけ `/design` を呼ぶ流れも標準（`/order` も、設計書が無くアーキテクチャ・API・データモデルに触る発注では `/design` の先行を提案する）。どちらの入り方でも、`/design` の設計書（`docs/requirements/` `docs/architecture/` `docs/screens/` `docs/api/` `docs/database/`）は `/order` が発注書の Context に載せ、実行エンジンの入力になる。拡張トラックの成果物（`docs/testing/` 等）は `/order` の対話で Context に明示する。`/order` と実行エンジンの使い分けは git-workflow パッケージの `/order` スキルと `development-workflow` ルールを参照。git-workflow を導入していない環境では、`/task-state` で plan ファイルに発注書の節（Goal / Context 等）と Phase を書いて `/goal` に渡す。
 
 ## Workflow（俯瞰図）
 
 ```
-[Phase 0: 既存システム調査]  ← 既存プロジェクトの場合のみ
-  成果物: なし（調査結果を口頭共有）
-  遷移: ユーザーが調査結果に合意
+[Phase 0: 既存コード調査と影響範囲分析]  ← 既存コードがある限り必ず実施
+  成果物: .claude/docs/impact-analysis/{date}_{slug}.md
+  遷移: 影響ファイル・依存関係・リスクが洗い出されユーザーが合意
     ↓
 Phase 1: 要件定義（Requirements）
   成果物: project-overview.md, glossary.md, feature-list.md, functional.md, non-functional.md
-  遷移: 全成果物作成 + MoSCoW分類 + スコープ確定 + ユーザー合意
+  ゲート: セルフチェック → requirements レビュー
+  遷移: 全成果物作成 + MoSCoW分類 + スコープ確定 + ゲート通過 + ユーザー合意
     ↓
 Phase 2: 基本設計（Basic Design）
   成果物: architecture.md, screen-list.md, api-list.md, er-design.md（該当分のみ）
-  遷移: 該当する全一覧ドキュメント作成 + ユーザー合意
+  ゲート: セルフチェック → architecture-reviewer（+ 条件付き security-reviewer）
+  遷移: 該当する全一覧ドキュメント作成 + ゲート通過 + ユーザー合意
     ↓
 Phase 3: 詳細設計（Detailed Design）
   成果物: API-001.md, SC-001.md, TBL-001.md, ...（一覧の各項目を個別展開）
-  遷移: 全個別設計書作成 + 実装可能レベル + ユーザー合意
+  ゲート: セルフチェック → spec-reviewer
+  遷移: 全個別設計書作成 + 実装可能レベル + ゲート通過 + ユーザー合意
     ↓
-/preflight → タスク分解（Plans.md 作成）
+/order → 発注書（plan ファイルまたは GitHub Issue）
     ↓
-/startproject → 実装開始
+実行エンジンで実装
 ```
 
-各フェーズの終わりで **受け入れ確認** を行い、ユーザーの明示的な合意を得てから次に進む。
-Phase 3 完了後は `/preflight` でタスク分解し、`/startproject` で実装に入る流れになる。
+各フェーズの終わりで **二段品質ゲート**（下記）を通し、レビュー結果を添えて **受け入れ確認** を行い、ユーザーの明示的な合意を得てから次に進む。
+Phase 3 完了後は `/order` で発注書に固め、実行エンジンで実装に入る流れになる。
+
+---
+
+## 品質ゲート（各フェーズ末・必須）
+
+Phase 1-3 の受け入れ確認の前に、必ず二段ゲートを通す。詳細手順・プロンプトテンプレートは `references/design-review.md` を参照。
+
+| Stage                       | 内容                                                                                      | 実施者                                         |
+| --------------------------- | ----------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| **Stage 1: セルフチェック** | 各 reference 末尾の「セルフチェックリスト」で成果物を検査し、未達を修正する               | オーケストレーター自身（エージェント起動なし） |
+| **Stage 2: 自動レビュー**   | フェーズ対応のレビュアーを起動し、Tiered Output（Critical/High/Medium/Low）で指摘を受ける | レビュアーサブエージェント                     |
+
+- **ゲート通過条件**: Critical = 0（修正後は再レビューで解消確認）、High はすべて処理済み（修正 / 理由付き受容 / タスク化）
+- 受け入れ確認では、レビュー結果サマリと **成果物マニフェスト**（作成済み / スキップ + 理由 / 未解決課題）を併せて提示する
+- 後続フェーズの変更が上流ドキュメントと矛盾したら、**上流を先に更新して該当ゲートを再実行**する（ドリフトプロトコル。`references/design-review.md` 参照）
+- Phase 0 は専用レビュアーを起動せず、既存の受け入れチェックリストを Stage 1 として扱う（成果物は Phase 1 レビューのコンテキストに含める）
+
+---
+
+## CODD フロントマター（全成果物に付与）
+
+**Phase 1-3 で生成する各ドキュメントファイルの先頭に、必ず `codd:` フロントマターを付与する。**
+codd は essential（常時有効）なので、条件分岐せず常に付与する。記法の詳細は
+`codd-frontmatter-policy` ルールを参照。
+
+### kind / node_id の対応
+
+| 成果物                                                                   | kind          | node_id 例            |
+| ------------------------------------------------------------------------ | ------------- | --------------------- |
+| project-overview / glossary / feature-list / functional / non-functional | `requirement` | `req:feature-list`    |
+| architecture / screen-list / api-list / er-design                        | `design`      | `design:architecture` |
+| API-001 / SC-001 / TBL-001 など個別設計書                                | `design`      | `design:API-001`      |
+
+- `node_id` は `<kind>:<file-slug>`（拡張子を除いたファイル名）。
+- `status` は新規作成時 `draft`（要件・設計とも）。
+- **1 ファイル = 1 ノード**。
+
+### depends_on（relation）
+
+- **基本設計 → 要件定義**: `derives_from`（例: `design:architecture` が `req:feature-list` から派生）
+- **詳細設計 → 基本設計**: `refines`（例: `design:API-001` が `design:api-list` を詳細化）
+- 上流が複数ある場合は該当する全 node_id を列挙する。
+
+### 付与例（基本設計 architecture.md）
+
+```yaml
+---
+codd:
+  node_id: 'design:architecture'
+  kind: design
+  status: draft
+  depends_on:
+    - id: 'req:feature-list'
+      relation: derives_from
+    - id: 'req:non-functional'
+      relation: derives_from
+  owner: <チーム名 or 省略>
+---
+```
+
+生成後、整合性は `/codd-validate` で確認できる（dangling 等が無いこと）。
 
 ---
 
@@ -127,61 +191,152 @@ Phase 3 完了後は `/preflight` でタスク分解し、`/startproject` で実
 
 ユーザーの入力から開始フェーズを判定する：
 
-| ユーザーの意図 | 開始フェーズ |
-|--------------|------------|
-| 「要件定義から始めたい」「何を作るか整理したい」 | Phase 1 |
-| 「要件は決まっている、設計をしたい」 | Phase 2 |
-| 「基本設計は終わった、詳細を詰めたい」 | Phase 3 |
-| 「設計して」（曖昧） | Phase 1 から |
+| ユーザーの意図                                   | 開始フェーズ |
+| ------------------------------------------------ | ------------ |
+| 「要件定義から始めたい」「何を作るか整理したい」 | Phase 1      |
+| 「要件は決まっている、設計をしたい」             | Phase 2      |
+| 「基本設計は終わった、詳細を詰めたい」           | Phase 3      |
+| 「設計して」（曖昧）                             | Phase 1 から |
 
 判定が曖昧な場合は AskUserQuestion で確認する。
 
 既存の `docs/` 配下にドキュメントがある場合は、それを読み込んで前フェーズの成果物として扱う。
 
+**Phase 0 の先行実施**: 開始フェーズが Phase 1 / 2 / 3 のいずれであっても、既存コードが存在するプロジェクトでは必ず Phase 0（既存コード調査と影響範囲分析）を先に実施する。影響範囲を把握しないまま要件・設計に入ると、既存コードと矛盾する設計を生みやすく、後段の手戻りコストが大きくなるため。
+
 ---
 
-## Phase 0: 既存システム調査（条件付き）
+## Phase 0: 既存コード調査と影響範囲分析
 
-**既存プロジェクトへの機能追加・改修の場合にのみ実施する。** 新規プロジェクトの場合はスキップして Phase 1 へ進む。
+**既存コードがあるプロジェクトでは必ず実施する。** 影響範囲を把握しないまま設計に入ると、既存仕様と矛盾する設計を生みやすく、後段の手戻りコストが大きくなる。
 
-### いつ実施するか
+このフェーズの目的は 2 つある:
 
-ユーザーの入力に以下のキーワード・文脈が含まれる場合に Phase 0 を実施する：
-- 「既存の〜に追加」「機能追加」「改修」「リプレース」
-- 既にコードベースが存在するプロジェクト内で `/design` が呼ばれた場合
+1. **既存コードの構造・設計パターンの把握** — どの技術スタックで、どのような分け方で作られているか
+2. **影響範囲分析（Impact Analysis）** — 今回の変更要望が既存コードのどこに触れ、何を壊し得るか
+
+### スキップ条件
+
+次の両方を満たす場合に限り Phase 0 をスキップしてよい:
+
+- プロジェクトルートに実装コードがほぼ存在しない（例: `.claude/` と `README.md` 程度）
+- ユーザー自身が「ゼロから作る新規プロジェクトだ」と明示している
+
+判断に迷う場合はスキップしない。調査コストより誤認識による破綻コストの方が大きい。
 
 ### 進め方
 
-このスキルは Claude Code 内で実行されるため、プロジェクト配下のコードを直接調査できる。
-技術スタックやプロジェクト構造はユーザーに聞くのではなく、**コードから自動で把握する**。
+Phase 0 は **必ず `researcher` サブエージェント経由で実施する**。理由:
 
-1. **プロジェクト構造の自動調査** — Glob/Grep/Read でディレクトリ構造、主要ファイル、設定ファイル（`package.json`, `pyproject.toml`, `go.mod`, `Gemfile` 等）を読み取る
-2. **技術スタックの自動特定** — 設定ファイルから言語・フレームワーク・DB・インフラを把握する。ユーザーに聞くのは自動判別できない情報（インフラ構成、外部サービス連携等）のみ
-3. **既存ドキュメントの確認** — `docs/`, `README.md`, 既存の設計書があれば読み込む
-4. **既存の設計パターン把握** — コードのアーキテクチャパターン（レイヤード、MVC 等）を分析
-5. **調査結果のサマリをユーザーに提示** — AskUserQuestion で認識齟齬がないか確認する
+- 大量のコード読み込み結果でメインコンテキストを消費させない
+- 調査内容を要約形式で受け取り、後続フェーズで参照しやすくする
+- 実行ツールは `cli-tools.yaml` の `agents.researcher.tool`（と `.local.yaml`）から hook が解決する
 
-サブエージェントの活用（`cli-tools.yaml` の `agents.researcher.tool` を参照）：
+依頼テンプレート:
 
 ```
-# 大規模コードベースの場合は researcher エージェントを活用
 Task(subagent_type="researcher", prompt="""
-以下のプロジェクトの構造と技術スタックを調査してください：
+design スキル Phase 0: 既存コード調査と影響範囲分析を実施してください。
 
-調査対象:
-1. プロジェクト構造（主要ディレクトリ、ファイル構成）
-2. 技術スタック（言語、フレームワーク、DB、インフラ）— 設定ファイルから自動検出
-3. 既存の設計パターン・アーキテクチャ
-4. 関連する既存機能・コード
+【変更要望のコンテキスト】
+{ユーザーの変更要望。機能追加/改修内容を具体的に記述}
 
-結果を要約して返してください。
+【調査内容】
+1. プロジェクト構造と技術スタック
+   - 主要ディレクトリ構成、設定ファイル（package.json, pyproject.toml, go.mod, Gemfile 等）
+   - 言語、フレームワーク、DB、インフラ、主要依存ライブラリ
+
+2. 既存の設計パターン
+   - アーキテクチャ（レイヤード、MVC、ヘキサゴナル等）
+   - ディレクトリ分割の原則と命名規則
+   - 参照すべき既存ドキュメント（docs/, README.md, ADR 等）
+
+3. 影響範囲分析（Impact Analysis）
+   変更要望を実装する場合に影響を受ける箇所を洗い出す:
+   - 直接変更対象: 修正が必要なファイル/モジュール
+   - 間接影響: 変更対象を呼び出している箇所、変更対象が呼び出している先
+   - 関連するテスト、設定ファイル、ドキュメント
+   - データ経路（DB テーブル、API、イベント、キュー等が関係する場合）
+
+4. リスクと未確認事項
+   - 後方互換性を壊しうる変更
+   - 同時に書き換えが必要になりそうな箇所
+   - 既存仕様の不明瞭な箇所（追加調査が必要なブラックボックス）
+
+【成果物の保存先】
+調査結果を `.claude/docs/impact-analysis/{YYYY-MM-DD}_{slug}.md` に書き出してください。
+`{slug}` は変更要望の短い英小文字スラッグ（例: 2026-04-11_add-login-audit.md）。
+
+【成果物フォーマット】
+---
+title: {変更要望の短い名前}
+date: {YYYY-MM-DD}
+status: draft
+---
+
+# Impact Analysis: {変更要望}
+
+## 1. 変更要望の要約
+{1-3 行}
+
+## 2. プロジェクト構造と技術スタック
+- 言語: ...
+- フレームワーク: ...
+- 主要ディレクトリ: ...
+
+## 3. 既存の設計パターン
+- アーキテクチャ: ...
+- レイヤー分割 / 命名規則: ...
+- 参照すべき既存ドキュメント: ...
+
+## 4. 影響範囲
+
+### 直接変更対象
+- `path/to/file.py:L12-L48` — {何を担う箇所か}
+
+### 間接影響（依存・呼び出し元/先）
+- `path/to/caller.py` — {どう関係するか}
+
+### 関連テスト/設定/ドキュメント
+- `tests/...`
+- `docs/...`
+
+## 5. リスクと注意点
+- {後方互換性、暗黙の仕様、ブラックボックス等}
+
+## 6. 未確認事項
+- {追加で確認すべき点。Phase 1-3 での検証ポイント}
+
+---
+
+【返却形式】
+メインには以下だけを戻してください:
+- 成果物ファイルのパス
+- 5-7 点の要約（変更要望に対して一番効く情報を優先）
+- Phase 1 以降で特にユーザー確認すべきトップ 3 の論点
 """)
 ```
 
-### フェーズ完了条件
+### 成果物
 
-- 既存システムの技術スタックと構造を把握した
-- ユーザーが調査結果の認識に合意した
+| ファイル                                              | 内容                                 |
+| ----------------------------------------------------- | ------------------------------------ |
+| `.claude/docs/impact-analysis/{YYYY-MM-DD}_{slug}.md` | 既存コード調査と影響範囲分析レポート |
+
+**保存先の理由**: 永続的な設計ドキュメントを置く `docs/` ではなく `.claude/docs/` 配下を使う。影響範囲分析はその時点の変更計画に紐づく作業メモであり、時間とともに陳腐化する。作業用スクラッチ領域として他の設計ドキュメントと分離する。
+
+### フェーズ完了条件（受け入れチェックリスト）
+
+以下を満たした上で AskUserQuestion でユーザーに受け入れ確認を行う:
+
+- [ ] `.claude/docs/impact-analysis/{date}_{slug}.md` が作成された
+- [ ] プロジェクトの技術スタックと既存設計パターンが記述されている
+- [ ] 直接変更対象のファイル/モジュールが列挙されている
+- [ ] 間接影響（呼び出し元/先、関連テスト・設定・ドキュメント）が列挙されている
+- [ ] リスクと未確認事項が 1 件以上記録されている
+- [ ] 調査結果のサマリをユーザーに提示し、認識齟齬がないことを確認した
+
+受け入れ確認後、成果物ファイルへのパスを Phase 1 以降の各フェーズで参照できるように保持する。
 
 ---
 
@@ -203,17 +358,22 @@ Task(subagent_type="researcher", prompt="""
 
 ### 出力ファイル
 
-| ファイル | 内容 |
-|---------|------|
-| `docs/project-overview.md` | プロジェクト概要（目的・背景・スコープ） |
-| `docs/glossary.md` | 用語集 |
-| `docs/requirements/feature-list.md` | 機能一覧 |
-| `docs/requirements/functional.md` | 機能要件の詳細 |
-| `docs/requirements/non-functional.md` | 非機能要件の詳細 |
+| ファイル                              | 内容                                     |
+| ------------------------------------- | ---------------------------------------- |
+| `docs/project-overview.md`            | プロジェクト概要（目的・背景・スコープ） |
+| `docs/glossary.md`                    | 用語集                                   |
+| `docs/requirements/feature-list.md`   | 機能一覧                                 |
+| `docs/requirements/functional.md`     | 機能要件の詳細                           |
+| `docs/requirements/non-functional.md` | 非機能要件の詳細                         |
+
+### フェーズ完了フロー（品質ゲート → 受け入れ確認）
+
+1. **Stage 1**: `references/requirements.md` 末尾のセルフチェックリストで成果物を検査し、未達を修正する
+2. **Stage 2**: `references/design-review.md` の Phase 1 テンプレートで `requirements` レビュアーを起動する（impact-analysis をコンテキストに含める）
+3. ゲート通過（Critical = 0、High 処理済み）を確認する
+4. レビュー結果サマリ・成果物マニフェストと、以下のチェックリストの充足を添えて AskUserQuestion で受け入れ確認を行う
 
 ### フェーズ完了条件（受け入れチェックリスト）
-
-以下の全項目を満たした上で、AskUserQuestion でユーザーに受け入れ確認を行う：
 
 - [ ] `docs/project-overview.md` が作成された
 - [ ] `docs/glossary.md` が作成された（用語が少なくても骨格は作る）
@@ -245,17 +405,24 @@ Task(subagent_type="researcher", prompt="""
 
 ### 出力ファイル
 
-| ファイル | 内容 | 必須度 |
-|---------|------|--------|
-| `docs/architecture/architecture.md` | アーキテクチャ設計 | ほぼ必須 |
-| `docs/screens/screen-list.md` | 画面一覧 | UI ありの場合 |
-| `docs/screens/screen-transitions.md` | 画面遷移 | UI ありの場合 |
-| `docs/api/api-list.md` | API エンドポイント一覧 | API ありの場合 |
-| `docs/database/er-design.md` | データモデル設計（テーブル定義含む） | DB ありの場合 |
+| ファイル                             | 内容                                 | 必須度         |
+| ------------------------------------ | ------------------------------------ | -------------- |
+| `docs/architecture/architecture.md`  | アーキテクチャ設計                   | ほぼ必須       |
+| `docs/screens/screen-list.md`        | 画面一覧                             | UI ありの場合  |
+| `docs/screens/screen-transitions.md` | 画面遷移                             | UI ありの場合  |
+| `docs/api/api-list.md`               | API エンドポイント一覧               | API ありの場合 |
+| `docs/database/er-design.md`         | データモデル設計（テーブル定義含む） | DB ありの場合  |
+
+### フェーズ完了フロー（品質ゲート → 受け入れ確認）
+
+1. **Stage 1**: `references/basic-design.md` 末尾のセルフチェックリストで成果物を検査し、未達を修正する
+2. **Stage 2**: `references/design-review.md` の Phase 2 テンプレートで `architecture-reviewer` を起動する。認証・認可 / 秘密情報・PII / 決済 / テナント分離 / 外部連携 / 公開 API のいずれかに該当する場合は `security-reviewer` も並列起動する
+3. ゲート通過（Critical = 0、High 処理済み）を確認する
+4. レビュー結果サマリ・成果物マニフェストと、以下のチェックリストの充足を添えて AskUserQuestion で受け入れ確認を行う
 
 ### フェーズ完了条件（受け入れチェックリスト）
 
-以下のうち、プロジェクトに該当する項目を満たした上で、AskUserQuestion でユーザーに受け入れ確認を行う：
+プロジェクトに該当する項目のみ対象とする：
 
 - [ ] `docs/architecture/architecture.md` が作成された（技術スタック・構成図を含む）
 - [ ] 画面一覧と画面遷移が作成された（UI ありの場合）
@@ -280,9 +447,14 @@ Task(subagent_type="researcher", prompt="""
 3. **データモデル詳細** — テーブル定義の詳細（カラム、インデックス、制約）
 4. **コンポーネント詳細** — 主要コンポーネントの内部設計
 
-### フェーズ完了条件（受け入れチェックリスト）
+### フェーズ完了フロー（品質ゲート → 受け入れ確認）
 
-以下を満たした上で、AskUserQuestion でユーザーに受け入れ確認を行う：
+1. **Stage 1**: `references/detailed-design.md` 末尾のセルフチェックリストで成果物を検査し、未達を修正する
+2. **Stage 2**: `references/design-review.md` の Phase 3 テンプレートで `spec-reviewer` を起動する（基本設計の一覧ドキュメントをコンテキストに含める）
+3. ゲート通過（Critical = 0、High 処理済み）を確認する。基本設計と矛盾する変更が見つかったらドリフトプロトコルに従い上流を先に更新する
+4. レビュー結果サマリ・成果物マニフェストと、以下のチェックリストの充足を添えて AskUserQuestion で受け入れ確認を行う
+
+### フェーズ完了条件（受け入れチェックリスト）
 
 - [ ] 基本設計の一覧に対応する個別設計書が作成された
 - [ ] 各設計書に実装に必要な情報が記載されている
@@ -295,11 +467,13 @@ Task(subagent_type="researcher", prompt="""
 
 Phase 1-3 の基本フローに加えて、プロジェクトの性質に応じて追加の設計トラックを実施できる。
 
-| トラック | reference ファイル | 主な実施タイミング | トリガー |
-|---------|------------------|------------------|---------|
-| デザインシステム | `references/design-system.md` | Phase 2-3（画面設計と並行） | UI を持つプロジェクトで画面数が多い、またはユーザーが希望 |
-| テスト設計 | `references/test-design.md` | Phase 2-3（設計と並行） | 機能数が多い、品質要件が厳しい、またはユーザーが希望 |
-| セキュリティ設計 | `references/security-design.md` | Phase 1-2（要件・基本設計と並行） | 機密データを扱う、権限モデルが複雑、またはユーザーが希望 |
+| トラック         | reference ファイル              | 主な実施タイミング                | トリガー                                                  |
+| ---------------- | ------------------------------- | --------------------------------- | --------------------------------------------------------- |
+| デザインシステム | `references/design-system.md`   | Phase 2-3（画面設計と並行）       | UI を持つプロジェクトで画面数が多い、またはユーザーが希望 |
+| テスト設計       | `references/test-design.md`     | Phase 2-3（設計と並行）           | 機能数が多い、品質要件が厳しい、またはユーザーが希望      |
+| セキュリティ設計 | `references/security-design.md` | Phase 1-2（要件・基本設計と並行） | 機密データを扱う、権限モデルが複雑、またはユーザーが希望  |
+
+拡張トラックの成果物にも各 reference 末尾のセルフチェックリストを適用し、**生成したフェーズの品質ゲート（Stage 2）のレビュー対象に必ず含める**。
 
 ---
 
@@ -307,23 +481,29 @@ Phase 1-3 の基本フローに加えて、プロジェクトの性質に応じ�
 
 設計作業でサブエージェントを活用する際は、`cli-tools.yaml` の `agents.{name}.tool` を参照する。
 
-| エージェント | 用途 |
-|------------|------|
-| `architect` | アーキテクチャレビュー・設計判断 |
-| `api-designer` | API 設計の詳細化 |
-| `data-modeler` | データモデル設計 |
-| `researcher` | 技術調査・ライブラリ選定 |
-| `requirements` | 要件の整理・分析（補助） |
+| エージェント            | 用途                                            |
+| ----------------------- | ----------------------------------------------- |
+| `architect`             | アーキテクチャレビュー・設計判断                |
+| `api-designer`          | API 設計の詳細化                                |
+| `data-modeler`          | データモデル設計                                |
+| `researcher`            | 技術調査・ライブラリ選定                        |
+| `requirements`          | 要件の整理・分析 / Phase 1 品質ゲートのレビュー |
+| `architecture-reviewer` | Phase 2 品質ゲートのレビュー                    |
+| `security-reviewer`     | Phase 2 品質ゲートのレビュー（条件付き）        |
+| `spec-reviewer`         | Phase 3 品質ゲートのレビュー                    |
 
 ---
 
 ## Tips
 
 - 全フェーズを一度にやる必要はない — 要件定義だけで止めてもよい
-- 設計ドキュメントは `/preflight` や `/startproject` への入力になる
+- 設計書（`docs/requirements/` 〜 `docs/database/`）は `/order` が発注書の Context として参照する
 - 大きなプロジェクトではフェーズごとにセッションを分けることを推奨
-- 既存プロジェクトに新機能を追加する場合は、Phase 0（既存システム調査）から始める
+- 既存コードのあるプロジェクトでは、どの Phase から始める場合でも Phase 0（既存コード調査と影響範囲分析）を先に実施する
+- Phase 0 の成果物（`.claude/docs/impact-analysis/*.md`）は Phase 1 以降で既存コードとの整合性を確認する際の参照元になる
 - 用語集はプロジェクト初期に作成し、設計中に継続的に更新する
+- 品質ゲートを飛ばさない — セルフチェックだけで受け入れ確認に進むのは、ユーザーが明示的にレビュー省略を指示した場合のみ（その旨を記録する）
+- 特定フェーズだけ実行する場合も、そのフェーズの品質ゲートは必ず通す
 
 ---
 
@@ -335,3 +515,4 @@ Phase 1-3 の基本フローに加えて、プロジェクトの性質に応じ�
 - For design-system details, see [references/design-system.md](references/design-system.md)
 - For test-design details, see [references/test-design.md](references/test-design.md)
 - For security-design details, see [references/security-design.md](references/security-design.md)
+- For design-review details, see [references/design-review.md](references/design-review.md)

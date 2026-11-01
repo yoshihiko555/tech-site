@@ -21,6 +21,23 @@ UIの一貫性と開発効率を担保するために、デザインシステム
 - 複数人で並行してフロントエンド開発を行う場合
 - 既存プロジェクトで UI の不統一が発生している場合
 
+## 文書の持ち方を決める
+
+トークンの値をどこに置くかで、作る文書が変わる。Step 1 のヒアリングで決め、以降のステップはその運用に合わせる。
+
+| 運用                  | トークンの値の正本                                                      | 文書に書くこと                   | 文書の構成                                                                            |
+| --------------------- | ----------------------------------------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------- |
+| A: 文書で持つ（既定） | `tokens.md`                                                             | 値・名前・用途                   | `principles.md` / `tokens.md` / `component-list.md` / `CMP-{ID}.md`                   |
+| B: コードで持つ       | コード（例: Tailwind 4 の `@theme`、CSS 変数、Style Dictionary の定義） | 名前と使い分けだけ。値は写さない | 入口の `DESIGN.md` に台帳をまとめてよい（1 ファイルでよい）。必要な部品だけ別ファイル |
+
+- 実装がまだ無い、またはデザインツールの値を先に文書で固めたい場合は A を選ぶ
+- トークンをコードで定義している（する予定の）場合は B を選ぶ。値を文書に写すと、コードを変えたときに文書だけが古くなる
+- 既存の `tokens.md` や `DESIGN.md` がある場合は、今の運用を確認してから決める。A から B に移すときは、`tokens.md` の値をコードに移してから文書の値を消す（A と B を併存させない）
+- B では、エージェントや実装者が最初に読む入口として `DESIGN.md` を置く（例: フロントエンドが `frontend/` にあれば `frontend/DESIGN.md`。フロントエンドが複数あればそれぞれに置く）。`DESIGN.md` には次を書き、詳細はコードや個別文書へのリンクで示す
+  - デザイン原則とアクセシビリティの目標（WCAG のバージョンとレベル）
+  - トークンの定義ファイルのパスと、トークンの名前・使い分け（どこで使うか、使ってはいけない組み合わせ）
+  - コンポーネントの台帳（名前・用途・実装ファイルのパス）
+
 ## ステップ
 
 ### Step 1: デザイン原則の定義
@@ -33,11 +50,12 @@ UIの一貫性と開発効率を担保するために、デザインシステム
 - ブランドカラーやロゴは既に決まっているか？
 - モバイルファースト or デスクトップファーストか？
 - ダークモード対応は必要か？
-- アクセシビリティ要件（WCAG レベル）は？
+- アクセシビリティ要件（WCAG のバージョンとレベル）は？（指定がなければ WCAG 2.2 AA を提案する）
+- トークンの値の正本はコードか、文書か？（「文書の持ち方を決める」の A / B）
 
 #### 出力
 
-デザイン原則を `docs/design-system/principles.md` に記載する。
+デザイン原則を、A では `docs/design-system/principles.md` に、B では `DESIGN.md` の冒頭の節に記載する。
 
 ```markdown
 # デザイン原則
@@ -55,7 +73,7 @@ UIの一貫性と開発効率を担保するために、デザインシステム
 
 ## アクセシビリティ
 
-- WCAG {レベル} 準拠
+- WCAG {バージョン} {レベル} 準拠（例: WCAG 2.2 AA）
 - {その他の方針}
 ```
 
@@ -67,18 +85,18 @@ UI の基礎値（色、フォント、スペーシング等）を Design Tokens
 
 #### 設計内容
 
-| カテゴリ | 定義する内容 |
-|---------|------------|
-| Color | プライマリ、セカンダリ、セマンティック（success, warning, error, info）、グレースケール |
-| Typography | フォントファミリー、サイズスケール、ウェイト、行間 |
-| Spacing | スペーシングスケール（4px ベース等） |
-| Border Radius | 角丸のサイズスケール |
-| Shadow | エレベーションレベル（shadow-sm, shadow-md 等） |
-| Z-index | レイヤー管理のスケール |
+| カテゴリ      | 定義する内容                                                                            |
+| ------------- | --------------------------------------------------------------------------------------- |
+| Color         | プライマリ、セカンダリ、セマンティック（success, warning, error, info）、グレースケール |
+| Typography    | フォントファミリー、サイズスケール、ウェイト、行間                                      |
+| Spacing       | スペーシングスケール（4px ベース等）                                                    |
+| Border Radius | 角丸のサイズスケール                                                                    |
+| Shadow        | エレベーションレベル（shadow-sm, shadow-md 等）                                         |
+| Z-index       | レイヤー管理のスケール                                                                  |
 
 #### 出力
 
-`docs/design-system/tokens.md` に記載する。
+A では `docs/design-system/tokens.md` に値を含めて記載する（下の例）。B では値を書かず、`DESIGN.md` のトークンの節に定義ファイルのパスと、名前・使い分けだけを書く（下の「B の場合」）。
 
 ```markdown
 # Design Tokens
@@ -87,78 +105,109 @@ UI の基礎値（色、フォント、スペーシング等）を Design Tokens
 
 ### Brand
 
-| Token | Value | 用途 |
-|-------|-------|------|
-| color-primary | {#hex} | メインアクション、ブランドカラー |
-| color-primary-hover | {#hex} | ホバー状態 |
-| color-secondary | {#hex} | サブアクション |
+| Token               | Value  | 用途                             |
+| ------------------- | ------ | -------------------------------- |
+| color-primary       | {#hex} | メインアクション、ブランドカラー |
+| color-primary-hover | {#hex} | ホバー状態                       |
+| color-secondary     | {#hex} | サブアクション                   |
 
 ### Semantic
 
-| Token | Value | 用途 |
-|-------|-------|------|
-| color-success | {#hex} | 成功状態 |
-| color-warning | {#hex} | 警告状態 |
-| color-error | {#hex} | エラー状態 |
-| color-info | {#hex} | 情報表示 |
+| Token         | Value  | 用途       |
+| ------------- | ------ | ---------- |
+| color-success | {#hex} | 成功状態   |
+| color-warning | {#hex} | 警告状態   |
+| color-error   | {#hex} | エラー状態 |
+| color-info    | {#hex} | 情報表示   |
 
 ### Neutral
 
-| Token | Value | 用途 |
-|-------|-------|------|
-| color-bg-primary | {#hex} | メイン背景 |
-| color-bg-secondary | {#hex} | セカンダリ背景 |
-| color-text-primary | {#hex} | メインテキスト |
-| color-text-secondary | {#hex} | サブテキスト |
-| color-border | {#hex} | ボーダー |
+| Token                | Value  | 用途           |
+| -------------------- | ------ | -------------- |
+| color-bg-primary     | {#hex} | メイン背景     |
+| color-bg-secondary   | {#hex} | セカンダリ背景 |
+| color-text-primary   | {#hex} | メインテキスト |
+| color-text-secondary | {#hex} | サブテキスト   |
+| color-border         | {#hex} | ボーダー       |
 
 ## Typography
 
-| Token | Value | 用途 |
-|-------|-------|------|
-| font-family-base | {フォント名} | 本文 |
-| font-family-heading | {フォント名} | 見出し |
-| font-family-mono | {フォント名} | コード |
-| font-size-xs | {rem} | 補足テキスト |
-| font-size-sm | {rem} | ラベル・キャプション |
-| font-size-base | {rem} | 本文 |
-| font-size-lg | {rem} | サブ見出し |
-| font-size-xl | {rem} | セクション見出し |
-| font-size-2xl | {rem} | ページタイトル |
-| line-height-tight | {値} | 見出し |
-| line-height-normal | {値} | 本文 |
+| Token               | Value        | 用途                 |
+| ------------------- | ------------ | -------------------- |
+| font-family-base    | {フォント名} | 本文                 |
+| font-family-heading | {フォント名} | 見出し               |
+| font-family-mono    | {フォント名} | コード               |
+| font-size-xs        | {rem}        | 補足テキスト         |
+| font-size-sm        | {rem}        | ラベル・キャプション |
+| font-size-base      | {rem}        | 本文                 |
+| font-size-lg        | {rem}        | サブ見出し           |
+| font-size-xl        | {rem}        | セクション見出し     |
+| font-size-2xl       | {rem}        | ページタイトル       |
+| line-height-tight   | {値}         | 見出し               |
+| line-height-normal  | {値}         | 本文                 |
 
 ## Spacing
 
 {4px ベースのスケール}
 
-| Token | Value |
-|-------|-------|
-| space-1 | 4px |
-| space-2 | 8px |
-| space-3 | 12px |
-| space-4 | 16px |
-| space-6 | 24px |
-| space-8 | 32px |
-| space-12 | 48px |
-| space-16 | 64px |
+| Token    | Value |
+| -------- | ----- |
+| space-1  | 4px   |
+| space-2  | 8px   |
+| space-3  | 12px  |
+| space-4  | 16px  |
+| space-6  | 24px  |
+| space-8  | 32px  |
+| space-12 | 48px  |
+| space-16 | 64px  |
 
 ## Border Radius
 
-| Token | Value | 用途 |
-|-------|-------|------|
-| radius-sm | {px} | 入力フィールド |
-| radius-md | {px} | カード・ボタン |
-| radius-lg | {px} | モーダル |
+| Token       | Value  | 用途             |
+| ----------- | ------ | ---------------- |
+| radius-sm   | {px}   | 入力フィールド   |
+| radius-md   | {px}   | カード・ボタン   |
+| radius-lg   | {px}   | モーダル         |
 | radius-full | 9999px | アバター・バッジ |
 
 ## Shadow
 
-| Token | Value | 用途 |
-|-------|-------|------|
-| shadow-sm | {値} | カード |
-| shadow-md | {値} | ドロップダウン |
-| shadow-lg | {値} | モーダル |
+| Token     | Value | 用途           |
+| --------- | ----- | -------------- |
+| shadow-sm | {値}  | カード         |
+| shadow-md | {値}  | ドロップダウン |
+| shadow-lg | {値}  | モーダル       |
+```
+
+#### B の場合（トークンをコードで持つ）
+
+値はコードを正とし、文書には写さない。トークン名はコード上の名前と一致させる。
+
+```markdown
+## トークン
+
+定義: `src/styles/theme.css`（`@theme`）。値はこのファイルを参照する。
+
+### Color
+
+| Token             | 使い分け                         | 使わない場面                     |
+| ----------------- | -------------------------------- | -------------------------------- |
+| `--color-primary` | メインアクション、ブランドカラー | 本文テキスト（コントラスト不足） |
+| `--color-error`   | エラー状態の文字・枠             | 装飾目的の強調                   |
+
+### Typography
+
+| Token         | 使い分け                           |
+| ------------- | ---------------------------------- |
+| `--text-base` | 本文                               |
+| `--text-sm`   | ラベル・キャプション               |
+| `--font-mono` | コード（本文や見出しには使わない） |
+
+### Spacing
+
+| Token         | 使い分け                                               |
+| ------------- | ------------------------------------------------------ |
+| `--spacing-*` | 余白はスケールの値だけを使う（任意の値を直書きしない） |
 ```
 
 ---
@@ -174,33 +223,33 @@ UI で使用する共通コンポーネントを一覧化する。
 
 #### 出力
 
-`docs/design-system/component-list.md` に記載する。
+`docs/design-system/component-list.md` に記載する。B では `DESIGN.md` の台帳の節に書いてよい（実装ファイルのパスの列を足す）。
 
 ```markdown
 # コンポーネント一覧
 
 ## Atoms（基本要素）
 
-| ID | コンポーネント | 概要 | バリアント |
-|----|-------------|------|----------|
-| CMP-001 | Button | アクションボタン | primary, secondary, ghost, danger |
-| CMP-002 | Input | テキスト入力 | text, password, email, number |
-| CMP-003 | Badge | ステータス表示 | success, warning, error, info |
-| CMP-004 | Icon | アイコン表示 | {アイコンセット名} |
+| ID      | コンポーネント | 概要             | バリアント                        |
+| ------- | -------------- | ---------------- | --------------------------------- |
+| CMP-001 | Button         | アクションボタン | primary, secondary, ghost, danger |
+| CMP-002 | Input          | テキスト入力     | text, password, email, number     |
+| CMP-003 | Badge          | ステータス表示   | success, warning, error, info     |
+| CMP-004 | Icon           | アイコン表示     | {アイコンセット名}                |
 
 ## Molecules（組み合わせ）
 
-| ID | コンポーネント | 概要 | 構成要素 |
-|----|-------------|------|---------|
-| CMP-010 | FormField | ラベル付き入力 | Label + Input + ErrorMessage |
-| CMP-011 | SearchBar | 検索バー | Input + Button |
+| ID      | コンポーネント | 概要           | 構成要素                     |
+| ------- | -------------- | -------------- | ---------------------------- |
+| CMP-010 | FormField      | ラベル付き入力 | Label + Input + ErrorMessage |
+| CMP-011 | SearchBar      | 検索バー       | Input + Button               |
 
 ## Organisms（複合要素）
 
-| ID | コンポーネント | 概要 | 構成要素 |
-|----|-------------|------|---------|
-| CMP-020 | Header | グローバルヘッダー | Logo + Navigation + UserMenu |
-| CMP-021 | DataTable | データテーブル | Table + Pagination + Sort |
+| ID      | コンポーネント | 概要               | 構成要素                     |
+| ------- | -------------- | ------------------ | ---------------------------- |
+| CMP-020 | Header         | グローバルヘッダー | Logo + Navigation + UserMenu |
+| CMP-021 | DataTable      | データテーブル     | Table + Pagination + Sort    |
 ```
 
 ---
@@ -216,7 +265,7 @@ UI で使用する共通コンポーネントを一覧化する。
 
 #### 出力
 
-`docs/design-system/CMP-{ID}.md` として個別ファイルを作成する。
+`docs/design-system/CMP-{ID}.md` として個別ファイルを作成する。B では、台帳で足りない部品だけを個別ファイルにし、その部品にだけ CMP-ID を付けて台帳の行からリンクする。色や余白は値ではなくトークン名で書く。
 
 ```markdown
 # CMP-001: Button
@@ -227,42 +276,42 @@ UI で使用する共通コンポーネントを一覧化する。
 
 ## バリアント
 
-| バリアント | 用途 | 背景色 | テキスト色 |
-|----------|------|--------|----------|
-| primary | メインアクション | color-primary | white |
-| secondary | サブアクション | transparent | color-primary |
-| ghost | テキストリンク風 | transparent | color-text-primary |
-| danger | 破壊的操作 | color-error | white |
+| バリアント | 用途             | 背景色        | テキスト色         |
+| ---------- | ---------------- | ------------- | ------------------ |
+| primary    | メインアクション | color-primary | white              |
+| secondary  | サブアクション   | transparent   | color-primary      |
+| ghost      | テキストリンク風 | transparent   | color-text-primary |
+| danger     | 破壊的操作       | color-error   | white              |
 
 ## サイズ
 
-| サイズ | padding | font-size | height |
-|--------|---------|-----------|--------|
-| sm | space-2 space-3 | font-size-sm | 32px |
-| md | space-2 space-4 | font-size-base | 40px |
-| lg | space-3 space-6 | font-size-lg | 48px |
+| サイズ | padding         | font-size      | height |
+| ------ | --------------- | -------------- | ------ |
+| sm     | space-2 space-3 | font-size-sm   | 32px   |
+| md     | space-2 space-4 | font-size-base | 40px   |
+| lg     | space-3 space-6 | font-size-lg   | 48px   |
 
 ## 状態
 
-| 状態 | 変化 |
-|------|------|
-| default | 通常表示 |
-| hover | 背景色を暗く / 明るく |
-| active | さらに暗く |
-| focus | フォーカスリング表示 |
+| 状態     | 変化                              |
+| -------- | --------------------------------- |
+| default  | 通常表示                          |
+| hover    | 背景色を暗く / 明るく             |
+| active   | さらに暗く                        |
+| focus    | フォーカスリング表示              |
 | disabled | opacity: 0.5, cursor: not-allowed |
-| loading | スピナー表示、テキスト非表示 |
+| loading  | スピナー表示、テキスト非表示      |
 
 ## Props
 
-| Prop | 型 | 必須 | デフォルト | 説明 |
-|------|-----|------|----------|------|
-| variant | 'primary' | 'secondary' | 'ghost' | 'danger' | No | 'primary' | ボタンの種類 |
-| size | 'sm' | 'md' | 'lg' | No | 'md' | サイズ |
-| disabled | boolean | No | false | 無効化 |
-| loading | boolean | No | false | ローディング状態 |
-| icon | ReactNode | No | - | 左側アイコン |
-| onClick | () => void | No | - | クリックハンドラ |
+| Prop     | 型         | 必須        | デフォルト | 説明             |
+| -------- | ---------- | ----------- | ---------- | ---------------- |
+| variant  | 'primary'  | 'secondary' | 'ghost'    | 'danger'         | No   | 'primary' | ボタンの種類 |
+| size     | 'sm'       | 'md'        | 'lg'       | No               | 'md' | サイズ    |
+| disabled | boolean    | No          | false      | 無効化           |
+| loading  | boolean    | No          | false      | ローディング状態 |
+| icon     | ReactNode  | No          | -          | 左側アイコン     |
+| onClick  | () => void | No          | -          | クリックハンドラ |
 
 ## アクセシビリティ
 
@@ -276,6 +325,8 @@ UI で使用する共通コンポーネントを一覧化する。
 
 ## 出力ディレクトリ
 
+### A: 文書で持つ場合
+
 ```
 docs/design-system/
 ├── principles.md        ← デザイン原則
@@ -284,6 +335,16 @@ docs/design-system/
 ├── CMP-001.md           ← 個別コンポーネント詳細（必要に応じて）
 ├── CMP-002.md
 └── ...
+```
+
+### B: コードで持つ場合（パスは例）
+
+```
+frontend/
+├── DESIGN.md            ← 入口（原則・a11y の目標・トークンの名前と使い分け・コンポーネント台帳）
+└── src/styles/theme.css ← トークンの値（正本。例: Tailwind 4 の @theme）
+docs/design-system/      ← 任意。台帳に収まらない部品の詳細だけ
+└── CMP-001.md
 ```
 
 ## ネイティブアプリでの考慮
@@ -299,5 +360,45 @@ docs/design-system/
 
 - デザインシステムは完璧を目指さず、プロジェクトに必要な範囲で作成する
 - 小規模プロジェクト（画面数 5 以下）では、Design Tokens と主要コンポーネントのリストで十分
-- 既存の CSS フレームワーク（Tailwind, shadcn/ui 等）を使用する場合は、フレームワークの Tokens をベースにカスタマイズする方が効率的
+- 既存の CSS フレームワーク（Tailwind, shadcn/ui 等）を使用する場合は、フレームワークの Tokens をベースにカスタマイズする方が効率的（トークンをコードで持つことになるので B が向く）
 - コンポーネント詳細設計（Step 4）は、実装フレームワークに依存する部分が大きいため、技術スタック確定後に行う
+
+---
+
+## セルフチェックリスト（品質ゲート Stage 1）
+
+成果物の作成が終わったら、レビュアー起動・受け入れ確認の前にオーケストレーター自身が以下を検査する。
+未達項目があれば成果物を修正してから次に進む。
+
+### 完成基準
+
+#### 共通
+
+- [ ] コンポーネントの台帳（A: `component-list.md`、B: `DESIGN.md` の台帳の節）の全コンポーネントに一意な ID または名前が付いている
+- [ ] 台帳の分類（Atoms/Molecules/Organisms 等）が `screen-list.md` の画面構成要素と対応している
+- [ ] Molecules / Organisms の「構成要素」欄が台帳に実在するコンポーネント名を参照している
+- [ ] 個別コンポーネント詳細（`CMP-{ID}.md`）を作成した場合、hover/disabled/error 等の主要状態が定義されている
+- [ ] 命名規則（トークン名・コンポーネント名）がドキュメント全体で一貫している（同じ概念に複数の名前がない）
+- [ ] デザイン原則（A: `principles.md`、B: `DESIGN.md`）にアクセシビリティ方針（WCAG のバージョンとレベル等）が明記されている
+- [ ] 個別コンポーネント詳細を作成した場合、アクセシビリティ欄（aria属性等）が空欄でない
+
+#### A: 文書で持つ場合
+
+- [ ] `tokens.md` の Color / Typography / Spacing の3カテゴリすべてに具体値が入っている（プレースホルダーのままでない）
+- [ ] `tokens.md` の Color に Brand / Semantic / Neutral の区分が漏れなく定義されている
+
+#### B: コードで持つ場合
+
+- [ ] `DESIGN.md` にトークンの定義ファイルのパスが書かれ、そのファイルが実在する（まだ実装していない段階では、予定のパスと未実装である旨が書かれている）
+- [ ] `DESIGN.md` のトークン名がコード上の名前と一致している（コードに無いトークンを書いていない）
+- [ ] Color / Typography / Spacing のトークンに使い分けが書かれている
+- [ ] 文書にトークンの値（`#hex`、`px`、`rem` 等）を写していない
+
+### アンチパターン（該当したら要修正）
+
+- **ハードコード値の散在**: トークンに定義せず、個別コンポーネントで色や余白の値を直書きしている → トークン参照に置き換える（A: `tokens.md` のトークン、B: コードのトークン）
+- **コンポーネントの重複定義**: 同じ役割のコンポーネントが異なる ID で二重登録されている → 台帳を整理し統合する
+- **状態定義の欠落**: hover/disabled/loading 等、実装上必要な状態が定義されていない → Step 4 の状態表に追記する
+- **アクセシビリティの後回し**: 個別コンポーネント詳細にアクセシビリティ欄がない、または aria 属性の記載がない → 追記する
+- **命名の不統一**: 同じトークン/コンポーネントが、文書間（A: `principles.md`, `tokens.md`, `component-list.md`）や文書とコードの間（B）で表記ゆれしている → 統一する
+- **値の二重管理（B）**: コードで持つトークンの値を `DESIGN.md` などの文書に写している → 値を消し、定義ファイルへの参照と使い分けだけを残す
