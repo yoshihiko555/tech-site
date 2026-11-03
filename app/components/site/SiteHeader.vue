@@ -15,6 +15,7 @@ const NAV: NavItem[] = [
 ]
 
 const route = useRoute()
+const searchOpen = useState('search-open', () => false)
 /** blips are a top-page thing, so the switch shows only there */
 const sound = useSound()
 /** set by the top page while a section is on screen */
@@ -68,6 +69,17 @@ function isCurrent(item: NavItem): boolean {
         class="snd-label"
         text="SOUND"
       />
+    </button>
+    <button
+      class="hbtn kbtn hov"
+      type="button"
+      aria-haspopup="dialog"
+      :aria-expanded="searchOpen"
+      @click="searchOpen = !searchOpen"
+      @pointermove="pullToward"
+      @pointerleave="releasePull"
+    >
+      <RollText text="SEARCH" /> <kbd>⌘K</kbd>
     </button>
     <i
       class="progress"
@@ -166,6 +178,14 @@ function isCurrent(item: NavItem): boolean {
   color: var(--base);
   outline: none;
 }
+.hbtn kbd {
+  font: 11px/1 var(--f-mono);
+  color: inherit;
+  opacity: 0.75;
+}
+.kbtn {
+  will-change: transform;
+}
 .eq {
   display: inline-flex;
   align-items: flex-end;
@@ -216,7 +236,7 @@ function isCurrent(item: NavItem): boolean {
   .home .nav {
     display: none;
   }
-  .home .hbtn {
+  .home .kbtn {
     margin-left: auto;
   }
   .snd-label {

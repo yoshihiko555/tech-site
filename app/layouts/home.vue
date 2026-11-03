@@ -29,6 +29,7 @@ onBeforeUnmount(() => {
       <slot />
     </main>
     <HomeFooter />
+    <SearchPalette />
     <CrosshairCursor />
   </div>
 </template>

@@ -9,6 +9,7 @@
       <slot />
     </main>
     <SiteFooter />
+    <SearchPalette />
     <CrosshairCursor />
   </div>
 </template>

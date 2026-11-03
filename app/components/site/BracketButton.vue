@@ -16,19 +16,10 @@ defineEmits<{ click: [event: MouseEvent] }>()
 const external = computed(() => !!props.to && /^https?:/.test(props.to))
 
 function onMove(e: PointerEvent) {
-  if (!props.magnetic || e.pointerType !== 'mouse' || motionReduced()) return
-  const el = e.currentTarget as HTMLElement
-  const box = el.getBoundingClientRect()
-  const dx = e.clientX - (box.left + box.width / 2)
-  const dy = e.clientY - (box.top + box.height / 2)
-  el.style.transition = 'transform .15s linear'
-  el.style.transform = `translate(${(dx * 0.18).toFixed(1)}px,${(dy * 0.26).toFixed(1)}px)`
+  if (props.magnetic) pullToward(e)
 }
 function onLeave(e: PointerEvent) {
-  if (!props.magnetic) return
-  const el = e.currentTarget as HTMLElement
-  el.style.transition = 'transform .8s cubic-bezier(.16,1,.3,1)'
-  el.style.transform = ''
+  if (props.magnetic) releasePull(e)
 }
 function onDown(e: PointerEvent) {
   replayClass(e.currentTarget as HTMLElement, 'zap', 320)
