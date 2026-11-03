@@ -158,3 +158,9 @@ pages/verifications/
 .claude/Plans.archive.md
 .claude/handoffs/
 # <<< AI Orchestra (.claude) <<<
+
+# Nuxt 4 build output
+.output
+.data
+.nitro
+.vercel

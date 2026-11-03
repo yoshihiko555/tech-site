@@ -1,7 +1,0 @@
-fragment tagFragment on Tags {
-  sys {
-    id
-  }
-  name
-  slug
-}
