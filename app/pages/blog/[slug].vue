@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { OGP_DEFAULT_IMAGE } from '#shared/ogp'
 import type { PostDetail } from '#shared/types/post'
 
 const route = useRoute()
@@ -16,7 +17,7 @@ const { activeId, activeSubId } = useReadingState(() => headings.value, 'prose')
 const { origin } = useRuntimeConfig().public
 const image = post.value.thumbnail
   ? `https:${post.value.thumbnail.url.replace(/^https?:/, '')}`
-  : `${origin}/ogp-default.jpeg`
+  : `${origin}${OGP_DEFAULT_IMAGE}`
 useSeoMeta({
   title: post.value.title,
   description: post.value.description,

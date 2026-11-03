@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { OGP_DEFAULT_IMAGE } from './shared/ogp'
+
 const SITE_NAME = 'Yoshihiko'
 const SITE_DESCRIPTION = 'Yoshihiko tech siteです。技術ブログ兼ポートフォリオにもなっています。'
 const ORIGIN = process.env.ORIGIN || 'https://yoshihiko.tech'
@@ -23,7 +25,7 @@ export default defineNuxtConfig({
         { name: 'description', content: SITE_DESCRIPTION },
         { property: 'og:site_name', content: SITE_NAME },
         { property: 'og:type', content: 'website' },
-        { property: 'og:image', content: `${ORIGIN}/ogp-default.jpeg` },
+        { property: 'og:image', content: `${ORIGIN}${OGP_DEFAULT_IMAGE}` },
         { name: 'twitter:card', content: 'summary_large_image' },
         { name: 'twitter:site', content: '@yoshihiko5555' },
       ],
