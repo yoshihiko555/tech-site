@@ -2,7 +2,8 @@
 /**
  * Crosshair cursor: full-screen hairlines with the pointer's coordinates.
  * Over links it shows a label; over article text the lines step aside.
- * Only for mouse pointers, and never when the visitor asks for reduced motion.
+ * Only for mouse pointers. Follows `pointerrawupdate` where the browser has it: it arrives
+ * as soon as the mouse moves instead of once per frame, so the lines trail less behind.
  */
 const root = ref<HTMLElement | null>(null)
 const horizontal = ref<HTMLElement | null>(null)
@@ -34,23 +35,30 @@ onMounted(async () => {
   const reduced = motionReduced()
   if (!fine || reduced || !horizontal.value) return
   const body = document.body
+  const MOVE = 'onpointerrawupdate' in window ? 'pointerrawupdate' : 'pointermove'
+  let shownText = ''
 
-  const onMove = (e: PointerEvent) => {
-    if (e.pointerType !== 'mouse') return
-    body.classList.add('has-ret')
-    const { clientX: x, clientY: y } = e
+  const setText = (text: string) => {
+    if (text === shownText) return
+    shownText = text
+    readout.value!.textContent = text
+  }
+  const onMove = (e: Event) => {
+    const { pointerType, clientX: x, clientY: y } = e as PointerEvent
+    if (pointerType !== 'mouse') return
+    if (!body.classList.contains('has-ret')) body.classList.add('has-ret')
     horizontal.value!.style.transform = `translate3d(0,${y}px,0)`
     vertical.value!.style.transform = `translate3d(${x}px,0,0)`
     box.value!.style.transform = `translate3d(${x}px,${y}px,0)`
     readout.value!.style.transform = `translate3d(${x}px,${y}px,0)`
-    if (!hit) readout.value!.textContent = `X ${pad(x)}  Y ${pad(y)}`
+    if (!hit) setText(`X ${pad(x)}  Y ${pad(y)}`)
   }
   const onLeave = () => body.classList.remove('has-ret')
   const onOver = (e: PointerEvent) => {
     const target = e.target as Element | null
     if (!target?.closest) return
     hit = target.closest(HIT)
-    if (hit) readout.value!.textContent = labelFor(hit)
+    if (hit) setText(labelFor(hit))
     body.classList.toggle('cur-lab', !!hit)
     body.classList.toggle('cur-read', !hit && !!target.closest('.prose'))
     body.classList.toggle('cur-txt', !hit && !!target.closest(route.path === '/' ? TEXT_HOME : TEXT))
@@ -61,12 +69,12 @@ onMounted(async () => {
     if (route.path === '/') replayClass(body, 'cur-zap', 220)
   }
 
-  window.addEventListener('pointermove', onMove, { passive: true })
+  window.addEventListener(MOVE, onMove, { passive: true })
   window.addEventListener('pointerdown', onDown, { passive: true })
   document.documentElement.addEventListener('mouseleave', onLeave)
   document.addEventListener('pointerover', onOver)
   cleanup = () => {
-    window.removeEventListener('pointermove', onMove)
+    window.removeEventListener(MOVE, onMove)
     window.removeEventListener('pointerdown', onDown)
     document.documentElement.removeEventListener('mouseleave', onLeave)
     document.removeEventListener('pointerover', onOver)
@@ -76,12 +84,15 @@ onMounted(async () => {
 
 // a page change can remove the hovered link without a pointerover
 const router = useRouter()
-router.afterEach(() => {
+const stopRouteHook = router.afterEach(() => {
   hit = null
   document.body.classList.remove('cur-lab')
 })
 
-onBeforeUnmount(() => cleanup?.())
+onBeforeUnmount(() => {
+  cleanup?.()
+  stopRouteHook()
+})
 </script>
 
 <template>
@@ -134,6 +145,8 @@ body.has-ret.cur-off .cur-xh {
   position: absolute;
   left: 0;
   top: 0;
+  /* each on its own layer: moving them never repaints the page */
+  will-change: transform;
 }
 .xh-h,
 .xh-v {

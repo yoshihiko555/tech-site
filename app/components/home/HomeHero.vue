@@ -20,7 +20,9 @@ const intro = useState<'none' | 'hold' | 'play'>('hero-intro', () => 'none')
 const letters = ref(Array.from(PROFILE.name))
 const phraseIndex = ref(0)
 const phrase = useScrambleText(() => PHRASES[phraseIndex.value]!, { steps: 24 })
-const coords = reactive({ x: '0000', y: '0000' })
+/** pointer coordinates, written straight to the DOM (no re-render on every move) */
+const coordX = ref<HTMLElement | null>(null)
+const coordY = ref<HTMLElement | null>(null)
 const clock = ref('00:00')
 
 /** how many hero parts are visible while the entrance plays (null when it is not playing) */
@@ -89,8 +91,8 @@ useFrame(({ y }) => {
 function onMove(e: PointerEvent) {
   pointer = { x: e.clientX / window.innerWidth, y: 1 - e.clientY / window.innerHeight, k: 1 }
   pointerX = e.clientX
-  coords.x = padNumber(e.clientX, 4)
-  coords.y = padNumber(e.clientY, 4)
+  if (coordX.value) coordX.value.textContent = padNumber(e.clientX, 4)
+  if (coordY.value) coordY.value.textContent = padNumber(e.clientY, 4)
 }
 function onLeave() {
   pointer.k = 0
@@ -204,7 +206,7 @@ onBeforeUnmount(() => {
         class="hcorner hc-l"
         aria-hidden="true"
       >
-        <span><b>X</b> {{ coords.x }}</span><span><b>Y</b> {{ coords.y }}</span>
+        <span><b>X</b> <span ref="coordX">0000</span></span><span><b>Y</b> <span ref="coordY">0000</span></span>
       </p>
       <p
         class="hcorner hc-r"
