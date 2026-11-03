@@ -11,8 +11,11 @@ services:
     volumes:
       - .:/usr/src
       # node_modules stays inside the container, so the host checkout is never touched.
-      # After switching branches, rebuild it: docker compose up --build -V
+      # After switching branches or adding a dependency, rebuild it: docker compose up --build -V
       - /usr/src/node_modules
+      # .nuxt too: running nuxt on the host (dev, typecheck, prepare) rewrites it with host
+      # paths, and the container's dev server then loses its components
+      - /usr/src/.nuxt
     env_file:
       - .env
     tty: true
