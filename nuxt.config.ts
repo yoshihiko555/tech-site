@@ -1,311 +1,90 @@
-import { NuxtConfig } from '@nuxt/types'
-import MarkdownIt from 'markdown-it'
-import { truncate } from './plugins/utils'
-import { client } from './utils/contentful'
-import { IArticlesFields, ICategoriesFields, ITagsFields } from './generated/contentful'
+// https://nuxt.com/docs/api/configuration/nuxt-config
+import { OGP_DEFAULT_IMAGE } from './shared/ogp'
 
-/** サイト名 */
-const siteName = 'Yoshihiko'
-/** Description */
-const desc = 'Yoshihiko tech siteです。技術ブログ兼ポートフォリオにもなっています。'
+const SITE_NAME = 'Yoshihiko'
+const SITE_DESCRIPTION = 'Yoshihiko tech siteです。技術ブログ兼ポートフォリオにもなっています。'
+const ORIGIN = process.env.ORIGIN || 'https://yoshihiko.tech'
 
-/** ビルド時の Contentful データキャッシュ（feed / sitemap 間で共有） */
-let contentfulCache: {
-  articles: Awaited<ReturnType<ReturnType<typeof client>['getEntries']>>
-  categories: Awaited<ReturnType<ReturnType<typeof client>['getEntries']>>
-  tags: Awaited<ReturnType<ReturnType<typeof client>['getEntries']>>
-} | null = null
+export default defineNuxtConfig({
+  compatibilityDate: '2026-11-01',
+  devtools: { enabled: true },
 
-async function fetchContentfulData () {
-  if (contentfulCache) return contentfulCache
+  modules: ['@nuxt/eslint', '@nuxtjs/sitemap', 'nuxt-gtag'],
 
-  const [articles, categories, tags] = await Promise.all([
-    client().getEntries<IArticlesFields>({
-      content_type: 'articles',
-      order: '-sys.createdAt',
-    }),
-    client().getEntries<ICategoriesFields>({
-      content_type: 'categories',
-    }),
-    client().getEntries<ITagsFields>({
-      content_type: 'tags',
-    }),
-  ])
+  css: ['~/assets/css/tokens.css', '~/assets/css/base.css', '~/assets/css/prose.css'],
 
-  contentfulCache = { articles, categories, tags }
-  return contentfulCache
-}
+  // components are named by file name alone (site/LogoMark.vue -> <LogoMark>)
+  components: [{ path: '~/components', pathPrefix: false }],
 
-export default ():NuxtConfig => ({
-  target: 'static',
-  // srcDir: 'src/',
-  head: {
-    title: siteName,
-    titleTemplate: `%s | ${siteName}`,
-    meta: [
-      { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { name: 'format-detection', content: 'telephone=no' },
-      { hid: 'description', name: 'description', content: desc },
-      { hid: 'og:site_name', property: 'og:site_name', content: siteName },
-      { hid: 'og:title', property: 'og:title', content: siteName },
-      { hid: 'og:description', property: 'og:description', content: desc },
-      { hid: 'og:type', property: 'og:type', content: 'website' },
-      { hid: 'og:url', property: 'og:url', content: process.env.ORIGIN || 'http://localhost:3000' },
-      { hid: 'og:image', property: 'og:image', content: `${process.env.ORIGIN}/ogp-default.jpeg` },
-      { hid: 'twitter:card', name: 'twitter:card', content: 'summary_large_image' },
-      { hid: 'twitter:title', name: 'twitter:title', content: 'Yoshihiko' },
-      { hid: 'twitter:site', name: 'twitter:site', content: '@yoshihiko5555' },
-      { hid: 'twitter:description', name: 'twitter:description', content: desc },
-      { hid: 'twitter:image', name: 'twitter:image', content: `${process.env.ORIGIN}/ogp-default.jpeg` },
-    ],
-    link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'apple-touch-icon', sizes: '180×180', href: '/apple-touch-icon.png'},
-    ],
-    htmlAttrs: {
-      prefix: 'og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# website: http://ogp.me/ns/website#',
-    }
-  },
-  css: [
-    'vuesax/dist/vuesax.css',
-    'boxicons/css/boxicons.min.css',
-    '~/assets/scss/styles',
-  ],
-  styleResources: {
-    scss: [
-      '~/assets/scss/prepends.scss'
-    ]
-  },
-  components: true,
-  plugins: [
-    '~/plugins/vuesax',
-    '~/plugins/apollo',
-    '~/plugins/prism',
-    '~/plugins/utils',
-    '~/plugins/markdown-it',
-    {
-      src: '~/plugins/vue-shortkey.ts',
-      mode: 'client',
+  app: {
+    head: {
+      htmlAttrs: { lang: 'ja' },
+      titleTemplate: `%s | ${SITE_NAME}`,
+      meta: [
+        { name: 'format-detection', content: 'telephone=no' },
+        { name: 'description', content: SITE_DESCRIPTION },
+        { property: 'og:site_name', content: SITE_NAME },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:image', content: `${ORIGIN}${OGP_DEFAULT_IMAGE}` },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:site', content: '@yoshihiko5555' },
+      ],
+      link: [
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,100..900&family=Chakra+Petch:wght@400;500;600&family=JetBrains+Mono:wght@400;700&family=Silkscreen:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap',
+        },
+        // new mark (design/logo): the SVG where supported, the ICO (16/32/48) for the rest.
+        // sizes="32x32" keeps Chrome from preferring the ICO over the SVG
+        { rel: 'icon', href: '/favicon.ico', sizes: '32x32' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+        { rel: 'alternate', type: 'application/rss+xml', title: SITE_NAME, href: '/feed.xml' },
+      ],
     },
-  ],
-  buildModules: [
-    '@nuxt/typescript-build',
-    '@nuxt/image',
-    '@nuxtjs/stylelint-module',
-    '@nuxtjs/tailwindcss',
-    '@nuxtjs/composition-api/module',
-    '@nuxtjs/google-fonts',
-    '@nuxtjs/color-mode',
-  ],
-  modules: [
-    '@nuxtjs/pwa',
-    '@nuxtjs/style-resources',
-    '@nuxtjs/apollo',
-    '@nuxtjs/moment',
-    '@nuxtjs/google-gtag',
-    '@nuxtjs/feed',
-    'nuxt-interpolation',
-    '@nuxtjs/sitemap',
-  ],
-  image: {
-    domains: ['images.ctfassets.net'],
   },
-  pwa: {
-    manifest: {
-      name: 'yoshihiko',
-      lang: 'ja'
-    }
-  },
-  build: {
-    parallel: true,
-    cache: true,
-    // hardSource: true,
-    transpile: ['mermaid'],
-  },
-  router: {
-    extendRoutes (routes, resolve) {
-      // Blog一覧ページネーション
-      routes.push({
-        path: '/blog/page/:page',
-        component: resolve(__dirname, 'pages/blog/index.vue'),
-        name: 'blog-page',
-      })
 
-      // Categoryページネーション
-      routes.push({
-        path: '/categories/:slug/page/:page',
-        component: resolve(__dirname, 'pages/categories/_slug.vue'),
-        name: 'categories-slug-page',
-      })
-
-      // Tagページネーション
-      routes.push({
-        path: '/tags/:slug/page/:page',
-        component: resolve(__dirname, 'pages/tags/_slug.vue'),
-        name: 'tags-slug-page',
-      })
-    }
-  },
-  // *******************
-  // 静的サイト生成の設定
-  // *******************
-  generate: {
-    async routes () {
-      const { articles, categories, tags } = await fetchContentfulData()
-      return [
-        ...articles.items.map((article: any) => `/blog/${article.fields.slug}`),
-        ...categories.items.map((category: any) => `/categories/${category.fields.slug}`),
-        ...tags.items.map((tag: any) => `/tags/${tag.fields.slug}`),
-      ]
+  runtimeConfig: {
+    // server only: read at build time when the site is prerendered
+    ctfEndpoint: process.env.CTF_ENDPOINT || '',
+    ctfCdaToken: process.env.CTF_CDA_TOKEN || '',
+    public: {
+      origin: ORIGIN,
+      siteName: SITE_NAME,
+      siteDescription: SITE_DESCRIPTION,
     },
-    fallback: true,
   },
-  // *******************
-  // DevServerの設定
-  // *******************
-  server: {
-    host: '0.0.0.0',
-  },
-  watchers: {
-    webpack: {
-      poll: true,
-      ignored: /node_modules/,
-    }
-  },
-  // *******************
-  // 環境変数の設定
-  // *******************
-  publicRuntimeConfig: {
-    origin: process.env.ORIGIN || 'http://localhost:3000',
-    giscusRepo: process.env.GISCUS_REPO || '',
-    giscusRepoId: process.env.GISCUS_REPO_ID || '',
-    giscusCategory: process.env.GISCUS_CATEGORY || '',
-    giscusCategoryId: process.env.GISCUS_CATEGORY_ID || '',
-    giscusTheme: process.env.GISCUS_THEME || 'preferred_color_scheme',
-  },
-  // *******************
-  // 各モジュールの設定
-  // *******************
-  googleFonts: {
-    families: {
-      Roboto: [100, 400, 500],
-      Inconsolata: [200, 500],
-      'Noto+Sans+JP': [100, 400, 700, 900],
-    },
-    display: 'swap'
-  },
-  apollo: {
-    clientConfigs: {
-      default: {
-        httpEndpoint: process.env.CTF_ENDPOINT,
-        httpLinkOptions: {
-          headers: {
-            Authorization: `Bearer ${process.env.CTF_CDA_TOKEN}`
-          }
-        }
-      }
-      // default: '~/utils/apollop.config.ts'
-      // default: {
-      //   // GraphQL検証用エンドポイント
-      //   // 参考記事：https://zenn.dev/kimkiyong/articles/b92b1029093741#reference
-      //   // httpEndpoint: 'https://graphql-pokemon2.vercel.app/'
-      // }
-    }
-  },
-  // tailwindcss: {
-  //   configPath: '~/config/tailwind.config.js',
-  //   purgeCSSInDev: false,
-  // }
-  'google-gtag': {
-    id: process.env.GTAG_ID
-  },
-  colorMode: {
-    classSuffix: '',
-  },
-  feed: [
-    {
-      path: '/feed.xml',
-      async create (feed: any) {
-        feed.options = {
-          title: siteName,
-          link: `${process.env.ORIGIN}/feed.xml`,
-          description: desc,
-          favicon: `${process.env.ORIGIN}/favicon.ico`,
-          image: `${process.env.ORIGIN}/apple-touch-icon.png`
-        }
 
-        const md = new MarkdownIt({
-          html: true,
-          typographer: true,
-        })
+  site: {
+    url: ORIGIN,
+    name: SITE_NAME,
+  },
 
-        const { articles } = await fetchContentfulData()
-
-        articles.items.forEach(article => {
-          feed.addItem({
-            id: article.fields.slug,
-            title: article.fields.title,
-            link: `${process.env.ORIGIN}/blog/${article.fields.slug}`,
-            description: article.fields.description || truncate(article.fields.content && article.fields.content.replace(/\[\[toc\]\]\s/, '') || '', 60),
-            content: md.render(article.fields.content || ''),
-            published: new Date(article.sys.createdAt),
-            date: new Date(article.sys.updatedAt),
-            image: `https:${article.fields.thumbnail && article.fields.thumbnail.fields.file.url}`,
-          })
-        })
-
-        feed.addCategory('blog')
-        feed.addContributor({
-          name: 'Yoshihiko',
-          email: 'yoshihiko05410@gmail.com',
-          link: process.env.ORIGIN
-        })
-      },
-      cacheTime: 1000 * 60 * 15,
-      type: 'rss2',
-    }
-  ],
   sitemap: {
-    hostname: process.env.ORIGIN || 'http://localhost:3000',
-    gzip: true,
-    exclude: [
-      '/blog/page/**',
-      '/categories/*/page/**',
-      '/tags/*/page/**',
-    ],
-    defaults: {
-      changefreq: 'monthly',
-      priority: 0.7,
-    },
-    routes: async () => {
-      try {
-        const { articles, categories, tags } = await fetchContentfulData()
+    // pagination pages stay out of the sitemap, as on the old site
+    exclude: ['/blog/page/**', '/categories/*/page/**', '/tags/*/page/**'],
+  },
 
-        return [
-          ...articles.items.map(article => ({
-            url: `/blog/${article.fields.slug}`,
-            lastmod: article.sys.updatedAt,
-            changefreq: 'monthly',
-            priority: 0.8,
-          })),
-          ...categories.items.map(category => ({
-            url: `/categories/${category.fields.slug}`,
-            changefreq: 'weekly',
-            priority: 0.6,
-          })),
-          ...tags.items.map(tag => ({
-            url: `/tags/${tag.fields.slug}`,
-            changefreq: 'weekly',
-            priority: 0.5,
-          })),
-        ]
-      } catch (error) {
-        // ビルド時のみ実行されるため console 出力を許可（診断情報を残す）
-        // eslint-disable-next-line no-console
-        console.error('[sitemap] Failed to fetch entries:', error)
-        return []
-      }
+  gtag: {
+    id: process.env.GTAG_ID || '',
+  },
+
+  routeRules: {
+    // About and Works now live on the top page; Contact was removed
+    '/about': { redirect: { to: '/#status', statusCode: 301 } },
+    '/works': { redirect: { to: '/#works', statusCode: 301 } },
+    '/contact': { redirect: { to: '/', statusCode: 301 } },
+    // the old PWA service worker is replaced by one that removes itself
+    '/sw.js': { headers: { 'cache-control': 'public, max-age=0, must-revalidate' } },
+  },
+
+  nitro: {
+    prerender: {
+      crawlLinks: true,
+      routes: ['/', '/blog', '/feed.xml', '/sitemap.xml'],
+      failOnError: true,
     },
   },
 })

@@ -1,20 +1,17 @@
 FROM node:24-alpine
 
-# 必要なツールを追加
-RUN apk update && \
-    apk add --no-cache python3 make g++ vim sudo
+# build tools for any dependency that has to compile a native module
+RUN apk add --no-cache python3 make g++
 
-# 作業ディレクトリ
 WORKDIR /usr/src
 
-# パッケージ情報をコピー
+# install first so the layer is reused while only the source changes.
+# --ignore-scripts skips `nuxt prepare`, which needs the source; `nuxt dev` runs it on start.
 COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --ignore-scripts
 
-# 依存インストール
-RUN yarn install --frozen-lockfile || yarn install
-
-# ソースコードをコピー
 COPY . .
 
-EXPOSE 3000
-CMD ["yarn", "dev"]
+# 3000: dev server, 24678: Vite hot reload
+EXPOSE 3000 24678
+CMD ["yarn", "dev", "--host", "0.0.0.0"]

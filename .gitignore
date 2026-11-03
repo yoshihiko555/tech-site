@@ -119,8 +119,10 @@ dist
 # IDE / Editor
 .idea
 
-# Service worker
+# Service worker (the old PWA generated these)
 sw.*
+# hand-written: removes the old PWA service worker for returning visitors, so it must deploy
+!public/sw.js
 
 # macOS
 .DS_Store
@@ -158,3 +160,9 @@ pages/verifications/
 .claude/Plans.archive.md
 .claude/handoffs/
 # <<< AI Orchestra (.claude) <<<
+
+# Nuxt 4 build output
+.output
+.data
+.nitro
+.vercel

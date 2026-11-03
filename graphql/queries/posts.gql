@@ -1,0 +1,47 @@
+# All posts, newest first. Fetched page by page at build time.
+query AllPosts($limit: Int!, $skip: Int!) {
+  articlesCollection(order: sys_firstPublishedAt_DESC, limit: $limit, skip: $skip) {
+    total
+    items {
+      sys {
+        id
+        firstPublishedAt
+        publishedAt
+      }
+      title
+      slug
+      description
+      content
+      thumbnail {
+        url
+        description
+      }
+      category {
+        name
+        slug
+      }
+      tagsCollection(limit: 20) {
+        items {
+          name
+          slug
+        }
+      }
+    }
+  }
+}
+
+# Every category and tag, including ones without posts yet.
+query Taxonomy {
+  categoriesCollection(limit: 50, order: sys_firstPublishedAt_DESC) {
+    items {
+      name
+      slug
+    }
+  }
+  tagsCollection(limit: 200) {
+    items {
+      name
+      slug
+    }
+  }
+}

@@ -1,20 +1,21 @@
-version: '3'
 services:
   client:
     build: .
-    container_name: client
+    container_name: tech-site
     working_dir: /usr/src
     ports:
-      - '3000:3000'
-      # Node.jsのデバッグ用のポート開く
-      # VSCode上でデバッグしたければ、下記リンクを参考(とりあえずコンソールでいいや)
-      # https://ichiki.me/blog/20200113_nextjs_debug
-      - '9229:9229'
+      # only this machine can open it (the dev server has no authentication).
+      # Change the host side when 3000 is taken: TECH_SITE_PORT=3100 docker compose up
+      - '127.0.0.1:${TECH_SITE_PORT:-3000}:3000'
+      - '127.0.0.1:${TECH_SITE_HMR_PORT:-24678}:24678'
     volumes:
       - .:/usr/src
+      # node_modules stays inside the container, so the host checkout is never touched.
+      # After switching branches or adding a dependency, rebuild it: docker compose up --build -V
       - /usr/src/node_modules
+      # .nuxt too: running nuxt on the host (dev, typecheck, prepare) rewrites it with host
+      # paths, and the container's dev server then loses its components
+      - /usr/src/.nuxt
     env_file:
       - .env
-    environment:
-      - NODE_OPTIONS=--openssl-legacy-provider
     tty: true

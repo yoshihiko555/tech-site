@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>ogp</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,100..900&family=JetBrains+Mono:wght@400;500&family=Silkscreen:wght@400&display=block"
+    />
+    <style>
+      :root {
+        --base: #0d1c1f;
+        --ink: #eee7da;
+        --dim: #9fb2ae;
+        --aqua: #5cc9be;
+        --warm: #dc6a35;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+      }
+      body {
+        background:
+          radial-gradient(
+            40% 60% at 80% 28%,
+            rgba(220, 106, 53, 0.16),
+            transparent 70%
+          ),
+          radial-gradient(
+            42% 55% at 18% 70%,
+            rgba(92, 201, 190, 0.12),
+            transparent 70%
+          ),
+          linear-gradient(#0f2427, var(--base));
+        color: var(--ink);
+        font-family: "JetBrains Mono", monospace;
+        -webkit-font-smoothing: antialiased;
+      }
+      /* the hero panel: orange frame with two cut corners and side tabs */
+      .panel {
+        position: absolute;
+        inset: 26px;
+        background: rgba(10, 24, 27, 0.55) url(circuit.svg)
+          no-repeat -26px -26px;
+        box-shadow: inset 0 0 0 2px var(--warm);
+        clip-path: polygon(
+          0 0,
+          calc(100% - 26px) 0,
+          100% 26px,
+          100% 100%,
+          26px 100%,
+          0 calc(100% - 26px)
+        );
+      }
+      .panel::before,
+      .panel::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: 7px;
+        height: 120px;
+        margin-top: -60px;
+        background: var(--warm);
+      }
+      .panel::before {
+        left: 0;
+      }
+      .panel::after {
+        right: 0;
+      }
+      .scan {
+        position: absolute;
+        inset: 0;
+        background: repeating-linear-gradient(
+          to bottom,
+          transparent 0 2px,
+          rgba(0, 0, 0, 0.08) 2px 3px
+        );
+      }
+      .center {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        align-content: center;
+        gap: 22px;
+        text-align: center;
+      }
+      .mark {
+        width: 112px;
+        height: 112px;
+        overflow: visible;
+        filter: drop-shadow(0 0 5px rgba(220, 106, 53, 0.55))
+          drop-shadow(0 0 16px rgba(220, 106, 53, 0.25));
+      }
+      .yu {
+        fill: var(--warm);
+      }
+      .yl {
+        fill: var(--aqua);
+      }
+      .yc {
+        fill: var(--ink);
+      }
+      .name {
+        margin: 0;
+        font-family: "Anybody", sans-serif;
+        font-variation-settings:
+          "wght" 500,
+          "wdth" 140;
+        font-size: 68px;
+        line-height: 1;
+        letter-spacing: 0.12em;
+        padding-left: 0.12em;
+        white-space: nowrap;
+        text-shadow:
+          0 0 10px rgba(238, 231, 218, 0.35),
+          0 0 28px rgba(92, 201, 190, 0.2);
+      }
+      .name b {
+        font-weight: inherit;
+        color: var(--warm);
+        text-shadow: 0 0 8px rgba(220, 106, 53, 0.55);
+      }
+      .tags {
+        display: flex;
+        gap: 26px;
+        margin: 0;
+        font:
+          400 15px/1 "Silkscreen",
+          monospace;
+        letter-spacing: 0.12em;
+        color: var(--dim);
+      }
+      .tags b {
+        font-weight: 400;
+        color: var(--ink);
+      }
+      .line {
+        margin: 4px 0 0;
+        font:
+          500 22px/1.4 "JetBrains Mono",
+          monospace;
+        letter-spacing: 0.04em;
+        color: var(--aqua);
+        text-shadow:
+          0 0 6px rgba(92, 201, 190, 0.5),
+          0 0 18px rgba(92, 201, 190, 0.22);
+      }
+      .line::after {
+        content: "_";
+        color: var(--warm);
+      }
+      .corner {
+        position: absolute;
+        bottom: 26px;
+        margin: 0;
+        font:
+          400 12px/1 "Silkscreen",
+          monospace;
+        letter-spacing: 0.14em;
+        color: var(--dim);
+      }
+      .corner b {
+        font-weight: 400;
+        color: var(--aqua);
+      }
+      .c-l {
+        left: 36px;
+      }
+      .c-r {
+        right: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="panel">
+      <div class="scan"></div>
+      <div class="center">
+        <svg class="mark" viewBox="0 0 48 48" aria-hidden="true">
+          <g transform="translate(2.85 0)">
+            <path
+              class="yu"
+              d="M5 8H13.77L19 13.23L24.23 8H33L22.3 18.7V28.6L15.7 22V18.7Z"
+            />
+            <path class="yl" d="M15.7 25.5L22.3 32.1V40H18.4L15.7 37.3Z" />
+            <path class="yc" d="M26.3 35.4H35.2L37.3 37.5V40H26.3Z" />
+          </g>
+        </svg>
+        <p class="name">YOSHIHIKO<b>.</b>TECH</p>
+        <p class="tags">
+          <span>&lt; Engineer / Creator /&gt;</span
+          ><span><b>SINCE</b> 2015</span><span><b>STACK</b> Go / TS / Vue</span>
+        </p>
+        <p class="line">writing about claude code</p>
+      </div>
+      <p class="corner c-l">
+        <b>&lt;writing/&gt;</b> AI AGENTS / CLAUDE CODE / DEVELOPER TOOLING
+      </p>
+      <p class="corner c-r">TECH BLOG / PORTFOLIO</p>
+    </div>
+  </body>
+</html>
