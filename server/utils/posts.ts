@@ -2,25 +2,31 @@ import { AllPostsDocument, TaxonomyDocument } from '~~/generated/graphql'
 import type { AllPostsQuery } from '~~/generated/graphql'
 import type { PostIndex, PostMeta, Term, TermWithCount } from '#shared/types/post'
 
-type RawPost = NonNullable<NonNullable<AllPostsQuery['articlesCollection']>['items'][number]>
+export type RawPost = NonNullable<NonNullable<AllPostsQuery['articlesCollection']>['items'][number]>
+type RawTerm = { name?: string | null; slug?: string | null } | null | undefined
 
 export interface PostRecord extends PostMeta {
   content: string
 }
 
-interface PostStore extends PostIndex {
+export interface PostStore extends PostIndex {
   records: PostRecord[]
 }
 
 const PAGE_SIZE = 25
 let store: Promise<PostStore> | null = null
 
-function toTerm(term: { name?: string | null; slug?: string | null } | null | undefined): Term | null {
+function toTerm(term: RawTerm): Term | null {
   if (!term?.slug) return null
   return { name: term.name ?? term.slug, slug: term.slug }
 }
 
-function toRecord(raw: RawPost): PostRecord | null {
+function toTerms(terms: RawTerm[]): Term[] {
+  return terms.map(toTerm).filter((term): term is Term => term !== null)
+}
+
+/** A Contentful entry as a post, or null when it has no slug or title. */
+export function toRecord(raw: RawPost): PostRecord | null {
   if (!raw.slug || !raw.title) return null
   const publishedAt = raw.sys.firstPublishedAt ?? raw.sys.publishedAt ?? ''
   return {
@@ -30,7 +36,7 @@ function toRecord(raw: RawPost): PostRecord | null {
     publishedAt,
     updatedAt: raw.sys.publishedAt ?? publishedAt,
     category: toTerm(raw.category),
-    tags: (raw.tagsCollection?.items ?? []).map(toTerm).filter((tag): tag is Term => tag !== null),
+    tags: toTerms(raw.tagsCollection?.items ?? []),
     thumbnail: raw.thumbnail?.url ? { url: raw.thumbnail.url, description: raw.thumbnail.description ?? '' } : null,
     content: raw.content ?? '',
   }
@@ -41,6 +47,43 @@ function withCounts(terms: Term[], records: PostRecord[], pick: (post: PostRecor
     ...term,
     count: records.filter((post) => pick(post).some((t) => t.slug === term.slug)).length,
   }))
+}
+
+/**
+ * Posts newest first, plus every category and tag with its post count.
+ * Terms without posts are kept, so their pages still exist.
+ */
+export function buildPostStore(records: PostRecord[], categoryTerms: RawTerm[], tagTerms: RawTerm[]): PostStore {
+  const sorted = [...records].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
+  const categories = withCounts(toTerms(categoryTerms), sorted, (post) => (post.category ? [post.category] : []))
+  const tags = withCounts(toTerms(tagTerms), sorted, (post) => post.tags).sort(
+    (a, b) => b.count - a.count || a.name.localeCompare(b.name),
+  )
+  const posts = sorted.map(({ content: _content, ...meta }) => meta)
+  return { records: sorted, posts, categories, tags }
+}
+
+/** Neighbours in a newest-first list: the older post comes after, the newer one before. */
+export function selectNeighbours(posts: PostMeta[], index: number): { older: PostMeta | null; newer: PostMeta | null } {
+  if (index < 0 || index >= posts.length) return { older: null, newer: null }
+  return {
+    older: posts[index + 1] ?? null,
+    newer: index > 0 ? (posts[index - 1] ?? null) : null,
+  }
+}
+
+/** Posts that share a tag or the category with `post`, newest first. */
+export function selectRelated(posts: PostMeta[], post: PostMeta, limit: number): PostMeta[] {
+  const tagSlugs = new Set(post.tags.map((tag) => tag.slug))
+  const categorySlug = post.category?.slug
+  return posts
+    .filter((other) => other.slug !== post.slug)
+    .filter(
+      (other) =>
+        other.tags.some((tag) => tagSlugs.has(tag.slug)) ||
+        (categorySlug !== undefined && other.category?.slug === categorySlug),
+    )
+    .slice(0, Math.max(0, limit))
 }
 
 async function fetchStore(): Promise<PostStore> {
@@ -54,19 +97,8 @@ async function fetchStore(): Promise<PostStore> {
     }
     if (!page || skip + PAGE_SIZE >= page.total) break
   }
-  records.sort((a, b) => b.publishedAt.localeCompare(a.publishedAt))
-
   const taxonomy = await queryContentful(TaxonomyDocument, {})
-  const categoryTerms = (taxonomy.categoriesCollection?.items ?? []).map(toTerm).filter((t): t is Term => t !== null)
-  const tagTerms = (taxonomy.tagsCollection?.items ?? []).map(toTerm).filter((t): t is Term => t !== null)
-
-  const categories = withCounts(categoryTerms, records, (post) => (post.category ? [post.category] : []))
-  const tags = withCounts(tagTerms, records, (post) => post.tags).sort(
-    (a, b) => b.count - a.count || a.name.localeCompare(b.name),
-  )
-
-  const posts = records.map(({ content: _content, ...meta }) => meta)
-  return { records, posts, categories, tags }
+  return buildPostStore(records, taxonomy.categoriesCollection?.items ?? [], taxonomy.tagsCollection?.items ?? [])
 }
 
 /** All posts and terms, fetched once per build (refetched on every call in dev). */

@@ -1,4 +1,4 @@
-import type { PostDetail, PostMeta } from '#shared/types/post'
+import type { PostDetail } from '#shared/types/post'
 
 const RELATED_LIMIT = 3
 
@@ -15,16 +15,8 @@ export default defineEventHandler(async (event): Promise<PostDetail> => {
   const { origin } = useRuntimeConfig().public
   const { html, headings, readingMinutes } = await renderPost(record.content, origin)
   const { content: _content, ...meta } = record
-
-  // posts are newest first, so the next index is the older post
-  const older: PostMeta | null = posts[index + 1] ?? null
-  const newer: PostMeta | null = index > 0 ? (posts[index - 1] ?? null) : null
-
-  const tagSlugs = new Set(meta.tags.map((tag) => tag.slug))
-  const related = posts
-    .filter((post) => post.slug !== meta.slug)
-    .filter((post) => post.tags.some((tag) => tagSlugs.has(tag.slug)) || post.category?.slug === meta.category?.slug)
-    .slice(0, RELATED_LIMIT)
+  const { older, newer } = selectNeighbours(posts, index)
+  const related = selectRelated(posts, meta, RELATED_LIMIT)
 
   return { ...meta, html, headings, readingMinutes, older, newer, related }
 })

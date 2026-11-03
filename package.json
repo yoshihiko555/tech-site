@@ -15,7 +15,8 @@
     "lint": "eslint .",
     "typecheck": "nuxt typecheck",
     "codegen": "graphql-codegen --config codegen.ts",
-    "check:routes": "node scripts/check-routes.mjs"
+    "check:routes": "node scripts/check-routes.mjs",
+    "test": "vitest run"
   },
   "dependencies": {
     "@nuxtjs/sitemap": "^9.1.0",
@@ -41,6 +42,7 @@
     "@nuxt/eslint": "^1.17.0",
     "eslint": "^10.14.0",
     "typescript": "^5",
+    "vitest": "^5.1.0",
     "vue-tsc": "^3.3.14"
   }
 }
