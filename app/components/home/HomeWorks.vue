@@ -123,6 +123,13 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure))
           </figure>
           <span class="wlinks">
             <BracketButton
+              v-if="work.caseStudy"
+              label="CASE STUDY →"
+              :to="`/works/${work.caseStudy}`"
+              tone="warm"
+              cursor="READ"
+            />
+            <BracketButton
               v-if="work.site"
               label="OPEN SITE ↗"
               :to="work.site"

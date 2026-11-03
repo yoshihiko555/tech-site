@@ -9,6 +9,8 @@ export interface Work {
   /** preview image under public/ */
   image: string
   source: string
+  /** slug of its case study page (/works/:slug), when there is one */
+  caseStudy?: string
 }
 
 export const WORKS: Work[] = [
@@ -19,6 +21,7 @@ export const WORKS: Work[] = [
     site: '',
     image: '/works/orchex.png',
     source: 'https://github.com/yoshihiko555/ai-orchestra',
+    caseStudy: 'orchex',
   },
   {
     name: 'Baton',

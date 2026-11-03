@@ -71,13 +71,14 @@ docker compose up --build -V
 │   ├── app.vue
 │   ├── components/         # site/（ヘッダー・フッター・照準カーソル・検索）, home/（トップの各セクション）, article/, listing/
 │   ├── composables/        # usePostIndex（全記事と分類）, useFrame（共有の rAF）, useReveal など
-│   ├── data/               # トップのプロフィール・経歴・作品・Uses（試作の内容）
+│   ├── data/               # トップのプロフィール・経歴・作品・Uses・NOW、ケーススタディの見出し（caseStudies）
 │   ├── layouts/            # default（記事・一覧）, home（トップ。WebGL・レール・大きいフッター）
-│   ├── pages/              # /, /blog, /blog/[slug], /categories/[slug], /tags/[slug] と各 /page/[page]
+│   ├── pages/              # /, /blog, /blog/[slug], /categories/[slug], /tags/[slug] と各 /page/[page], /works/[slug]（ケーススタディ）
 │   ├── plugins/            # mermaid.client.ts, lenis.client.ts
 │   └── utils/              # pagination（1 ページ 8 件）, postStats, searchPosts, motion など
 ├── server/
-│   ├── api/                # /api/posts, /api/posts/[slug]（prerender 時に呼ばれ payload に入る）
+│   ├── api/                # /api/posts, /api/posts/[slug], /api/works/[slug]（prerender 時に呼ばれ payload に入る）
+│   ├── assets/works/       # ケーススタディの本文（Markdown。記事と同じ仕組みで HTML にする）
 │   ├── routes/feed.xml.ts  # RSS
 │   └── utils/              # contentful（GraphQL）, posts（取得と組み立て）, markdown（HTML 化）
 ├── shared/types/           # app と server で共有する型（#shared/types/post）
