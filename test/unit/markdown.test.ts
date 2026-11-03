@@ -64,6 +64,32 @@ describe('renderPost', () => {
     expect(html).toContain('class="shiki')
   })
 
+  it('puts a bar with the language, line count and a copy button on each code block', async () => {
+    const { html } = await renderPost('```bash\necho one\necho two\n```\n\n```ts\nconst a = 1\n```', ORIGIN)
+    expect(html).toContain('<span class="lang">BASH</span><span>2 LINES</span>')
+    expect(html).toContain('<span class="lang">TS</span><span>1 LINE</span>')
+    expect(html.match(/<button class="copy" type="button"/g)).toHaveLength(2)
+  })
+
+  it('wraps tables in a scroll box', async () => {
+    const { html } = await renderPost('| a | b |\n| - | - |\n| 1 | 2 |', ORIGIN)
+    expect(html).toMatch(/<div class="tbl"[^>]*><table>[\s\S]*<\/table><\/div>/)
+  })
+
+  it('numbers each h2 in order and leaves h3 alone', async () => {
+    const { html } = await renderPost('## One\n\n### Sub\n\n## Two', ORIGIN)
+    expect(html.match(/<span class="h-no" aria-hidden="true">\d+<\/span>/g)).toEqual([
+      '<span class="h-no" aria-hidden="true">01</span>',
+      '<span class="h-no" aria-hidden="true">02</span>',
+    ])
+  })
+
+  it('restarts numbering for every post', async () => {
+    await renderPost('## A\n\n## B', ORIGIN)
+    const { html } = await renderPost('## C', ORIGIN)
+    expect(html).toContain('<span class="h-no" aria-hidden="true">01</span>')
+  })
+
   it('falls back to plain text for languages it does not know', async () => {
     const { html } = await renderPost('```brainfuck\n+++.\n```', ORIGIN)
     expect(html).toContain('data-lang="brainfuck"')

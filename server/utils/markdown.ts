@@ -113,8 +113,29 @@ async function buildPageRenderer(origin: string): Promise<MarkdownIt> {
         `<pre class="mermaid-fallback"><code>${md.utils.escapeHtml(token.content)}</code></pre></div>\n`
       )
     }
-    return `<figure class="code" data-lang="${md.utils.escapeHtml(lang)}">${fence(tokens, idx, options, env, self)}</figure>\n`
+    const label = md.utils.escapeHtml(lang)
+    const lines = token.content.replace(/\n$/, '').split('\n').length
+    const bar =
+      `<div class="code-bar"><span class="lang">${label.toUpperCase()}</span>` +
+      `<span>${lines} ${lines === 1 ? 'LINE' : 'LINES'}</span>` +
+      `<button class="copy" type="button" data-cursor="COPY">COPY</button></div>`
+    return `<figure class="code" data-lang="${label}">${bar}${fence(tokens, idx, options, env, self)}</figure>\n`
   }
+
+  // tables scroll inside their own box on narrow screens
+  md.renderer.rules.table_open = () => '<div class="tbl" tabindex="0" role="region" aria-label="Table"><table>\n'
+  md.renderer.rules.table_close = () => '</table></div>\n'
+
+  // sections are numbered 01, 02, ... in front of each h2
+  const headingOpen = md.renderer.rules.heading_open ?? renderToken
+  md.renderer.rules.heading_open = (tokens, idx, options, env, self) => {
+    const html = headingOpen(tokens, idx, options, env, self)
+    const counter = env as { sectionCount?: number } | undefined
+    if (tokens[idx]!.tag !== 'h2' || !counter) return html
+    counter.sectionCount = (counter.sectionCount ?? 0) + 1
+    return `${html}<span class="h-no" aria-hidden="true">${String(counter.sectionCount).padStart(2, '0')}</span>`
+  }
+
   return md
 }
 
