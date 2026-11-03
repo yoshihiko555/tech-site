@@ -50,7 +50,15 @@ yarn codegen
 ```
 
 - `.env` を読むコマンド（`dev` / `generate` / `typecheck` / `nuxt prepare`）は、Claude Code のサンドボックス内では `.env` の読み取りが禁止されているため失敗する。サンドボックス外で実行する
-- Docker は不要。`Dockerfile` / `docker-compose.yml` は Nuxt 2 時代のもので、Nuxt 4 では動作を確認していない
+- Docker でも動かせる。`node_modules` はコンテナ内だけに置くので、手元の `node_modules` を触らずにブランチを行き来できる
+
+```bash
+# 起動（http://localhost:3000。3000 が使用中なら TECH_SITE_PORT=3100 を付ける）
+docker compose up --build
+
+# ブランチを切り替えた後は、コンテナ内の node_modules を作り直す
+docker compose up --build -V
+```
 
 ---
 
