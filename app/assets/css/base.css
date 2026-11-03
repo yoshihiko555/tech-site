@@ -12,6 +12,11 @@ html {
   scroll-behavior: smooth;
 }
 
+/* while Lenis is easing the page, native smooth scrolling stays out of its way */
+html.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
 body {
   margin: 0;
   background: var(--base);
@@ -49,6 +54,18 @@ img {
 ::selection {
   background: var(--warm);
   color: var(--base);
+}
+
+/* panel with the top-right and bottom-left corners cut at 45° (size: --c) */
+.chamfer {
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--c, 12px)) 0,
+    100% var(--c, 12px),
+    100% 100%,
+    var(--c, 12px) 100%,
+    0 calc(100% - var(--c, 12px))
+  );
 }
 
 /* the three parts of the logo mark */

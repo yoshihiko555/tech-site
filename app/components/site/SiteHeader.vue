@@ -15,6 +15,8 @@ const NAV: NavItem[] = [
 ]
 
 const route = useRoute()
+/** blips are a top-page thing, so the switch shows only there */
+const sound = useSound()
 /** set by the top page while a section is on screen */
 const activeSection = useState<string | null>('active-section', () => null)
 
@@ -51,6 +53,22 @@ function isCurrent(item: NavItem): boolean {
         {{ item.label }}
       </NuxtLink>
     </nav>
+    <button
+      v-if="route.path === '/'"
+      class="hbtn hov"
+      type="button"
+      data-sound-toggle
+      :aria-pressed="sound.on.value"
+      @click="sound.set(!sound.on.value)"
+    >
+      <span
+        class="eq"
+        aria-hidden="true"
+      ><i /><i /><i /><i /></span><RollText
+        class="snd-label"
+        text="SOUND"
+      />
+    </button>
     <i
       class="progress"
       aria-hidden="true"
@@ -110,6 +128,73 @@ function isCurrent(item: NavItem): boolean {
   color: var(--base);
   background: var(--warm);
 }
+.hbtn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  font: 400 11px/1 var(--f-px);
+  letter-spacing: 0.12em;
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  box-shadow: inset 0 0 0 1px var(--line);
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 0.3s;
+}
+.hbtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -2em;
+  right: -2em;
+  background: var(--aqua);
+  transform: translateX(-104%) skewX(-45deg);
+  transition: transform 0.6s var(--ease);
+  z-index: -1;
+}
+.hbtn:hover::before,
+.hbtn:focus-visible::before {
+  transform: translateX(0) skewX(-45deg);
+}
+.hbtn:hover,
+.hbtn:focus-visible {
+  color: var(--base);
+  outline: none;
+}
+.eq {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 11px;
+}
+.eq i {
+  display: block;
+  width: 2px;
+  height: 3px;
+  background: currentColor;
+}
+[aria-pressed='true'] .eq i {
+  animation: eq 0.7s ease-in-out infinite alternate;
+}
+[aria-pressed='true'] .eq i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+[aria-pressed='true'] .eq i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+[aria-pressed='true'] .eq i:nth-child(4) {
+  animation-delay: 0.45s;
+}
+@keyframes eq {
+  to {
+    height: 11px;
+  }
+}
 .progress {
   position: absolute;
   left: 0;
@@ -123,6 +208,17 @@ function isCurrent(item: NavItem): boolean {
 @media (max-width: 640px) {
   .nav a:not(.cur) {
     display: none;
+  }
+  .snd-label {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hbtn::before {
+    transition: none;
+  }
+  [aria-pressed='true'] .eq i {
+    animation: none;
   }
 }
 </style>
