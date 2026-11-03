@@ -31,7 +31,7 @@ export function useReveal(target: Ref<HTMLElement | null>, onReveal?: () => void
 
   onMounted(async () => {
     await nextTick()
-    if (prefersReducedMotion() || !target.value) {
+    if (motionReduced() || !target.value) {
       onReveal?.()
       return
     }

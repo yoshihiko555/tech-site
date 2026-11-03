@@ -121,7 +121,7 @@ function onKey(e: KeyboardEvent) {
 
 onMounted(() => {
   if (!active.value) return
-  if (location.hash || prefersReducedMotion()) {
+  if (location.hash || motionReduced()) {
     active.value = false
     return
   }

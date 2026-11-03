@@ -19,7 +19,7 @@ const year = useBuildYear()
 const word = ref<HTMLElement | null>(null)
 const live = ref(false)
 const shown = useReveal(word, () => {
-  if (prefersReducedMotion()) return
+  if (motionReduced()) return
   setTimeout(() => (live.value = true), 1400)
 })
 const { $lenis } = useNuxtApp()
@@ -63,7 +63,7 @@ function onPointerLeave() {
 
 function backToTop() {
   if ($lenis) $lenis.scrollTo(0)
-  else window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' })
+  else window.scrollTo({ top: 0, behavior: motionReduced() ? 'auto' : 'smooth' })
 }
 
 let raf = 0
@@ -330,14 +330,6 @@ onBeforeUnmount(() => {
   }
   .fw-l:first-child {
     flex-basis: 100%;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .fword .c {
-    transition: none;
-  }
-  .fw-cur {
-    animation: none;
   }
 }
 </style>

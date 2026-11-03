@@ -54,7 +54,7 @@ function switchTo(i: number) {
   target = i
   const canvas = wipe.value
   const ctx = canvas?.getContext('2d')
-  if (prefersReducedMotion() || !canvas || !ctx) {
+  if (motionReduced() || !canvas || !ctx) {
     shown.value = i
     return
   }
@@ -98,7 +98,7 @@ useFrame(({ vh }) => {
   if (i !== target) switchTo(i)
   const sub = p * count - i
   fills.value = topics.value.map((_, n) => (n < i ? 1 : n === i ? sub : 0))
-  if (prefersReducedMotion() || !nameEl.value) return
+  if (motionReduced() || !nameEl.value) return
   nameEl.value.style.transform = `translate3d(${(6 - sub * 30).toFixed(2)}vw,0,0)`
   nameEl.value.style.fontVariationSettings = `"wght" 840, "wdth" ${(60 + sub * 90).toFixed(1)}`
 })

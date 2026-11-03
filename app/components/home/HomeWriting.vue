@@ -297,12 +297,4 @@ onBeforeUnmount(onLeave)
     -webkit-box-orient: vertical;
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .rv {
-    transition: none;
-  }
-  .row.lock::before {
-    animation: none;
-  }
-}
 </style>

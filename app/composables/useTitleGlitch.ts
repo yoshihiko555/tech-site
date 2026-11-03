@@ -19,7 +19,7 @@ function schedule() {
 }
 
 export function setTitleVisible(el: HTMLElement, on: boolean) {
-  if (prefersReducedMotion()) return
+  if (motionReduced()) return
   if (on) visible.add(el)
   else visible.delete(el)
   if (visible.size && !timer) schedule()

@@ -94,7 +94,7 @@ onMounted(async () => {
   if (!canvas.value) return
   build()
   window.addEventListener('resize', onResize)
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  if (motionReduced()) return
   observer = new IntersectionObserver(([entry]) => {
     visible = !!entry?.isIntersecting
   })

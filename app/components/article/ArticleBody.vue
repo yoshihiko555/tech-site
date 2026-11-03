@@ -50,7 +50,7 @@ function onClick(e: MouseEvent) {
 }
 
 onMounted(() => {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !root.value) return
+  if (motionReduced() || !root.value) return
   observer = new IntersectionObserver((entries) => {
     for (const entry of entries) {
       if (!entry.isIntersecting) continue

@@ -27,7 +27,7 @@ function flicker() {
 }
 
 export function setRowFlicker(row: HTMLElement, on: boolean) {
-  if (prefersReducedMotion()) return
+  if (motionReduced()) return
   if (on) rows.add(row)
   else rows.delete(row)
   if (rows.size && !timer) timer = setTimeout(flicker, 120)

@@ -27,7 +27,7 @@ onBeforeUnmount(() => {
 })
 
 useFrame(({ vh }) => {
-  if (props.variant === 'tiles' || !inView.value || !heading.value || prefersReducedMotion()) return
+  if (props.variant === 'tiles' || !inView.value || !heading.value || motionReduced()) return
   const top = heading.value.getBoundingClientRect().top
   const p = clamp((vh - top) / (vh * 0.65), 0, 1)
   const next = (62 + p * 78).toFixed(1)
@@ -258,12 +258,5 @@ function glitch() {
   font: 400 11px/1 var(--f-px);
   letter-spacing: 0.12em;
   opacity: 0.8;
-}
-@media (prefers-reduced-motion: reduce) {
-  .sec-head::after,
-  .st .c,
-  .tiles .c {
-    transition: none;
-  }
 }
 </style>

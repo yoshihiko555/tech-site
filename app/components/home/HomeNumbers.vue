@@ -42,7 +42,7 @@ function hexStream(): string {
 }
 
 useFrame(({ vh }) => {
-  if (!inView.value || !section.value || prefersReducedMotion()) return
+  if (!inView.value || !section.value || motionReduced()) return
   const top = section.value.getBoundingClientRect().top
   const next = Number(clamp((0.95 * vh - top) / (vh * 0.75), 0, 1).toFixed(3))
   if (next !== progress.value) progress.value = next
@@ -50,7 +50,7 @@ useFrame(({ vh }) => {
 
 onMounted(() => {
   streams.value = tiles.value.map(hexStream)
-  if (!prefersReducedMotion()) progress.value = 0
+  if (!motionReduced()) progress.value = 0
 })
 </script>
 
@@ -319,11 +319,6 @@ onMounted(() => {
   }
   .tb {
     grid-template-columns: 9em minmax(0, 1fr) 2em;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .n-tile pre {
-    animation: none;
   }
 }
 </style>

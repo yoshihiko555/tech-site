@@ -116,7 +116,7 @@ function scheduleGlitch() {
 let phraseTimer: ReturnType<typeof setInterval> | undefined
 let clockTimer: ReturnType<typeof setInterval> | undefined
 onMounted(() => {
-  reduced = prefersReducedMotion()
+  reduced = motionReduced()
   tickClock()
   clockTimer = setInterval(tickClock, 15000)
   window.addEventListener('pointermove', onMove, { passive: true })
@@ -443,16 +443,6 @@ onBeforeUnmount(() => {
   }
   .hcorner {
     display: none;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .hpanel,
-  .scr::after,
-  .scroll-cue i {
-    animation: none;
-  }
-  .hero-in > * {
-    transition: none;
   }
 }
 </style>

@@ -25,7 +25,7 @@ export function useHomeSections(root: Ref<HTMLElement | null>) {
   }
 
   useFrame(({ vel }) => {
-    const v = prefersReducedMotion() ? 0 : clamp(vel / 30, -1, 1)
+    const v = motionReduced() ? 0 : clamp(vel / 30, -1, 1)
     document.documentElement.style.setProperty('--v', v.toFixed(2))
   })
 

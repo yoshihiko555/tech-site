@@ -17,7 +17,7 @@ useFrame(({ y, vh }) => {
   const el = section.value
   const row = track.value
   if (!inView.value || !el || !row) return
-  const reduced = prefersReducedMotion()
+  const reduced = motionReduced()
   const top = el.getBoundingClientRect().top + y
   const p = clamp((y - top) / Math.max(1, el.offsetHeight - vh), 0, 1)
   eased = reduced ? p : eased + (p - eased) * 0.09
@@ -223,14 +223,6 @@ useFrame(({ y, vh }) => {
   }
   .ep {
     width: 78vw;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .no em.wip {
-    animation: none;
-  }
-  .ep b {
-    transition: none;
   }
 }
 </style>

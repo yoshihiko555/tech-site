@@ -46,7 +46,7 @@ useFrame(({ vh }) => {
   thresholds.forEach((threshold, n) => {
     if (threshold < q) ctx.fillRect(n % cols, Math.floor(n / cols), 1, 1)
   })
-  const open = prefersReducedMotion() ? 1 : p
+  const open = motionReduced() ? 1 : p
   if (word.value) {
     word.value.style.fontVariationSettings = `"wght" 820, "wdth" ${(50 + open * 100).toFixed(1)}`
     word.value.style.letterSpacing = `${(open * 0.12).toFixed(3)}em`

@@ -8,7 +8,7 @@ const inView = useInView(block)
 
 useFrame(({ vel, vh }) => {
   if (!inView.value || !block.value) return
-  const skew = prefersReducedMotion() ? 0 : clamp(vel * 0.12, -10, 10)
+  const skew = motionReduced() ? 0 : clamp(vel * 0.12, -10, 10)
   const top = block.value.getBoundingClientRect().top
   const p = clamp((vh - top) / (vh + block.value.offsetHeight), 0, 1)
   rows.value.forEach((item, i) => {

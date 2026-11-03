@@ -28,12 +28,12 @@ useSeoMeta({
 useHead({
   script: [
     {
-      // before first paint: no intro when landing on a #section or asking for reduced motion
+      // before first paint: no intro when landing on a #section
       key: 'intro-gate',
       tagPosition: 'head',
       // (a style tag rather than a class on <html>, which hydration may rewrite)
       innerHTML:
-        'if(location.hash||matchMedia("(prefers-reduced-motion: reduce)").matches){var s=document.createElement("style");s.textContent=".loader{display:none}";document.head.appendChild(s)}',
+        'if(location.hash){var s=document.createElement("style");s.textContent=".loader{display:none}";document.head.appendChild(s)}',
     },
   ],
   noscript: [{ key: 'intro-off', innerHTML: '<style>.loader{display:none}</style>' }],

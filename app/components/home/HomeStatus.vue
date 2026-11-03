@@ -17,7 +17,7 @@ const chipsShown = ref(chips.length)
 const timers: ReturnType<typeof setTimeout>[] = []
 
 const shown = useReveal(grid, () => {
-  if (prefersReducedMotion()) return
+  if (motionReduced()) return
   chips.forEach((_, i) => timers.push(setTimeout(() => (chipsShown.value = i + 1), i * 45)))
   let n = 0
   const count = () => {
@@ -33,7 +33,7 @@ function chipIndex(group: number, i: number): number {
 }
 
 onMounted(() => {
-  if (!prefersReducedMotion()) chipsShown.value = 0
+  if (!motionReduced()) chipsShown.value = 0
 })
 onBeforeUnmount(() => timers.forEach(clearTimeout))
 </script>
@@ -462,16 +462,6 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   }
   .vtab {
     display: none;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .rv,
-  .stack li {
-    transition: none;
-  }
-  .online i,
-  .ava::after {
-    animation: none;
   }
 }
 </style>

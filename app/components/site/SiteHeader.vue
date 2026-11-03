@@ -223,12 +223,4 @@ function isCurrent(item: NavItem): boolean {
     display: none;
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .hbtn::before {
-    transition: none;
-  }
-  [aria-pressed='true'] .eq i {
-    animation: none;
-  }
-}
 </style>

@@ -19,7 +19,7 @@ export function useScrambleText(source: () => string, options: ScrambleOptions =
 
   function run(final: string) {
     clearTimeout(timer)
-    const reduced = import.meta.client && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reduced = motionReduced()
     if (reduced || (!options.anyText && /[^ -~]/.test(final))) {
       shown.value = final
       return

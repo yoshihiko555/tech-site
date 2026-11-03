@@ -16,7 +16,7 @@ defineEmits<{ click: [event: MouseEvent] }>()
 const external = computed(() => !!props.to && /^https?:/.test(props.to))
 
 function onMove(e: PointerEvent) {
-  if (!props.magnetic || e.pointerType !== 'mouse' || prefersReducedMotion()) return
+  if (!props.magnetic || e.pointerType !== 'mouse' || motionReduced()) return
   const el = e.currentTarget as HTMLElement
   const box = el.getBoundingClientRect()
   const dx = e.clientX - (box.left + box.width / 2)
@@ -136,11 +136,6 @@ function onDown(e: PointerEvent) {
   }
   100% {
     transform: none;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .btn::before {
-    transition: none;
   }
 }
 </style>

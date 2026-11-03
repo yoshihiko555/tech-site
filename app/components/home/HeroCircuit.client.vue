@@ -89,7 +89,7 @@ onMounted(async () => {
   // a .client component draws its template only after it mounts
   await nextTick()
   if (!canvas.value) return
-  reduced = prefersReducedMotion()
+  reduced = motionReduced()
   ctx = canvas.value.getContext('2d')
   traces = []
   const box = canvas.value.getBoundingClientRect()

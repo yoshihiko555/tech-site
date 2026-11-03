@@ -117,7 +117,7 @@ onMounted(async () => {
   // a .client component draws its template only after it mounts
   await nextTick()
   if (!canvas.value) return
-  reduced = prefersReducedMotion()
+  reduced = motionReduced()
   city = createCityProgram(canvas.value)
   if (!city) {
     failed.value = true

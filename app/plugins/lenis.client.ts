@@ -2,12 +2,11 @@ import Lenis from 'lenis'
 import 'lenis/dist/lenis.css'
 
 /**
- * Smooth, slightly weighted scrolling on every page (Lenis). Skipped when the
- * visitor asks for reduced motion; then `$lenis` is null and the page scrolls natively.
+ * Smooth, slightly weighted scrolling on every page (Lenis). Off only when the site
+ * stops its motion (motionReduced); then `$lenis` is null and the page scrolls natively.
  */
 export default defineNuxtPlugin(() => {
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  const lenis = reduced
+  const lenis = motionReduced()
     ? null
     : new Lenis({
         lerp: 0.08,
@@ -17,6 +16,8 @@ export default defineNuxtPlugin(() => {
         allowNestedScroll: true,
         // a link to another page drops the remaining glide
         stopInertiaOnNavigate: true,
+        // the OS "reduce motion" setting is not followed (see utils/motion)
+        respectReducedMotion: false,
       })
   return { provide: { lenis } }
 })

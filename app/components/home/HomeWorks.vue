@@ -335,9 +335,4 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure))
     top: auto;
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  .rv {
-    transition: none;
-  }
-}
 </style>

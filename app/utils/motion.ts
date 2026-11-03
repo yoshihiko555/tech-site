@@ -1,9 +1,17 @@
 /** Glyphs used while text scrambles into place. */
 export const GLYPHS = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789#$%&@<>/|=+*'
 
-/** True when the visitor asks for less motion. Always false on the server. */
-export function prefersReducedMotion(): boolean {
-  return import.meta.client && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+/**
+ * Owner's decision (2026-11-03): the site shows all of its motion, as the approved
+ * prototype does, even when the OS asks to reduce it. Set to true to honour the OS again.
+ */
+const FOLLOW_OS_REDUCED_MOTION = false
+
+/** True when motion should stop. Always false on the server. */
+export function motionReduced(): boolean {
+  return (
+    FOLLOW_OS_REDUCED_MOTION && import.meta.client && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  )
 }
 
 /** True for a mouse or trackpad (hover effects and the magnetic pull). */
@@ -26,7 +34,7 @@ export function randomGlyph(set: string = GLYPHS): string {
 
 /** Plays a one-shot CSS animation class again (removed after `ms`). */
 export function replayClass(el: Element | null | undefined, name: string, ms: number) {
-  if (!el || prefersReducedMotion()) return
+  if (!el || motionReduced()) return
   el.classList.remove(name)
   void (el as HTMLElement).offsetWidth
   el.classList.add(name)

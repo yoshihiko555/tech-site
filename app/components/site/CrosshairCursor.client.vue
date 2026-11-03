@@ -31,7 +31,7 @@ onMounted(async () => {
   // a .client component draws its template only after it mounts
   await nextTick()
   const fine = window.matchMedia('(pointer: fine)').matches
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const reduced = motionReduced()
   if (!fine || reduced || !horizontal.value) return
   const body = document.body
 

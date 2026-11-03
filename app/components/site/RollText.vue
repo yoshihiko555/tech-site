@@ -65,9 +65,4 @@ const chars = computed(() => Array.from(props.text, (ch) => (ch === ' ' ? ' ' :
 .hov:focus-visible .rl-b .c {
   transform: none;
 }
-@media (prefers-reduced-motion: reduce) {
-  .c {
-    transition: none;
-  }
-}
 </style>

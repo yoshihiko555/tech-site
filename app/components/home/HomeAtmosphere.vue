@@ -14,7 +14,7 @@ function schedule() {
 }
 
 onMounted(() => {
-  if (!prefersReducedMotion()) schedule()
+  if (!motionReduced()) schedule()
 })
 onBeforeUnmount(() => clearTimeout(timer))
 </script>
@@ -96,11 +96,6 @@ onBeforeUnmount(() => clearTimeout(timer))
 @keyframes sweepdown {
   to {
     transform: translateY(calc(100vh + 20px));
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .grain {
-    animation: none;
   }
 }
 </style>
