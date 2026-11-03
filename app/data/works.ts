@@ -6,12 +6,20 @@ export interface Work {
   stack: string[]
   /** live site, when there is one */
   site: string
-  /** screenshot under public/ (1200px wide JPEG) */
+  /** preview image under public/ */
   image: string
   source: string
 }
 
 export const WORKS: Work[] = [
+  {
+    name: 'orchex',
+    description: 'Multi-agent orchestration framework',
+    stack: ['Python', 'Claude Code', 'Codex', 'Antigravity'],
+    site: '',
+    image: '/works/orchex.png',
+    source: 'https://github.com/yoshihiko555/ai-orchestra',
+  },
   {
     name: 'Baton',
     description: 'AI coding session monitor',
@@ -51,14 +59,6 @@ export const WORKS: Work[] = [
     site: '',
     image: '/works/bandue.jpg',
     source: 'https://github.com/shutotakizawa/bandue',
-  },
-  {
-    name: 'Coopy',
-    description: 'Blog service',
-    stack: [],
-    site: '',
-    image: '/works/coopy.jpg',
-    source: 'https://github.com/shutotakizawa/coopy',
   },
 ]
 

@@ -1,4 +1,4 @@
-/** USES on the top page: the tools written about in two posts (USES_SOURCES). */
+/** USES on the top page: tools in daily use, with related posts in USES_SOURCES. */
 export interface UseItem {
   name: string
   note?: string
@@ -13,7 +13,7 @@ export interface UseCard {
 }
 
 export const USES: UseCard[] = [
-  { title: 'TERMINAL', tone: 'dark', speed: -0.035, items: [{ name: 'WezTerm' }, { name: 'tmux' }] },
+  { title: 'TERMINAL', tone: 'dark', speed: -0.035, items: [{ name: 'Ghostty' }, { name: 'Herdr' }] },
   {
     title: 'AI',
     tone: 'warm',
@@ -21,9 +21,11 @@ export const USES: UseCard[] = [
     items: [
       { name: 'Claude Code' },
       { name: 'Codex' },
-      { name: 'ChatGPT' },
-      { name: 'Gemini' },
-      { name: 'NotebookLM' },
+      { name: 'Antigravity' },
+      { name: 'opencode' },
+      { name: 'Hermes' },
+      { name: 'Pi' },
+      { name: 'Local LLM' },
     ],
   },
   {
@@ -32,16 +34,15 @@ export const USES: UseCard[] = [
     speed: -0.02,
     items: [
       { name: 'git-worktree-runner', note: 'gtr' },
-      { name: 'Baton', note: 'my own session TUI' },
       { name: 'fzf + ghq' },
       { name: 'lazygit' },
     ],
   },
   {
-    title: 'MCP / PLUGINS',
+    title: 'DEV ENV',
     tone: 'mustard',
     speed: 0.03,
-    items: [{ name: 'Context7' }, { name: 'Notion MCP' }, { name: 'claude-mem' }],
+    items: [{ name: 'Nix' }, { name: 'mise' }, { name: 'OrbStack' }, { name: 'AeroSpace' }, { name: 'Neovim' }],
   },
   {
     title: 'VOICE & DESIGN',
@@ -51,7 +52,7 @@ export const USES: UseCard[] = [
   },
 ]
 
-/** the posts the list comes from, with the short labels of the prototype */
+/** related posts about the toolchain and workflow */
 export const USES_SOURCES: { slug: string; label: string }[] = [
   { slug: 'claude-code-dev-toolchain', label: 'Claude Code開発を支える私のツールチェイン' },
   { slug: 'engineer-ai-daily-workflow', label: '1人のエンジニアがAIを日常にどう組み込んでいるか' },

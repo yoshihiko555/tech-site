@@ -155,7 +155,6 @@ onBeforeUnmount(() => {
     </div>
     <div class="fbar">
       <p>© {{ year }} YOSHIHIKO</p>
-      <p>BUILT WITH NUXT / CONTENTFUL / VERCEL</p>
     </div>
   </footer>
 </template>
@@ -280,7 +279,7 @@ onBeforeUnmount(() => {
 .fw-cur {
   flex: none;
   width: 0.52em;
-  height: 0.62em;
+  height: 0.36em;
   margin: 0 0 0.04em 0.06em;
   background: var(--warm);
   clip-path: polygon(0 0, calc(100% - 0.12em) 0, 100% 0.12em, 100% 100%, 0 100%);
@@ -302,7 +301,7 @@ onBeforeUnmount(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 10px 28px;
-  justify-content: space-between;
+  justify-content: center;
   padding: 18px 8px calc(24px + env(safe-area-inset-bottom, 0px));
   font: 400 10px/1.4 var(--f-px);
   letter-spacing: 0.14em;

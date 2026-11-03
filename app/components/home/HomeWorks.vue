@@ -115,7 +115,7 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure))
           >
             <img
               :src="work.image"
-              :alt="`${work.name} screenshot`"
+              :alt="`${work.name}のプレビュー`"
               width="1200"
               height="750"
             >

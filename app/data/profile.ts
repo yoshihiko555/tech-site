@@ -4,24 +4,24 @@
  */
 
 /** first year as an engineer (LEVEL and YEARS count from here) */
-export const SINCE = 2015
+export const SINCE = 2019
 
 export const PROFILE = {
   name: 'YOSHIHIKO',
   role: 'Engineer / Creator',
   /** short stack line in the hero tags */
-  stackLine: 'Go / TS / Vue',
+  stackLine: 'Go / TS / AI',
   className: 'ENGINEER / CREATOR',
   mainQuest: 'AI engineering and a tech lead role',
-  lede: 'Writing about AI agents, Claude Code and developer tooling.',
+  lede: 'Notes on software development, AI, and the tools I use.',
 }
 
 /** the hero status line cycles through these */
 export const PHRASES = [
-  'full-stack engineer',
+  'engineer',
   'heading to ai engineering',
-  'writing about claude code',
-  'go / typescript / vue',
+  'exploring ai and developer tools',
+  'go / typescript / ai',
   `building since ${SINCE}`,
 ]
 
@@ -30,18 +30,19 @@ export type BioPart = { text: string; mark?: boolean }
 
 export const BIO: BioPart[][] = [
   [
-    { text: 'Full-stack leaning engineer who enjoys the whole process of making things. Heading toward ' },
+    { text: 'Engineer who enjoys the whole process of making things. Heading toward ' },
     { text: 'AI engineering', mark: true },
     { text: ' and a tech lead role.' },
   ],
   [{ text: 'Lately building side projects in Go, and writing about AI agents, Claude Code and developer tooling.' }],
 ]
 
-/** toolkit from the old About page, grouped (no skill levels) */
+/** toolkit grouped by field (no skill levels) */
 export const STACK: { group: string; items: string[] }[] = [
-  { group: 'FRONTEND', items: ['HTML', 'CSS', 'JavaScript', 'TypeScript', 'Vue', 'React'] },
-  { group: 'BACKEND', items: ['Python', 'Go', 'Java', 'C#'] },
-  { group: 'INFRA', items: ['Docker'] },
+  { group: 'LANGUAGES', items: ['TypeScript', 'JavaScript', 'Go', 'Python', 'Swift', 'C#', 'Java'] },
+  { group: 'FRONTEND', items: ['Vue.js', 'Nuxt.js', 'React', 'Next.js', 'HTML5', 'CSS3'] },
+  { group: 'BACKEND & INFRA', items: ['Node.js', 'Django', '.NET', 'Docker', 'Nix', 'Git'] },
+  { group: 'AI / ML', items: ['OpenAI', 'Anthropic', 'RAG', 'Local LLM', 'Hermes'] },
 ]
 
 export const TRAITS = ['Builds things end to end', 'Breadth and curiosity', 'AI and automation', 'Eyes on the team']

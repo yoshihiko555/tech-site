@@ -8,8 +8,8 @@ export interface Episode {
 }
 
 export const EPISODES: Episode[] = [
-  { when: '2015', title: 'Career begins', done: true },
-  { when: '2019', title: 'Into web development', done: true },
+  { when: '2019', title: 'Career begins', done: true },
+  { when: '2020', title: 'Into web development', done: true },
   { when: '2022', title: 'Healthcare, finance and business systems', done: true },
   { when: '2024', title: 'Learning and prototyping with AI', done: true },
   { when: 'NOW', title: 'Next chapter in progress', done: false },

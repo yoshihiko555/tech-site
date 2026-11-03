@@ -125,7 +125,14 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
             <h3>[ PLAYER ]</h3>
             <div class="player">
               <div class="ava">
-                <LogoMark />
+                <img
+                  src="/avatar.png"
+                  :alt="`${PROFILE.name}のアバター`"
+                  width="1145"
+                  height="1110"
+                  loading="lazy"
+                  decoding="async"
+                >
               </div>
               <dl class="kv">
                 <div>
@@ -274,13 +281,16 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 }
 .stack {
   display: grid;
-  gap: 14px;
+  gap: 18px;
+}
+.stack > div + div {
+  padding-top: 16px;
+  border-top: 1px solid rgba(24, 18, 15, 0.2);
 }
 .stack h4 {
-  margin: 0 0 7px;
-  font: 400 10px/1 var(--f-px);
+  margin: 0 0 10px;
+  font: 400 10px/1.5 var(--f-px);
   letter-spacing: 0.14em;
-  opacity: 0.7;
 }
 .stack ul {
   list-style: none;
@@ -291,22 +301,17 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
   gap: 6px;
 }
 .stack li {
-  padding: 8px 11px;
-  font: 600 14px/1 var(--f-sans);
-  box-shadow: inset 0 0 0 1.5px #18120f;
+  padding: 6px 10px;
+  font: 500 12.5px/1.4 var(--f-mono);
+  background: rgba(24, 18, 15, 0.05);
+  box-shadow: inset 0 0 0 1px rgba(24, 18, 15, 0.18);
   transition:
-    background 0.2s,
-    color 0.2s,
     transform 0.5s var(--ease),
     opacity 0.5s;
 }
 .stack li.pre {
   opacity: 0;
   transform: translateY(8px);
-}
-.stack li:hover {
-  background: #18120f;
-  color: var(--mustard);
 }
 .side {
   display: grid;
@@ -330,34 +335,81 @@ onBeforeUnmount(() => timers.forEach(clearTimeout))
 }
 .ava {
   position: relative;
+  isolation: isolate;
   display: grid;
   place-items: center;
   aspect-ratio: 1;
-  background:
-    repeating-linear-gradient(0deg, rgba(92, 201, 190, 0.08) 0 1px, transparent 1px 5px),
-    #081315;
-  box-shadow: inset 0 0 0 1px rgba(92, 201, 190, 0.35);
+  background: #fff;
   overflow: hidden;
 }
-.ava svg {
-  width: 60%;
-  height: auto;
-  overflow: visible;
-  filter: drop-shadow(0 0 5px rgba(220, 106, 53, 0.6));
+.ava img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
+.ava::before,
 .ava::after {
   content: '';
   position: absolute;
-  left: 0;
-  right: 0;
-  height: 30%;
-  top: -30%;
-  background: linear-gradient(transparent, rgba(92, 201, 190, 0.22), transparent);
-  animation: scanv 3.6s linear infinite;
+  inset: 0;
+  pointer-events: none;
+  background: url('/avatar.png') center / contain no-repeat;
+  opacity: 0;
 }
-@keyframes scanv {
-  to {
-    top: 100%;
+.ava::before {
+  z-index: 1;
+  background:
+    linear-gradient(rgba(92, 201, 190, 0.18), rgba(92, 201, 190, 0.18)),
+    url('/avatar.png') center / contain no-repeat;
+  animation: avatar-slice-a 6s steps(1, end) infinite;
+}
+.ava::after {
+  z-index: 2;
+  animation: avatar-slice-b 6s steps(1, end) infinite;
+}
+@keyframes avatar-slice-a {
+  0%, 100% {
+    opacity: 0;
+  }
+  95% {
+    opacity: 1;
+    clip-path: inset(28% 0 70% 0);
+    transform: translateX(-4px);
+  }
+  96.25% {
+    clip-path: inset(52% 0 45% 0);
+    transform: translateX(5px);
+  }
+  97.5% {
+    clip-path: inset(36% 0 62% 0);
+    transform: translateX(-3px);
+  }
+  98.75% {
+    clip-path: inset(72% 0 26% 0);
+    transform: translateX(3px);
+  }
+}
+@keyframes avatar-slice-b {
+  0%, 100% {
+    opacity: 0;
+  }
+  95% {
+    opacity: 0.9;
+    clip-path: inset(61% 0 37% 0);
+    transform: translateX(4px);
+  }
+  96.25% {
+    clip-path: inset(33% 0 65% 0);
+    transform: translateX(-3px);
+  }
+  97.5% {
+    clip-path: inset(68% 0 29% 0);
+    transform: translateX(3px);
+  }
+  98.75% {
+    clip-path: inset(45% 0 53% 0);
+    transform: translateX(-4px);
   }
 }
 .kv {

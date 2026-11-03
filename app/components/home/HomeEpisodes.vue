@@ -75,7 +75,7 @@ useFrame(({ y, vh }) => {
       >
         <article
           v-for="(episode, i) in EPISODES"
-          :key="episode.when"
+          :key="`${episode.when}-${episode.title}`"
           class="ep"
           :class="{ on: i === current }"
         >
