@@ -5,9 +5,8 @@ import { USES, USES_SOURCES } from '~/data/uses'
 /** USES: overlapping cards of the tools in daily use; each drifts at its own speed. */
 const props = defineProps<{ posts: PostMeta[] }>()
 
-const sources = computed(() =>
-  USES_SOURCES.map((slug) => props.posts.find((post) => post.slug === slug)).filter((post): post is PostMeta => !!post),
-)
+/** sources whose post exists (a removed post drops its link) */
+const sources = computed(() => USES_SOURCES.filter((source) => props.posts.some((post) => post.slug === source.slug)))
 
 const section = ref<HTMLElement | null>(null)
 const cards = ref<HTMLElement[]>([])
@@ -76,18 +75,18 @@ useFrame(({ vh }) => {
       >
         FROM:
         <template
-          v-for="(post, i) in sources"
-          :key="post.slug"
+          v-for="(source, i) in sources"
+          :key="source.slug"
         >
           <template v-if="i">
             /
           </template>
           <NuxtLink
             class="hov"
-            :to="`/blog/${post.slug}`"
+            :to="`/blog/${source.slug}`"
             data-cursor="READ"
           >
-            {{ post.title }}
+            {{ source.label }}
           </NuxtLink>
         </template>
       </p>

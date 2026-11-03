@@ -68,7 +68,6 @@ defineExpose({ row })
   display: inline-block;
 }
 .sl {
-  font-style: normal;
   color: var(--warm);
   -webkit-text-stroke: 0;
   padding: 0 0.18em;

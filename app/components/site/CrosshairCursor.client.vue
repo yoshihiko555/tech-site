@@ -12,6 +12,9 @@ const readout = ref<HTMLElement | null>(null)
 
 const HIT = 'a,button,summary,[data-cursor]'
 const TEXT = 'p,li,h1,h2,h3,td,th,pre,blockquote'
+/** the top page also reads its labels and key-value lists as text */
+const TEXT_HOME = `${TEXT},h4,dd,dt,input`
+const route = useRoute()
 let hit: Element | null = null
 let cleanup: (() => void) | null = null
 
@@ -50,14 +53,21 @@ onMounted(async () => {
     if (hit) readout.value!.textContent = labelFor(hit)
     body.classList.toggle('cur-lab', !!hit)
     body.classList.toggle('cur-read', !hit && !!target.closest('.prose'))
-    body.classList.toggle('cur-txt', !hit && !!target.closest(TEXT))
+    body.classList.toggle('cur-txt', !hit && !!target.closest(route.path === '/' ? TEXT_HOME : TEXT))
+  }
+
+  // the top page: the box splits into colours for a moment on each press
+  const onDown = () => {
+    if (route.path === '/') replayClass(body, 'cur-zap', 220)
   }
 
   window.addEventListener('pointermove', onMove, { passive: true })
+  window.addEventListener('pointerdown', onDown, { passive: true })
   document.documentElement.addEventListener('mouseleave', onLeave)
   document.addEventListener('pointerover', onOver)
   cleanup = () => {
     window.removeEventListener('pointermove', onMove)
+    window.removeEventListener('pointerdown', onDown)
     document.documentElement.removeEventListener('mouseleave', onLeave)
     document.removeEventListener('pointerover', onOver)
     body.classList.remove('has-ret', 'cur-lab', 'cur-read', 'cur-txt')
@@ -160,6 +170,9 @@ body.has-ret.cur-off .cur-xh {
     left 0.3s var(--ease),
     top 0.3s var(--ease),
     background 0.2s;
+}
+.cur-zap .xh-box {
+  filter: drop-shadow(-3px 0 rgba(92, 201, 190, 0.95)) drop-shadow(3px 0 rgba(220, 106, 53, 0.95));
 }
 .cur-lab .xh-box::before {
   left: -13px;

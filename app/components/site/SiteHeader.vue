@@ -27,7 +27,10 @@ function isCurrent(item: NavItem): boolean {
 </script>
 
 <template>
-  <header class="top">
+  <header
+    class="top"
+    :class="{ home: route.path === '/' }"
+  >
     <NuxtLink
       class="brand"
       to="/"
@@ -202,9 +205,19 @@ function isCurrent(item: NavItem): boolean {
   transform-origin: left;
   transform: scaleX(var(--rp, 0));
 }
+/* the top page, as in its prototype */
+.top.home {
+  background: rgba(13, 28, 31, 0.78);
+}
 @media (max-width: 640px) {
   .nav a:not(.cur) {
     display: none;
+  }
+  .home .nav {
+    display: none;
+  }
+  .home .hbtn {
+    margin-left: auto;
   }
   .snd-label {
     display: none;

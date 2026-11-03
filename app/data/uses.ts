@@ -51,5 +51,8 @@ export const USES: UseCard[] = [
   },
 ]
 
-/** slugs of the posts the list comes from */
-export const USES_SOURCES = ['claude-code-dev-toolchain', 'engineer-ai-daily-workflow']
+/** the posts the list comes from, with the short labels of the prototype */
+export const USES_SOURCES: { slug: string; label: string }[] = [
+  { slug: 'claude-code-dev-toolchain', label: 'Claude Code開発を支える私のツールチェイン' },
+  { slug: 'engineer-ai-daily-workflow', label: '1人のエンジニアがAIを日常にどう組み込んでいるか' },
+]
