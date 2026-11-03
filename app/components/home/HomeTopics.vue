@@ -12,11 +12,12 @@ interface Theme {
   fg: string
   ac: string
 }
-const ORDER = ['ai', 'programming', 'lifestyle']
+const ORDER = ['ai', 'programming', 'dev-env', 'lifestyle']
 const THEMES: Record<string, Theme> = {
-  ai: { bg: '#173A3D', fg: '#EEE7DA', ac: '#5CC9BE' },
-  programming: { bg: '#DC6A35', fg: '#18120F', ac: '#0D1C1F' },
-  lifestyle: { bg: '#E2B04A', fg: '#18120F', ac: '#DC6A35' },
+  'ai': { bg: '#173A3D', fg: '#EEE7DA', ac: '#5CC9BE' },
+  'programming': { bg: '#DC6A35', fg: '#18120F', ac: '#0D1C1F' },
+  'dev-env': { bg: '#5CC9BE', fg: '#0D1C1F', ac: '#173A3D' },
+  'lifestyle': { bg: '#E2B04A', fg: '#18120F', ac: '#DC6A35' },
 }
 const FALLBACK = THEMES.ai!
 
@@ -110,6 +111,7 @@ onBeforeUnmount(() => wipeId++)
     id="topics"
     ref="scene"
     class="topics"
+    :style="{ '--steps': topics.length }"
     data-tag="<topics/>"
     data-nav="posts"
     aria-labelledby="tp-h"
@@ -195,7 +197,8 @@ onBeforeUnmount(() => wipeId++)
 <style scoped>
 .topics {
   position: relative;
-  height: 380vh;
+  /* the prototype gave its 3 categories 380vh; each category keeps that share of the scroll */
+  height: calc(100vh + var(--steps, 3) * 280vh / 3);
   scroll-margin-top: var(--head);
 }
 .tp-stage {
