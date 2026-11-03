@@ -19,7 +19,6 @@
           rel="noopener"
         >RSS ↗</a>
       </nav>
-      <p>BUILT WITH NUXT / CONTENTFUL / VERCEL</p>
     </div>
   </footer>
 </template>
