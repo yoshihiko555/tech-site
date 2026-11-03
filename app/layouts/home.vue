@@ -17,7 +17,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="site home">
+  <div
+    id="top"
+    class="site home"
+  >
     <CityShader />
     <HomeAtmosphere />
     <HomeRail />

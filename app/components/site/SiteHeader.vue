@@ -27,10 +27,7 @@ function isCurrent(item: NavItem): boolean {
 </script>
 
 <template>
-  <header
-    id="top"
-    class="top"
-  >
+  <header class="top">
     <NuxtLink
       class="brand"
       to="/"
