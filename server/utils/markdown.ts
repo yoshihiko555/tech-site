@@ -35,7 +35,27 @@ const codeTheme = createCssVariablesTheme({
 
 const CHARS_PER_MINUTE = 500
 const TOC_PLACEHOLDER = /^\s*\[\[toc\]\]\s*$/gim
-const SAME_SITE = ['https://yoshihiko.tech', 'https://www.yoshihiko.tech']
+const SAME_SITE_HOSTS = ['yoshihiko.tech', 'www.yoshihiko.tech']
+
+function hostOf(url: string): string | null {
+  try {
+    return new URL(url).host
+  } catch {
+    return null
+  }
+}
+
+/** The path of an absolute link to this site, or null for any other link. */
+function sameSitePath(href: string, hosts: Set<string>): string | null {
+  if (!/^https?:\/\//i.test(href)) return null
+  let url: URL
+  try {
+    url = new URL(href)
+  } catch {
+    return null
+  }
+  return hosts.has(url.host) ? `${url.pathname}${url.search}${url.hash}` : null
+}
 
 let pageRenderer: Promise<MarkdownIt> | null = null
 let feedRenderer: MarkdownIt | null = null
@@ -46,15 +66,15 @@ function baseRenderer(origin: string): MarkdownIt {
   const md = createMarkdownIt({ linkify: true, breaks: true })
   md.use(anchor)
 
-  const sameSite = [origin, ...SAME_SITE]
+  const hosts = new Set([...SAME_SITE_HOSTS, hostOf(origin)].filter((host): host is string => !!host))
   const linkOpen = md.renderer.rules.link_open ?? renderToken
   md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
     const token = tokens[idx]!
     const href = String(token.attrGet('href') ?? '')
-    const local = sameSite.find((base) => base && href.startsWith(base))
-    if (local) {
-      token.attrSet('href', href.slice(local.length) || '/')
-    } else if (/^https?:\/\//.test(href)) {
+    const local = sameSitePath(href, hosts)
+    if (local !== null) {
+      token.attrSet('href', local)
+    } else if (/^https?:\/\//i.test(href)) {
       token.attrSet('target', '_blank')
       token.attrSet('rel', 'noopener noreferrer')
     }
@@ -117,7 +137,11 @@ export async function renderPost(
   tokens.forEach((token, i) => {
     if (token.type !== 'heading_open' || (token.tag !== 'h2' && token.tag !== 'h3')) return
     const id = token.attrGet('id')
-    const text = tokens[i + 1]?.content ?? ''
+    // plain text, as markdown-it-anchor reads it (no ` or ** marks)
+    const text = (tokens[i + 1]?.children ?? [])
+      .filter((child) => child.type === 'text' || child.type === 'code_inline')
+      .map((child) => child.content)
+      .join('')
     if (id) headings.push({ level: token.tag === 'h2' ? 2 : 3, id: String(id), text })
   })
 

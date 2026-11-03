@@ -36,6 +36,23 @@ describe('renderPost', () => {
     expect(html).toContain('<a href="/tags/llm">d</a>')
   })
 
+  it('treats look-alike hosts as other sites', async () => {
+    const { html } = await renderPost('[x](https://yoshihiko.tech.example.com/blog/a)', ORIGIN)
+    expect(html).toContain(
+      '<a href="https://yoshihiko.tech.example.com/blog/a" target="_blank" rel="noopener noreferrer">x</a>',
+    )
+  })
+
+  it('keeps query and hash when it makes a link relative', async () => {
+    const { html } = await renderPost('[x](https://yoshihiko.tech/blog/a?ref=1#setup)', ORIGIN)
+    expect(html).toContain('<a href="/blog/a?ref=1#setup">x</a>')
+  })
+
+  it('gives the outline plain text, without markdown marks', async () => {
+    const { headings } = await renderPost('## `CLAUDE.md` と **Hooks**', ORIGIN)
+    expect(headings[0]?.text).toBe('CLAUDE.md と Hooks')
+  })
+
   it('lazy-loads images', async () => {
     const { html } = await renderPost('![diagram](https://images.ctfassets.net/x.png)', ORIGIN)
     expect(html).toMatch(/<img [^>]*loading="lazy"/)

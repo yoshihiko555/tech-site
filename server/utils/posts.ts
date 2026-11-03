@@ -104,6 +104,10 @@ async function fetchStore(): Promise<PostStore> {
 /** All posts and terms, fetched once per build (refetched on every call in dev). */
 export function loadPosts(): Promise<PostStore> {
   if (import.meta.dev) return fetchStore()
-  store ??= fetchStore()
+  // a failed fetch is not kept, so the next call tries again
+  store ??= fetchStore().catch((error: unknown) => {
+    store = null
+    throw error
+  })
   return store
 }
