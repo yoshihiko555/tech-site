@@ -58,6 +58,7 @@ useHead({
       :tags="data?.tags ?? []"
     />
     <HomeEpisodes />
+    <HomeNow />
     <HomeUses :posts="posts" />
     <HomeWorks />
   </div>

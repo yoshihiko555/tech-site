@@ -4,6 +4,8 @@
 
 ### Added
 
+- トップの EPISODES の後に、いま取り組んでいることを更新日つきで並べる NOW セクションを追加しました。
+- 作品 orchex のケーススタディページ（`/works/orchex`）を追加し、トップの WORKS から開けるようにしました。
 - カテゴリ「Dev Env」の配色と背景の粒子模様を追加し、トップの TOPICS で Programming の次に表示するようにしました。
 
 ### Changed
