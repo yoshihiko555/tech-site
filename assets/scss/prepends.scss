@@ -1,9 +1,0 @@
-// *********************************
-// 非出力用の各ファイルのインポート
-// *********************************
-@use 'sass:meta';
-@use 'sass:map';
-@use './abstracts/functions';
-@import './abstracts/variables';
-@import './abstracts/mixins/index';
-@import './abstracts/verification';
