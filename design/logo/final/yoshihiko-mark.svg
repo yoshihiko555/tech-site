@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img">
+  <title>yoshihiko.tech</title>
+  <desc>A geometric uppercase Y cut by a 45-degree slit, with a terminal underscore cursor on its baseline.</desc>
+  <path id="y-upper" fill="#DC6A35" d="M13.5 14H33.5L45 25.5L56.5 14H76.5L52.5 38V60.5L37.5 45.5V38Z"/>
+  <path id="y-lower" fill="#5CC9BE" d="M37.5 53.5L52.5 68.5V86H43.5L37.5 80Z"/>
+  <path id="cursor" fill="#EEE7DA" d="M61.5 75.5H82L86.5 80V86H61.5Z"/>
+</svg>
