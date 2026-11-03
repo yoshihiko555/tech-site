@@ -118,7 +118,7 @@ docker compose up --build -V
 
 ## Current Project: Nuxt 4 移行とサイト刷新
 
-- Phase 1（土台、今の URL・SEO の引き継ぎ）: PR #35
+- Phase 1（土台、今の URL・SEO の引き継ぎ）: develop にマージ済み（#35）
 - Phase 2: 試作（トップ・記事・一覧）どおりの新デザインを実装。配色はオレンジ、カーソルは照準
 - Phase 3: Vercel プレビューで確認し、`NODE_OPTIONS` を外してから develop → master
-- 注意: develop → master は本番に出る。Phase 1 だけが入った develop を master に出すと、デザインのない画面が公開される（#35 のマージ時期は未決）
+- 注意: develop → master は本番に出る。新デザインがそろう前に出すと、デザインのない画面が公開される
