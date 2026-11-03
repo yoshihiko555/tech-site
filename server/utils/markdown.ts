@@ -62,9 +62,18 @@ let feedRenderer: MarkdownIt | null = null
 
 const renderToken: RendererRule = (tokens, idx, options, _env, self) => self.renderToken(tokens, idx, options)
 
+/**
+ * Heading id: markdown-it-anchor's default slug without the percent-encoding, so the
+ * router can find the heading of a #hash it has decoded. The old site's links
+ * (#%E3%81%AF...) still land, as browsers percent-decode a fragment before matching ids.
+ */
+function slugify(text: string): string {
+  return text.trim().toLowerCase().replace(/\s+/g, '-')
+}
+
 function baseRenderer(origin: string): MarkdownIt {
   const md = createMarkdownIt({ linkify: true, breaks: true })
-  md.use(anchor)
+  md.use(anchor, { slugify })
 
   const hosts = new Set([...SAME_SITE_HOSTS, hostOf(origin)].filter((host): host is string => !!host))
   const linkOpen = md.renderer.rules.link_open ?? renderToken

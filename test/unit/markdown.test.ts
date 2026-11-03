@@ -9,17 +9,26 @@ describe('renderPost', () => {
     expect(html).not.toContain('[[toc]]')
   })
 
-  it('collects h2 and h3 only, with the same ids the old site used', async () => {
+  it('collects h2 and h3 only, with readable ids', async () => {
     const source = '# Title\n\n## はじめに\n\n### 準備\n\n#### 細かい話\n\n## Setup steps'
     const { html, headings } = await renderPost(source, ORIGIN)
     expect(headings).toEqual([
-      { level: 2, id: encodeURIComponent('はじめに'), text: 'はじめに' },
-      { level: 3, id: encodeURIComponent('準備'), text: '準備' },
+      { level: 2, id: 'はじめに', text: 'はじめに' },
+      { level: 3, id: '準備', text: '準備' },
       { level: 2, id: 'setup-steps', text: 'Setup steps' },
     ])
     for (const heading of headings) {
       expect(html).toContain(`id="${heading.id}"`)
     }
+  })
+
+  it('keeps the old site\'s anchors reachable: they were these ids, percent-encoded', async () => {
+    // the old site linked #%E3%81%AF... ; browsers percent-decode a fragment before matching ids
+    const { headings } = await renderPost('## はじめに の 準備\n\n## Setup steps', ORIGIN)
+    expect(headings.map((heading) => encodeURIComponent(heading.id))).toEqual([
+      encodeURIComponent('はじめに-の-準備'),
+      'setup-steps',
+    ])
   })
 
   it('makes links to this site relative and opens other sites in a new tab', async () => {
