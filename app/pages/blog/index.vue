@@ -1,17 +1,6 @@
-<script setup lang="ts">
-const { data } = await usePostIndex()
-
-useSeoMeta({
-  title: 'Blog',
-  ogTitle: 'Blog',
-})
-</script>
-
 <template>
   <PostListing
-    heading="All posts"
-    :posts="data?.posts ?? []"
+    kind="all"
     :page="1"
-    base-path="/blog"
   />
 </template>
