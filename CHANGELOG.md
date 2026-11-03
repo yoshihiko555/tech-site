@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- カテゴリ「Dev Env」の配色と背景の粒子模様を追加し、トップの TOPICS で Programming の次に表示するようにしました。
+
 ### Changed
 
 - Nuxt 4へ移行し、既存の記事URL、カテゴリ・タグ一覧、RSS、サイトマップを引き継ぎました。

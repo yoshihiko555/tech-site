@@ -32,6 +32,10 @@ export const GRAIN: Record<string, GrainKind> = {
     colors: ['#DC6A35', '#C2532C', '#173A3D'],
     weights: (u, v) => [cut(v * 0.7 - 0.15, 0.5), cut(0.2 - fromCorner(u, v, 0.05, 1) * 0.4, 0.14)],
   },
+  'dev-env': {
+    colors: ['#5CC9BE', '#47B1A6', '#173A3D'],
+    weights: (u, v) => [cut(v * 0.7 - 0.15, 0.5), cut(0.2 - fromCorner(u, v, 0.05, 1) * 0.4, 0.14)],
+  },
   lifestyle: {
     colors: ['#E2B04A', '#CF9636', '#DC6A35'],
     weights: (u, v) => [cut(v * 0.7 - 0.15, 0.5), cut(0.22 - fromCorner(u, v, 0.05, 1) * 0.4, 0.16)],
