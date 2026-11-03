@@ -9,6 +9,11 @@ export default defineNuxtConfig({
 
   modules: ['@nuxt/eslint', '@nuxtjs/sitemap', 'nuxt-gtag'],
 
+  css: ['~/assets/css/tokens.css', '~/assets/css/base.css', '~/assets/css/prose.css'],
+
+  // components are named by file name alone (site/LogoMark.vue -> <LogoMark>)
+  components: [{ path: '~/components', pathPrefix: false }],
+
   app: {
     head: {
       htmlAttrs: { lang: 'ja' },
@@ -23,7 +28,16 @@ export default defineNuxtConfig({
         { name: 'twitter:site', content: '@yoshihiko5555' },
       ],
       link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,100..900&family=Chakra+Petch:wght@400;500;600&family=JetBrains+Mono:wght@400;700&family=Silkscreen:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap',
+        },
+        // new mark (design/logo): the SVG where supported, the ICO (16/32/48) for the rest.
+        // sizes="32x32" keeps Chrome from preferring the ICO over the SVG
+        { rel: 'icon', href: '/favicon.ico', sizes: '32x32' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
         { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
         { rel: 'alternate', type: 'application/rss+xml', title: SITE_NAME, href: '/feed.xml' },
       ],

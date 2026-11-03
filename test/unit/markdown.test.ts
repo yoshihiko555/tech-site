@@ -9,17 +9,26 @@ describe('renderPost', () => {
     expect(html).not.toContain('[[toc]]')
   })
 
-  it('collects h2 and h3 only, with the same ids the old site used', async () => {
+  it('collects h2 and h3 only, with readable ids', async () => {
     const source = '# Title\n\n## はじめに\n\n### 準備\n\n#### 細かい話\n\n## Setup steps'
     const { html, headings } = await renderPost(source, ORIGIN)
     expect(headings).toEqual([
-      { level: 2, id: encodeURIComponent('はじめに'), text: 'はじめに' },
-      { level: 3, id: encodeURIComponent('準備'), text: '準備' },
+      { level: 2, id: 'はじめに', text: 'はじめに' },
+      { level: 3, id: '準備', text: '準備' },
       { level: 2, id: 'setup-steps', text: 'Setup steps' },
     ])
     for (const heading of headings) {
       expect(html).toContain(`id="${heading.id}"`)
     }
+  })
+
+  it('keeps the old site\'s anchors reachable: they were these ids, percent-encoded', async () => {
+    // the old site linked #%E3%81%AF... ; browsers percent-decode a fragment before matching ids
+    const { headings } = await renderPost('## はじめに の 準備\n\n## Setup steps', ORIGIN)
+    expect(headings.map((heading) => encodeURIComponent(heading.id))).toEqual([
+      encodeURIComponent('はじめに-の-準備'),
+      'setup-steps',
+    ])
   })
 
   it('makes links to this site relative and opens other sites in a new tab', async () => {
@@ -62,6 +71,32 @@ describe('renderPost', () => {
     const { html } = await renderPost('```ts\nconst a = 1\n```', ORIGIN)
     expect(html).toContain('<figure class="code" data-lang="ts">')
     expect(html).toContain('class="shiki')
+  })
+
+  it('puts a bar with the language, line count and a copy button on each code block', async () => {
+    const { html } = await renderPost('```bash\necho one\necho two\n```\n\n```ts\nconst a = 1\n```', ORIGIN)
+    expect(html).toContain('<span class="lang">BASH</span><span>2 LINES</span>')
+    expect(html).toContain('<span class="lang">TS</span><span>1 LINE</span>')
+    expect(html.match(/<button class="copy" type="button"/g)).toHaveLength(2)
+  })
+
+  it('wraps tables in a scroll box', async () => {
+    const { html } = await renderPost('| a | b |\n| - | - |\n| 1 | 2 |', ORIGIN)
+    expect(html).toMatch(/<div class="tbl"[^>]*><table>[\s\S]*<\/table><\/div>/)
+  })
+
+  it('numbers each h2 in order and leaves h3 alone', async () => {
+    const { html } = await renderPost('## One\n\n### Sub\n\n## Two', ORIGIN)
+    expect(html.match(/<span class="h-no" aria-hidden="true">\d+<\/span>/g)).toEqual([
+      '<span class="h-no" aria-hidden="true">01</span>',
+      '<span class="h-no" aria-hidden="true">02</span>',
+    ])
+  })
+
+  it('restarts numbering for every post', async () => {
+    await renderPost('## A\n\n## B', ORIGIN)
+    const { html } = await renderPost('## C', ORIGIN)
+    expect(html).toContain('<span class="h-no" aria-hidden="true">01</span>')
   })
 
   it('falls back to plain text for languages it does not know', async () => {

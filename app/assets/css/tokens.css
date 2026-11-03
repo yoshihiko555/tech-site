@@ -1,0 +1,39 @@
+/*
+ * Design tokens for yoshihiko.tech.
+ * One dark look (no light theme): night-teal base, cream ink, and an orange accent
+ * with aqua and mustard as supporting colors. Same values as the approved prototype.
+ */
+:root {
+  /* surfaces */
+  --base: #0d1c1f;
+  --base-2: #132b2e;
+  --deep: #173a3d;
+
+  /* text */
+  --ink: #eee7da;
+  --read: #dcd6ca; /* long-form body text, a little softer than --ink */
+  --dim: #9fb2ae;
+
+  /* accents */
+  --aqua: #5cc9be;
+  --mustard: #e2b04a;
+  --warm: #dc6a35;
+  --line: rgba(92, 201, 190, 0.22);
+
+  /* type */
+  --f-wide: 'Anybody', 'Chakra Petch', system-ui, sans-serif;
+  --f-sans: 'Chakra Petch', 'Zen Kaku Gothic New', system-ui, sans-serif;
+  --f-px: 'Silkscreen', 'JetBrains Mono', monospace;
+  --f-mono: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+  --f-ja: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Yu Gothic', system-ui, sans-serif;
+
+  /* layout */
+  --gut-l: max(16px, env(safe-area-inset-left, 0px));
+  --gut-r: max(16px, env(safe-area-inset-right, 0px));
+  --head: 56px;
+
+  /* motion */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  color-scheme: dark;
+}

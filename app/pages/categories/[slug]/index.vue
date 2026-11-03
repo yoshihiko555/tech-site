@@ -4,7 +4,7 @@ const slug = String(route.params.slug)
 </script>
 
 <template>
-  <TermListing
+  <PostListing
     kind="categories"
     :slug="slug"
     :page="1"

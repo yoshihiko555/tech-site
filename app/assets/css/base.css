@@ -1,0 +1,90 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* while Lenis is easing the page, native smooth scrolling stays out of its way */
+html.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+body {
+  margin: 0;
+  background: var(--base);
+  color: var(--ink);
+  font-family: var(--f-sans);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* paints the band under the phone's status bar */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 40;
+  background: var(--base);
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+}
+
+:focus-visible {
+  outline: 2px solid var(--aqua);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--warm);
+  color: var(--base);
+}
+
+/* panel with the top-right and bottom-left corners cut at 45° (size: --c) */
+.chamfer {
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--c, 12px)) 0,
+    100% var(--c, 12px),
+    100% 100%,
+    var(--c, 12px) 100%,
+    0 calc(100% - var(--c, 12px))
+  );
+}
+
+/* the three parts of the logo mark */
+.yu {
+  fill: var(--warm);
+}
+.yl {
+  fill: var(--aqua);
+}
+.yc {
+  fill: var(--ink);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+

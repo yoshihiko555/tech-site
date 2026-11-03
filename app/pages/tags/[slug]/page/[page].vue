@@ -9,7 +9,7 @@ useSeoMeta({ robots: 'noindex, follow' })
 </script>
 
 <template>
-  <TermListing
+  <PostListing
     kind="tags"
     :slug="slug"
     :page="page!"

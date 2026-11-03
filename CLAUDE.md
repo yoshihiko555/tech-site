@@ -12,7 +12,8 @@
 - **CMS**: Contentful（GraphQL Content API）。build 時に取得し、クライアントには認証情報を出さない
 - **Markdown**: markdown-it + markdown-it-anchor + Shiki（build 時に HTML 化）。mermaid は client で描画
 - **SEO**: `@nuxtjs/sitemap`、`/feed.xml`（`feed`）、`useSeoMeta`、`nuxt-gtag`
-- **Styling**: 新デザインの実装時に決める（Tailwind は外した）
+- **Styling**: 色・文字・余白はトークン（CSS 変数、`app/assets/css/tokens.css`）、各コンポーネントは `<style scoped>` の素の CSS。Tailwind は使わない
+- **Motion**: Lenis（全ページの滑らかなスクロール）、トップの背景は WebGL。動きは OS の「視差効果を減らす」に関係なく全部出す（`app/utils/motion.ts` の `FOLLOW_OS_REDUCED_MOTION`）
 - **Test / Lint**: Vitest、`@nuxt/eslint`、`nuxt typecheck`
 - **Deployment**: Vercel（`vercel.json` は `buildCommand: yarn generate` のみ）
 
@@ -50,13 +51,13 @@ yarn codegen
 ```
 
 - `.env` を読むコマンド（`dev` / `generate` / `typecheck` / `nuxt prepare`）は、Claude Code のサンドボックス内では `.env` の読み取りが禁止されているため失敗する。サンドボックス外で実行する
-- Docker でも動かせる。`node_modules` はコンテナ内だけに置くので、手元の `node_modules` を触らずにブランチを行き来できる
+- Docker でも動かせる。`node_modules` と `.nuxt` はコンテナ内だけに置くので、手元の `node_modules` を触らずにブランチを行き来でき、手元で `dev` や `typecheck` を実行してもコンテナの開発サーバーは壊れない
 
 ```bash
 # 起動（http://localhost:3000。3000 が使用中なら TECH_SITE_PORT=3100 を付ける）
 docker compose up --build
 
-# ブランチを切り替えた後は、コンテナ内の node_modules を作り直す
+# ブランチを切り替えた後や依存を足した後は、コンテナ内の node_modules を作り直す
 docker compose up --build -V
 ```
 
@@ -68,11 +69,13 @@ docker compose up --build -V
 .
 ├── app/                    # Nuxt アプリ（画面）
 │   ├── app.vue
-│   ├── components/         # PostListing / TermListing など
-│   ├── composables/        # usePostIndex（全記事と分類）
+│   ├── components/         # site/（ヘッダー・フッター・照準カーソル・検索）, home/（トップの各セクション）, article/, listing/
+│   ├── composables/        # usePostIndex（全記事と分類）, useFrame（共有の rAF）, useReveal など
+│   ├── data/               # トップのプロフィール・経歴・作品・Uses（試作の内容）
+│   ├── layouts/            # default（記事・一覧）, home（トップ。WebGL・レール・大きいフッター）
 │   ├── pages/              # /, /blog, /blog/[slug], /categories/[slug], /tags/[slug] と各 /page/[page]
-│   ├── plugins/            # mermaid.client.ts
-│   └── utils/              # pagination（1 ページ 8 件）
+│   ├── plugins/            # mermaid.client.ts, lenis.client.ts
+│   └── utils/              # pagination（1 ページ 8 件）, postStats, searchPosts, motion など
 ├── server/
 │   ├── api/                # /api/posts, /api/posts/[slug]（prerender 時に呼ばれ payload に入る）
 │   ├── routes/feed.xml.ts  # RSS
@@ -83,7 +86,8 @@ docker compose up --build -V
 ├── public/                 # 静的ファイル（favicon、OGP 画像、robots.txt、作品画像、旧 SW を消す sw.js）
 ├── scripts/                # check-routes.mjs と旧サイトの sitemap（fixtures/）
 ├── test/unit/              # Vitest
-└── design/logo/            # 新ロゴの SVG / PNG
+├── design/logo/            # 新ロゴの SVG / PNG（favicon の元）
+└── design/ogp/             # OGP の既定画像の元 HTML と作り直し方
 ```
 
 ---
@@ -119,6 +123,6 @@ docker compose up --build -V
 ## Current Project: Nuxt 4 移行とサイト刷新
 
 - Phase 1（土台、今の URL・SEO の引き継ぎ）: develop にマージ済み（#35）
-- Phase 2: 試作（トップ・記事・一覧）どおりの新デザインを実装。配色はオレンジ、カーソルは照準
+- Phase 2: 試作（トップ・記事・一覧）どおりの新デザインを実装。配色はオレンジ、カーソルは照準。feat/redesign-ui で実装済み、develop へ PR
 - Phase 3: Vercel プレビューで確認し、`NODE_OPTIONS` を外してから develop → master
 - 注意: develop → master は本番に出る。新デザインがそろう前に出すと、デザインのない画面が公開される
