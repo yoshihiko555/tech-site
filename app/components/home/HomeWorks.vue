@@ -261,7 +261,8 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure))
   color: var(--aqua);
   box-shadow: inset 0 0 0 1px rgba(92, 201, 190, 0.45);
 }
-/* screenshot in a small screen frame */
+/* screenshot in a small screen frame: the whole image, uncropped and without scanlines
+   (shots range from square to twice as wide as tall) */
 .wshot {
   position: relative;
   margin: 4px 0 0;
@@ -276,16 +277,7 @@ onBeforeUnmount(() => window.removeEventListener('resize', measure))
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: top center;
-  opacity: 0.92;
-}
-.wshot::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0, 0, 0, 0.12) 2px 3px);
+  object-fit: contain;
 }
 .wshot figcaption {
   position: absolute;
