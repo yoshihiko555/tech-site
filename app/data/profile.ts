@@ -30,11 +30,11 @@ export type BioPart = { text: string; mark?: boolean }
 
 export const BIO: BioPart[][] = [
   [
-    { text: 'ものづくりの最初から最後までを楽しむエンジニアです。' },
-    { text: 'AI エンジニアリング', mark: true },
-    { text: 'とテックリードの役割を目指しています。' },
+    { text: 'Engineer who enjoys the whole process of making things. Heading toward ' },
+    { text: 'AI engineering', mark: true },
+    { text: ' and a tech lead role.' },
   ],
-  [{ text: '最近は Go で個人開発をしながら、AI エージェントや Claude Code、開発ツールについて書いています。' }],
+  [{ text: 'Lately building side projects in Go, and writing about AI agents, Claude Code and developer tooling.' }],
 ]
 
 /** toolkit grouped by field (no skill levels) */

@@ -108,8 +108,11 @@ function isExternal(item: NowItem): boolean {
   background: var(--warm);
   animation: cblink 1.6s steps(1, end) infinite;
 }
-.st-shipped {
+.st-growing {
   background: var(--mustard);
+}
+.st-running {
+  background: var(--ink);
 }
 .row h3 {
   margin: 0;
