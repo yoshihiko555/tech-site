@@ -107,7 +107,7 @@ docker compose up --build -V
 `.env`（手元）と Vercel の環境変数に設定する:
 
 - `CTF_ENDPOINT` / `CTF_CDA_TOKEN`: Contentful GraphQL のエンドポイントと Content Delivery トークン
-- `ORIGIN`: サイトの URL（本番は `https://yoshihiko.tech`）。sitemap / RSS / OGP の URL に使う
+- `ORIGIN`: サイトの URL（本番は `https://www.yoshihiko.tech`。`yoshihiko.tech` は Vercel で www へ転送している）。sitemap / RSS / OGP の URL に使う
 - `GTAG_ID`: Google アナリティクス（空なら読み込まない）
 
 ---
