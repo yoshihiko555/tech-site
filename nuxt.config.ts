@@ -3,7 +3,7 @@ import { OGP_DEFAULT_IMAGE } from './shared/ogp'
 
 const SITE_NAME = 'Yoshihiko'
 const SITE_DESCRIPTION = 'Yoshihiko tech siteです。技術ブログ兼ポートフォリオにもなっています。'
-const ORIGIN = process.env.ORIGIN || 'https://yoshihiko.tech'
+const ORIGIN = process.env.ORIGIN || 'https://www.yoshihiko.tech'
 
 export default defineNuxtConfig({
   compatibilityDate: '2026-11-01',
