@@ -50,7 +50,15 @@ yarn codegen
 ```
 
 - `.env` を読むコマンド（`dev` / `generate` / `typecheck` / `nuxt prepare`）は、Claude Code のサンドボックス内では `.env` の読み取りが禁止されているため失敗する。サンドボックス外で実行する
-- Docker は不要。`Dockerfile` / `docker-compose.yml` は Nuxt 2 時代のもので、Nuxt 4 では動作を確認していない
+- Docker でも動かせる。`node_modules` はコンテナ内だけに置くので、手元の `node_modules` を触らずにブランチを行き来できる
+
+```bash
+# 起動（http://localhost:3000。3000 が使用中なら TECH_SITE_PORT=3100 を付ける）
+docker compose up --build
+
+# ブランチを切り替えた後は、コンテナ内の node_modules を作り直す
+docker compose up --build -V
+```
 
 ---
 
@@ -110,7 +118,7 @@ yarn codegen
 
 ## Current Project: Nuxt 4 移行とサイト刷新
 
-- Phase 1（土台、今の URL・SEO の引き継ぎ）: PR #35
+- Phase 1（土台、今の URL・SEO の引き継ぎ）: develop にマージ済み（#35）
 - Phase 2: 試作（トップ・記事・一覧）どおりの新デザインを実装。配色はオレンジ、カーソルは照準
 - Phase 3: Vercel プレビューで確認し、`NODE_OPTIONS` を外してから develop → master
-- 注意: develop → master は本番に出る。Phase 1 だけが入った develop を master に出すと、デザインのない画面が公開される（#35 のマージ時期は未決）
+- 注意: develop → master は本番に出る。新デザインがそろう前に出すと、デザインのない画面が公開される
