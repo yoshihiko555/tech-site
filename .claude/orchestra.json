@@ -2,11 +2,16 @@
   "installed_packages": [
     "agency-agents",
     "agent-routing",
+    "antigravity-suggestions",
+    "audit",
+    "codd",
+    "codex-suggestions",
     "core",
+    "git-workflow",
     "quality-gates"
   ],
   "orchestra_dir": "/Users/yoshihiko/ghq/github.com/yoshihiko555/ai-orchestra",
-  "last_sync": "2026-11-03T04:25:36.615738+00:00",
+  "last_sync": "2026-11-04T12:15:08.263291+00:00",
   "synced_files": [
     "agents/adversarial-reviewer.md",
     "agents/ai-architect.md",
@@ -44,7 +49,11 @@
     "agents/testing-reality-checker.md",
     "agents/ux-reviewer.md",
     "config/agent-routing/cli-tools.yaml",
+    "config/audit/audit-flags.json",
+    "config/audit/delegation-policy.json",
+    "config/codd/codd.yaml",
     "config/core/task-memory.yaml",
+    "config/git-workflow/sandbox-requirements.json",
     "config/quality-gates/evaluation-set-mapping.yaml",
     "config/quality-gates/quality-gates.json"
   ],
@@ -95,6 +104,16 @@
     },
     "quality-gates": {
       "config/quality-gates/quality-gates.json": "6efbb1c0c84106d598a8019808f50b2af99189b0617b7aaa49801d3e5c8a6a43"
+    },
+    "audit": {
+      "config/audit/delegation-policy.json": "b092b5385d3ec51252c5781cdbafa2d2e55d075d9cb74d25e89b71e95279d231",
+      "config/audit/audit-flags.json": "b39f2cba905759c88c29db260ea940ee71a9202a4b4794b56d6f43f9edbbc399"
+    },
+    "codd": {
+      "config/codd/codd.yaml": "cae91ecf120cfa1be382a5d1303a1ffdd208d59033d5fb062ffa4353c0a9a7c9"
+    },
+    "git-workflow": {
+      "config/git-workflow/sandbox-requirements.json": "4b2f9366201ed8f90d3f2f5e418502f75d977b4ca659f8dfc91b8369e5971e5e"
     }
   },
   "codex_file_hashes": {}

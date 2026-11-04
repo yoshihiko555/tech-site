@@ -1,0 +1,171 @@
+# Codex Delegation Rule
+
+**Codex CLI の利用可否と役割は config-driven で決定する。**
+
+> **Note**: モデル名・オプションは `.claude/config/agent-routing/cli-tools.yaml` で一元管理。
+> `.claude/config/agent-routing/cli-tools.local.yaml` が存在する場合はそちらの値を優先する（詳細は `config-loading.md` 参照）。
+> 以下の `<codex.model>` 等は config ファイルから解決して使用する。
+
+## 判定手順（MUST）
+
+1. `.claude/config/agent-routing/cli-tools.yaml` を読み込む
+2. `.claude/config/agent-routing/cli-tools.local.yaml` があれば上書きを適用する
+3. `codex.enabled` を確認する
+4. 対象エージェントの `agents.<name>.tool` で実行先を決定する
+5. `tool == codex` のときだけ Codex CLI を呼び出す
+
+サブエージェントとして起動された場合、prompt に `[Resolved Routing]` があれば 1〜4 は hook が
+解決済みなので、その `tool` / `codex.sandbox` / `codex.model` / `codex.flags` をそのまま使う
+（config を読み直して判断を変えない）。ブロックがない場合だけ上記の手順で自分で解決する。
+
+## ルーティング規則
+
+| 条件                                    | 動作                                             |
+| --------------------------------------- | ------------------------------------------------ |
+| `codex.enabled == false`                | Codex は呼び出さない（フォールバック方針に従う） |
+| `agents.<name>.tool == "codex"`         | Codex CLI を使用                                 |
+| `agents.<name>.tool == "claude-direct"` | 外部 CLI を呼ばず Claude で処理                  |
+| `agents.<name>.tool == "antigravity"`   | Antigravity CLI（`agy`）を使用                   |
+| `agents.<name>.tool == "auto"`          | 以下の `auto` ヒューリスティクスで選択           |
+
+## `tool: auto` ヒューリスティクス
+
+`tool: auto` のときのみ、以下を目安に選択する:
+
+| タスク種別                                         | 推奨          |
+| -------------------------------------------------- | ------------- |
+| 深い推論（設計判断、デバッグ、比較検討、レビュー） | Codex         |
+| 外部調査、最新ドキュメント確認                     | Antigravity   |
+| 単純編集、明確な単一解、テスト/lint実行            | Claude direct |
+
+## 呼び出し方法
+
+> **Bash サンドボックス制約**
+> Codex CLI（0.145 系以降）は起動時の in-process app-server 初期化が sandbox の OS 制限で
+> 失敗するため、sandbox 内では動作しない。`sandbox.excludedCommands` の `codex` 除外も
+> 現行の Claude Code では効かない。
+>
+> sandbox 無効化（`dangerouslyDisableSandbox: true`）は、以下を全て満たす場合のみ行う
+> （満たさない場合は無効化せず、実行失敗時は `claude-direct` にフォールバックする）:
+>
+> 1. **実効値の確認**: base + `.local.yaml` マージ後の `codex.requires_sandbox_disable` が
+>    `true` であること（`.local.yaml` で `false` に上書きされた環境では sandbox 内で実行する）
+> 2. **内側 sandbox の検証（fail-closed）**: `codex.sandbox.*` にエージェント別上書き
+>    （`agents.<name>.sandbox`）まで適用した**最終解決値**が `read-only` / `workspace-write`
+>    のいずれかであり、`codex.flags` に `--dangerously-bypass-approvals-and-sandbox` 等の
+>    bypass 系フラグが含まれないこと（グローバル値の検証だけでは不足。内外両方の
+>    ファイルシステム境界を同時に失わないため）
+> 3. **単体コマンド限定**: `codex exec ...` 単体のコマンドにのみ適用し、他のシェルコマンドと
+>    `&&` / `;` / `|` 等で連結しない（インジェクション発生時の被害拡大を防ぐため）
+> 4. **prompt の shell-safe 渡し**: Issue 本文・README・ログ等の信頼できない文字列を prompt に
+>    含める場合は、シェル文字列へ直接埋め込まず一時ファイルへ書き出して
+>    `"$(cat '<書き出したファイルの絶対パス>')"` として渡す（`$(...)` やバッククォートがホスト側
+>    シェルで評価されるのを防ぐ。コマンド置換の結果は再評価されない）。書き出しは sandbox を
+>    外さない**別の Bash 呼び出し**で行い（条件 3 のため `codex exec` と同じ呼び出しに入れない）、
+>    `mktemp` には `"${TMPDIR:-/tmp}/codex-prompt.XXXXXX"` のようにテンプレートを渡す（引数なしの
+>    `mktemp` は sandbox 内で失敗する）。シェル変数は呼び出しをまたいで残らないため、表示した
+>    絶対パスを `codex exec` の呼び出しに文字列で書く。
+>
+> 条件を満たして sandbox を無効化した場合も、`--sandbox read-only` / `workspace-write` による
+> codex 側の保護は維持される。
+
+### サブエージェント経由（推奨）
+
+```
+Task(subagent_type="general-purpose", prompt="""
+Resolve target agent/tool from cli-tools.yaml first. If the prompt already contains a
+`[Resolved Routing]` block, follow it instead (do not re-read the config files).
+
+If route resolves to codex, write the question to a temp file first and pass it
+via command substitution (never interpolate untrusted text into the shell string):
+
+1) Bash (keep the sandbox on):
+PROMPT_FILE=$(mktemp "${TMPDIR:-/tmp}/codex-prompt.XXXXXX")
+cat > "$PROMPT_FILE" <<'PROMPT'
+{question}
+PROMPT
+echo "$PROMPT_FILE"
+
+2) Bash (disable the sandbox only when the codex-delegation conditions allow it; run `codex exec`
+   alone; write the printed path literally because shell variables do not survive
+   between Bash calls):
+codex exec --model <codex.model> --sandbox <codex.sandbox> <codex.flags> "$(cat '<printed path>')" < /dev/null 2>/dev/null
+
+Return concise summary (recommendation + rationale).
+""")
+```
+
+`<codex.sandbox>` は `[Resolved Routing]` の `codex.sandbox`。エージェントに sandbox の固定値がない場合、
+ブロックには `codex.sandbox` の代わりに `codex.sandbox.analysis` / `codex.sandbox.implementation` が
+出るので、用途に合う方（相談・分析なら analysis、実装なら implementation）を使う。ブロック自体が
+ない場合だけ、config から `agents.<name>.sandbox` → `codex.sandbox.analysis` の順で解決する。
+
+### 直接呼び出し（短い質問）
+
+```bash
+# 1 回目（sandbox 内のまま）: 書き出して絶対パスを表示
+PROMPT_FILE=$(mktemp "${TMPDIR:-/tmp}/codex-prompt.XXXXXX")
+cat > "$PROMPT_FILE" <<'PROMPT'
+{question または task}
+PROMPT
+echo "$PROMPT_FILE"
+```
+
+```bash
+# 2 回目（`codex exec` 単体。表示されたパスを文字列で書く）
+# analysis
+codex exec --model <codex.model> --sandbox <codex.sandbox.analysis> <codex.flags> "$(cat '<表示されたパス>')" < /dev/null 2>/dev/null
+
+# implementation
+codex exec --model <codex.model> --sandbox <codex.sandbox.implementation> <codex.flags> "$(cat '<表示されたパス>')" < /dev/null 2>/dev/null
+```
+
+## Non-Interactive 実行（MUST）
+
+Codex CLI はサブプロセスとして実行されるため、対話的な入力を受け付けられない。
+以下を必ず守ること。
+
+### 基本ルール
+
+1. **stdin を封じる**: 全コマンドに `< /dev/null` を追加
+   - stdin が開いたままだと `codex exec` は "Reading additional input from stdin..." で入力を待ち続け、無限ハングする（特にバックグラウンド実行・サブエージェント実行時）
+2. **タイムアウトを設定**: Bash の timeout パラメータに `300000`（5分）を推奨
+3. **exit code で判定**: `2>/dev/null` で stderr を破棄しているため、成否は exit code で判定する
+   - **出力が空（0バイト）かつプロセス継続中**: ハングの疑い
+
+### ハング調査プロトコル
+
+`codex exec` が長時間無出力の場合、以下の順で調査する:
+
+1. `< /dev/null` が付いているか確認する（stdin 待ちが最頻出の原因）
+2. `2>/dev/null` を外して再実行し、stderr のエラーを確認する
+   - 無効なモデル名（例: アカウントで未サポート）は **400 エラーをリトライし続けて無限ハングに見える**
+3. `codex.model` の値が現在のアカウントで有効か、最小コマンドで疎通確認する:
+   `codex exec --sandbox read-only "Reply with OK only" < /dev/null`
+4. stderr に `failed to initialize in-process app-server client: Operation not permitted` が
+   出る場合は sandbox 起因の起動失敗（ハングではなく即時 exit 1）。Claude Code の sandbox 内で
+   実行していないか確認し、sandbox を無効化して再実行する（`sandbox.excludedCommands` の
+   `codex` 除外は現行 Claude Code では効かない。上記「Bash サンドボックス制約」参照）
+
+## Sandbox モード
+
+| モード            | 用途                         |
+| ----------------- | ---------------------------- |
+| `read-only`       | 分析、レビュー、デバッグ助言 |
+| `workspace-write` | 実装、修正、リファクタリング |
+
+## 無効化
+
+`codex.enabled: false` を設定すると Codex 呼び出しを停止できる。
+
+```yaml
+# .claude/config/agent-routing/cli-tools.local.yaml
+codex:
+  enabled: false
+```
+
+## 使わない場面
+
+- `tool` 解決結果が `codex` でない場合
+- 単純な typo 修正など、明らかに単一解で完結する作業
+- テスト・lint 実行のみの作業
