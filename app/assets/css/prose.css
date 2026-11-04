@@ -1,5 +1,4 @@
 /* Article body (rendered from Markdown at build time, so it is styled globally). */
-/* ---------- article typography ---------- */
 .prose {
   min-width: 0;
   max-width: 38em;

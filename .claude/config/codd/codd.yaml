@@ -1,0 +1,141 @@
+# codd: ドキュメント整合性レイヤーの設定
+#
+# プロジェクト固有の上書きは codd.local.yaml で行う（config-loading ルール参照）。
+# scan が走査する対象・kind/relation 語彙・検査レベル・グラフ保存先を定義する。
+
+# 機能全体の有効/無効。
+enabled: true
+
+# scan が走査する対象ファイル（glob）。include から exclude を差し引く。
+# plan ファイルは既定の対象外。必要なら codd.local.yaml で .claude/plans/*.md を追加する。
+scope:
+  include:
+    - "docs/**/*.md"
+    - ".claude/rules/*.md"
+    - "templates/context/*.md"
+  exclude:
+    - "docs/adr/_template.md"
+    - "docs/adr/DECISIONS.md"
+    # 評価セットは CODD 統合まで対象外（ADR-20260703-029: kind 語彙に eval がないため）
+    - "docs/evaluation/**/*.md"
+
+# scan が走査するソースファイル（Issue #98 / opt-in）。既定は空 = 何も走査しない
+# （既存プロジェクトへの挙動変化ゼロ）。code/test ノードで追跡したいディレクトリのみ
+# include に追加する（例: "packages/core/**/*.py"）。
+# コード注釈は 1 行形式（`codd:<key> <value>`）を Python は module docstring、
+# `//` 系言語（TS/JS/Go/Java/Rust/C 系）は先頭の行コメントブロックに書く。
+# 例:
+#   """
+#   codd:implements design:codd-coherence-layer
+#   codd:node_id code:my-module
+#   """
+# 注釈が無いファイルは missing_frontmatter を出さず黙ってスキップする（doc scope と異なる）。
+code_scope:
+  include: []
+  # exclude は `Path.glob()` で解決するため、末尾を `/**` ではなく `/**/*` にする
+  # （`Path.glob("**/.venv/**")` は Python 3.12 ではディレクトリのみを返し、
+  # `_glob_relpaths()` の `is_file()` フィルタで捨てられて実質無効になるため）。
+  exclude:
+    - "**/__pycache__/**/*"
+    - "**/node_modules/**/*"
+    - "**/.venv/**/*"
+
+# code_scope から抽出した depends_on リンクの既定信頼度（Issue #98）。
+# doc frontmatter 由来のリンクは常に 1.0（人手レビュー済みの確定宣言）。
+# コード注釈は 1 行形式で書ける分レビューが軽いため、既定でこれより低く設定する。
+# impact 分析では relation 重み × confidence がエッジ重みになる（4.5.1 参照）。
+inline_confidence: 0.7
+
+# 許可する kind 語彙（scope と整合させる）。
+kinds:
+  - requirement
+  - design
+  - adr
+  - plan
+  - rule
+  - instruction
+  # Issue #98: code_scope で抽出されるコード/テストノード。
+  - code
+  - test
+
+# 許可する relation 語彙。
+relations:
+  - derives_from
+  - refines
+  - implements
+  - references
+  - supersedes
+
+# 被参照ゼロを許容する最上流 kind（orphan 検査から除外）。
+roots:
+  - requirement
+  - instruction
+
+# 依存グラフの保存形式と出力先。
+graph_store:
+  format: jsonl
+  path: ".claude/codd/graph.jsonl"
+
+# 各検査のレベル（error / warning / off）。
+checks:
+  dangling: error
+  duplicate: error
+  cycle: error
+  unknown: error
+  # Issue #98: 値の無いコード注釈（例: `codd:implements` のみで参照先が無い）を検出する。
+  malformed_annotation: error
+  missing_frontmatter: warning
+  orphan: warning
+  drift: warning
+
+# drift 検査（Issue #515）の対象と判定
+# - relations: 「下流が上流に追従すべき」relation だけを drift の対象にする。
+#   references（弱い参照）と supersedes（置換）は既定で対象外。
+# - exclude_downstream_kinds: 追従する側として扱わない kind。ADR は確定記録なので既定で除外。
+# 旧挙動（全 relation・全 kind を対象）に戻すには relations に 5 つ全部を書き、
+# exclude_downstream_kinds を [] にする（リストは .local.yaml で丸ごと置き換わる）。
+# 上流コミットのうち空白・空行・Markdown 表の区切り行だけの変更は「上流が変わった」と数えない。
+# depends_on[].synced（確認済みの上流コミット）と depends_on[].anchor（行単位の依存）は
+# frontmatter 側で宣言する（codd-frontmatter-policy ルール参照）。
+drift:
+  relations:
+    - derives_from
+    - refines
+    - implements
+  exclude_downstream_kinds:
+    - adr
+
+# impact 分析（codd impact --diff <ref>）の信頼度スコア設定。
+# 変更ノードの下流を Green（自動更新可）/ Amber（要確認）/ Gray（参考）に分類する。
+# path_score = min(経路上の relation 重み) × decay^(hops-1)、ノードは全経路の最良値を採る。
+impact:
+  # relation 種別ごとの重み（強い派生ほど高信頼）。
+  relation_weights:
+    derives_from: 1.0
+    refines: 1.0
+    implements: 1.0
+    supersedes: 0.6
+    references: 0.3
+  # 1 hop ごとの距離減衰係数。
+  decay: 0.5
+  # 伝播を辿る最大ホップ数（decay=0.5 では 6 hop で score < 0.04 のため打ち切り）。
+  max_hops: 6
+  # 帯域の閾値（score >= green は Green、>= amber は Amber、それ未満は Gray）。
+  green_threshold: 0.8
+  amber_threshold: 0.4
+  # 直接事実とみなす relation 重みの下限（1 hop かつこの値以上で Corroboration 免除）。
+  strong_relation_min: 1.0
+  # Green に必要な裏付け起点数（直接事実でない推論的影響に適用）。
+  corroboration_min_origins: 2
+  # 複数の強起点が裏付ける場合の 1 起点あたり加点（弱リンク水増し防止）。
+  evidence_bonus: 0.05
+
+# hook 配線（Issue #95）
+# hook の「登録」は manifest 経由で全導入先に自動展開されるが、
+# 「実動作」は以下のキーで opt-in 制御する（二段構え）
+hooks:
+  # PostToolUse (Edit|Write): scope 内ファイル編集時に codd scan で graph を再構築する
+  scan_on_edit: false
+  # PreToolUse (Bash): git commit 検出時に codd validate を実行する
+  # "off" = 無効 / warn = 指摘を警告表示のみ / block = error 検出時に commit をブロック
+  validate_on_commit: warn

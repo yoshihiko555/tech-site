@@ -1,0 +1,8 @@
+{
+  "version": 3,
+  "features": {
+    "route_audit": { "enabled": true, "max_excerpt_chars": 160 },
+    "kpi_scorecard": { "enabled": true, "default_period_days": 7 }
+  },
+  "paths": { "logs_dir": ".claude/logs/audit" }
+}

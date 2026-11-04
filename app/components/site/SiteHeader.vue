@@ -89,7 +89,6 @@ function isCurrent(item: NavItem): boolean {
 </template>
 
 <style scoped>
-/* ---------- header ---------- */
 .top {
   position: sticky;
   top: env(safe-area-inset-top, 0px);
@@ -225,7 +224,7 @@ function isCurrent(item: NavItem): boolean {
   transform-origin: left;
   transform: scaleX(var(--rp, 0));
 }
-/* the top page, as in its prototype */
+/* the top page */
 .top.home {
   background: rgba(13, 28, 31, 0.78);
 }

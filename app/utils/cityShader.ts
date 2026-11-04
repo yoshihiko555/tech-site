@@ -1,4 +1,4 @@
-/** GLSL for the muted rain city behind the top page (same as the approved prototype). */
+/** GLSL for the muted rain city behind the top page. */
 export const CITY_VERTEX = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}'
 
 export const CITY_FRAGMENT = [

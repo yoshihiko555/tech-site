@@ -1,8 +1,11 @@
-/** WORKS on the top page (from the old Works page). */
+/** WORKS on the top page. */
+export type WorkKind = 'side' | 'early'
+
 export interface Work {
   name: string
   description: string
-  /** only where the old About page lists it; a stack marks a side project */
+  /** side: a recent side project (counted in STATUS); early: from around 2020-2021 */
+  kind: WorkKind
   stack: string[]
   /** live site, when there is one */
   site: string
@@ -13,10 +16,16 @@ export interface Work {
   caseStudy?: string
 }
 
+export const WORK_KIND_LABEL: Record<WorkKind, string> = {
+  side: 'SIDE PROJECT',
+  early: 'EARLY WORK',
+}
+
 export const WORKS: Work[] = [
   {
     name: 'orchex',
     description: 'Multi-agent orchestration framework',
+    kind: 'side',
     stack: ['Python', 'Claude Code', 'Codex', 'Antigravity'],
     site: '',
     image: '/works/orchex.png',
@@ -26,6 +35,7 @@ export const WORKS: Work[] = [
   {
     name: 'Baton',
     description: 'AI coding session monitor',
+    kind: 'side',
     stack: ['Go', 'bubbletea', 'tmux'],
     site: '',
     image: '/works/baton.jpg',
@@ -34,6 +44,7 @@ export const WORKS: Work[] = [
   {
     name: 'Nudge',
     description: 'Notion management app',
+    kind: 'side',
     stack: ['Go', 'Wails', 'Notion'],
     site: '',
     image: '/works/nudge.jpg',
@@ -42,7 +53,8 @@ export const WORKS: Work[] = [
   {
     name: 'Offbal',
     description: 'Task management service',
-    stack: [],
+    kind: 'early',
+    stack: ['Vue.js', 'Django', 'MySQL', 'Docker'],
     site: '',
     image: '/works/offbal.jpg',
     source: 'https://github.com/yoshihiko555/offbal',
@@ -50,7 +62,8 @@ export const WORKS: Work[] = [
   {
     name: 'Myunsplash',
     description: 'Favorite image collection service',
-    stack: [],
+    kind: 'early',
+    stack: ['React', 'TypeScript', 'Material-UI', 'Firebase'],
     site: 'https://myunsplash-49abd.web.app/',
     image: '/works/myunsplash.jpg',
     source: 'https://github.com/yoshihiko555/myunsplash',
@@ -58,7 +71,8 @@ export const WORKS: Work[] = [
   {
     name: 'Bandue',
     description: 'Social network service',
-    stack: [],
+    kind: 'early',
+    stack: ['Vue.js', 'Django', 'Docker'],
     site: '',
     image: '/works/bandue.jpg',
     source: 'https://github.com/shutotakizawa/bandue',
@@ -66,5 +80,5 @@ export const WORKS: Work[] = [
 ]
 
 export function isSideProject(work: Work): boolean {
-  return work.stack.length > 0
+  return work.kind === 'side'
 }

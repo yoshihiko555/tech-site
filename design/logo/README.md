@@ -14,7 +14,7 @@
 | `export/yoshihiko-favicon/*.png` | favicon の PNG（16 / 32 / 48 / 180 / 192 / 512 px）                                    |
 | `brief.md`                       | 最初のデザイン依頼。色は当時のネオン配色のまま                                         |
 
-- 置き場所: サイト刷新で使うロゴの元データ。2026-11-03 時点ではサイトのビルドからは参照しておらず、今の `assets/img/logo.svg` と `static/favicon.ico` は旧ロゴのまま
+- 置き場所: ロゴの元データ。サイトのビルドからは参照していない
 
 - すべて `viewBox="0 0 100 100"`。width / height は付けていないので、CSS で大きさを決める
 - 部品の id: `#y-upper`（上の Y）、`#y-lower`（下の脚）、`#cursor`（カーソル）、favicon のみ `#tile`
@@ -29,7 +29,6 @@
 | カーソル               | `#cursor`  | `#EEE7DA`（クリーム） |
 | favicon のタイル       | `#tile`    | `#0D1C1F`             |
 
-- 2026-11-03: サイトの配色（オレンジ）に合わせて色を変えた（最初はピンク #F7367C / シアン #44D9DD / #F2EEFF、タイル #0B0812 のネオン配色だった）
 - 単色版の推奨色: ライト背景では `#17181D`、ダーク背景では `#ECE8F7`（`color` で指定）
 
 ## 背景による使い分け
@@ -54,27 +53,6 @@
 - マークの外形の四方に、X 以上の空きを取る
 - SVG 自体が四方に 13.5〜14% の余白を持っているので、実用上は「SVG の枠の中に他の要素を重ねない」でほぼ足りる
 - ヘッダーで横に `yoshihiko.tech` の文字を置くときは、SVG の枠から文字まで X の半分以上あける
-
-## favicon の読み込み例（Nuxt 2 の `head.link`）
-
-```js
-link: [
-  { rel: 'icon', type: 'image/svg+xml', href: '/yoshihiko-favicon.svg' },
-  {
-    rel: 'icon',
-    type: 'image/png',
-    sizes: '32x32',
-    href: '/yoshihiko-favicon-32.png',
-  },
-  {
-    rel: 'apple-touch-icon',
-    sizes: '180x180',
-    href: '/yoshihiko-favicon-180.png',
-  },
-]
-```
-
-192 / 512 px は Web App Manifest の `icons` に使う。
 
 ## カーソルの点滅（CSS 案）
 

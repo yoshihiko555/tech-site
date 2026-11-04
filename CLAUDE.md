@@ -118,12 +118,4 @@ docker compose up --build -V
 - `/about` `/works` `/contact` は廃止し、`routeRules` で 301 転送している
 - 旧 PWA の service worker は `public/sw.js` で解除している。消さないこと
 - Vercel の環境変数 `NODE_OPTIONS=--openssl-legacy-provider` は Nuxt 2 用。不要になったので外す
-
----
-
-## Current Project: Nuxt 4 移行とサイト刷新
-
-- Phase 1（土台、今の URL・SEO の引き継ぎ）: develop にマージ済み（#35）
-- Phase 2: 試作（トップ・記事・一覧）どおりの新デザインを実装。配色はオレンジ、カーソルは照準。feat/redesign-ui で実装済み、develop へ PR
-- Phase 3: Vercel プレビューで確認し、`NODE_OPTIONS` を外してから develop → master
-- 注意: develop → master は本番に出る。新デザインがそろう前に出すと、デザインのない画面が公開される
+- develop → master は本番に出る

@@ -2,7 +2,7 @@
 export const GLYPHS = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789#$%&@<>/|=+*'
 
 /**
- * Owner's decision (2026-11-03): the site shows all of its motion, as the approved
+ * Owner's decision: the site shows all of its motion, as the approved
  * prototype does, even when the OS asks to reduce it. Set to true to honour the OS again.
  */
 const FOLLOW_OS_REDUCED_MOTION = false
