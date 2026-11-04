@@ -19,7 +19,7 @@ const results = computed(() => searchPosts(data.value?.posts ?? [], query.value)
 let lastFocus: HTMLElement | null = null
 let closeTimer: ReturnType<typeof setTimeout> | undefined
 
-/** 2026-05-07 -> 05/07, as the prototype shows it */
+/** 2026-05-07 -> 05/07 */
 function monthDay(iso: string): string {
   return formatDate(iso).slice(5).replace('.', '/')
 }

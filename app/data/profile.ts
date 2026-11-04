@@ -1,6 +1,6 @@
 /**
  * Who runs the site: the copy on the top page (hero, STATUS, footer).
- * Taken from the approved prototype and the old About page. Keep it factual.
+ * Keep it factual.
  */
 
 /** first year as an engineer (LEVEL and YEARS count from here) */

@@ -1,4 +1,4 @@
-/** WORKS on the top page (from the old Works page). */
+/** WORKS on the top page. */
 export interface Work {
   name: string
   description: string

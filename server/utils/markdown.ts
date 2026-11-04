@@ -6,7 +6,7 @@ import { createCssVariablesTheme } from 'shiki'
 import type { BundledLanguage } from 'shiki'
 import type { Heading } from '#shared/types/post'
 
-/** Languages used across the posts (checked against all 24 articles). */
+/** Languages used across the posts. */
 const LANGUAGES: BundledLanguage[] = [
   'bash',
   'shell',

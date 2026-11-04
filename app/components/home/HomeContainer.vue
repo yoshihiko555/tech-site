@@ -5,7 +5,6 @@
 </template>
 
 <style scoped>
-/* the 1200px column every top-page section sits in */
 .sec {
   position: relative;
   max-width: 1200px;

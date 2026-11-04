@@ -197,7 +197,7 @@ onBeforeUnmount(() => wipeId++)
 <style scoped>
 .topics {
   position: relative;
-  /* the prototype gave its 3 categories 380vh; each category keeps that share of the scroll */
+  /* 380vh for 3 categories, scaled so each category keeps the same share of the scroll */
   height: calc(100vh + var(--steps, 3) * 280vh / 3);
   scroll-margin-top: var(--head);
 }
