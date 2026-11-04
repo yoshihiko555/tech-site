@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { LINKS } from '~/data/profile'
-import { isSideProject, WORKS } from '~/data/works'
+import { WORK_KIND_LABEL, WORKS } from '~/data/works'
 
 /** WORKS: the pastel world with the inventory list and a card for the selected item. */
 const list = ref<HTMLElement | null>(null)
@@ -10,9 +10,7 @@ const shown = useReveal(list)
 const current = ref(0)
 const work = computed(() => WORKS[current.value]!)
 const name = useScrambleText(() => work.value.name.toUpperCase())
-const label = computed(
-  () => `ITEM ${padNumber(current.value + 1, 2)}${isSideProject(work.value) ? ' / SIDE PROJECT' : ''}`,
-)
+const label = computed(() => `ITEM ${padNumber(current.value + 1, 2)} / ${WORK_KIND_LABEL[work.value.kind]}`)
 const caption = computed(() => work.value.image.split('/').pop()!.toUpperCase())
 /** longer names get a smaller size so they fit the card */
 const fit = ref('60px')
