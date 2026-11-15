@@ -1,6 +1,7 @@
 import createMarkdownIt from 'markdown-it'
 import type { MarkdownIt, RendererRule } from 'markdown-it'
 import anchor from 'markdown-it-anchor'
+import footnote from 'markdown-it-footnote'
 import markdownItShiki from '@shikijs/markdown-it'
 import { createCssVariablesTheme } from 'shiki'
 import type { BundledLanguage } from 'shiki'
@@ -74,6 +75,19 @@ function slugify(text: string): string {
 function baseRenderer(origin: string): MarkdownIt {
   const md = createMarkdownIt({ linkify: true, breaks: true })
   md.use(anchor, { slugify })
+  md.use(footnote)
+  // 見出しの既存 URL を変えず、脚注側の名前空間で ID の衝突を避ける。
+  md.core.ruler.after('anchor', 'footnote_ids', (state) => {
+    if (!state.env.footnotes) return
+    const headingIds = state.tokens
+      .filter((token) => token.type === 'heading_open')
+      .map((token) => String(token.attrGet('id') ?? ''))
+    let docId = 'footnote'
+    while (headingIds.some((id) => id.startsWith(`fn-${docId}-`) || id.startsWith(`fnref-${docId}-`))) {
+      docId += '-'
+    }
+    state.env.docId = docId
+  })
 
   const hosts = new Set([...SAME_SITE_HOSTS, hostOf(origin)].filter((host): host is string => !!host))
   const linkOpen = md.renderer.rules.link_open ?? renderToken

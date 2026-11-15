@@ -106,6 +106,51 @@
   display: none;
 }
 
+/* 脚注 */
+.prose .footnote-ref {
+  font: 500 0.75em/0 var(--f-mono);
+  vertical-align: super;
+}
+.prose .footnote-ref a,
+.prose .footnote-backref {
+  padding-inline: 0.15em;
+  text-decoration: none;
+}
+.prose .footnote-ref a,
+.prose .footnote-item {
+  scroll-margin-top: calc(var(--head) + 20px);
+}
+.prose .footnotes-sep {
+  margin: 3.2em 0 1.4em;
+  border-top: 1px solid var(--line);
+}
+.prose .footnotes {
+  font-size: 0.85em;
+  color: var(--dim);
+  overflow-wrap: anywhere;
+}
+.prose .footnotes-list {
+  margin: 0;
+  padding-left: 1.8em;
+}
+.prose .footnote-item::marker {
+  font-family: var(--f-mono);
+  color: var(--warm);
+}
+.prose .footnote-item + .footnote-item,
+.prose .footnote-item > * + * {
+  margin-top: 0.8em;
+}
+.prose .footnote-item > :first-child {
+  margin-top: 0;
+}
+.prose .footnote-item:target {
+  background: var(--base-2);
+}
+.prose .footnote-backref {
+  font-family: var(--f-mono);
+}
+
 /* code blocks */
 .code {
   margin-left: 0;
