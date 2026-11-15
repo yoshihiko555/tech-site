@@ -3,7 +3,91 @@ import { renderFeedHtml, renderPost } from '../../server/utils/markdown'
 
 const ORIGIN = 'https://yoshihiko.tech'
 
+describe.each([
+  { label: '記事', render: async (source: string) => (await renderPost(source, ORIGIN)).html },
+  { label: 'RSS', render: (source: string) => renderFeedHtml(source, ORIGIN) },
+])('$label の脚注', ({ render }) => {
+  it('名前付きの脚注を上付きの番号と末尾の一覧に変換し、本文に戻るリンクを付ける', async () => {
+    const html = await render('本文[^takatani]と補足[^detail]。\n\n[^takatani]: 一つ目の注釈。\n[^detail]: 二つ目の注釈。')
+    expect(html).toContain('<sup class="footnote-ref"><a href="#fn-footnote-1" id="fnref-footnote-1">[1]</a></sup>')
+    expect(html).toContain('<sup class="footnote-ref"><a href="#fn-footnote-2" id="fnref-footnote-2">[2]</a></sup>')
+    expect(html).toContain('<section class="footnotes">\n<ol class="footnotes-list">')
+    expect(html).toContain('<li id="fn-footnote-1" class="footnote-item"><p>一つ目の注釈。')
+    expect(html).toContain('<li id="fn-footnote-2" class="footnote-item"><p>二つ目の注釈。')
+    expect(html).toContain('<a href="#fnref-footnote-1" class="footnote-backref">↩︎</a>')
+    expect(html).toContain('<a href="#fnref-footnote-2" class="footnote-backref">↩︎</a>')
+    expect(html).toMatch(/<\/ol>\n<\/section>\n$/)
+    expect(html).not.toContain('[^')
+  })
+
+  it('脚注内の外部リンクにも別タブの設定を適用し、同一サイトのリンクは相対 URL にする', async () => {
+    const html = await render([
+      '本文[^source]。',
+      '[^source]: **出典**は[外部](https://example.com/source)と[内部](https://yoshihiko.tech/blog/a?ref=1#setup)。',
+      '    二段落目。',
+    ].join('\n\n'))
+    expect(html).toContain('<strong>出典</strong>')
+    expect(html).toContain('<a href="https://example.com/source" target="_blank" rel="noopener noreferrer">外部</a>')
+    expect(html).toContain('<a href="/blog/a?ref=1#setup">内部</a>')
+    expect(html).toContain('<p>二段落目。')
+    expect(html).not.toMatch(/<a href="#fn[^>]*target=/)
+  })
+
+  it('同じ脚注を複数回参照しても ID を重複させず、それぞれの位置へ戻れる', async () => {
+    const html = await render('最初[^note]と再び[^note]。\n\n[^note]: 共通の注釈。')
+    expect(html).toContain('href="#fn-footnote-1" id="fnref-footnote-1"')
+    expect(html).toContain('href="#fn-footnote-1" id="fnref-footnote-1:1"')
+    expect(html).toContain('href="#fnref-footnote-1" class="footnote-backref"')
+    expect(html).toContain('href="#fnref-footnote-1:1" class="footnote-backref"')
+    expect(html.match(/class="footnote-item"/g)).toHaveLength(1)
+    const ids = Array.from(html.matchAll(/ id="([^"]+)"/g), (match) => match[1])
+    expect(new Set(ids).size).toBe(ids.length)
+  })
+
+  it.each(['fn-footnote-1', 'fnref-footnote-1', 'fnref-footnote-1:1'])(
+    '見出し %s のアンカーを維持しながら脚注 ID の衝突を避ける',
+    async (heading) => {
+      const html = await render(`## ${heading}\n\n本文[^note]と再参照[^note]。\n\n[^note]: 注釈。`)
+      expect(html).toContain(`<h2 id="${heading}"`)
+      expect(html).toContain('href="#fn-footnote--1" id="fnref-footnote--1"')
+      expect(html).toContain('href="#fnref-footnote--1:1" class="footnote-backref"')
+      const ids = Array.from(html.matchAll(/ id="([^"]+)"/g), (match) => match[1])
+      expect(new Set(ids).size).toBe(ids.length)
+    },
+  )
+
+  it('別の記事を描画するたびに脚注番号と ID をリセットする', async () => {
+    await render('## fn-footnote-1\n\n本文[^a]と[^b]。\n\n[^a]: A\n[^b]: B')
+    const html = await render('本文[^c]。\n\n[^c]: C')
+    expect(html).toContain('href="#fn-footnote-1" id="fnref-footnote-1">[1]</a>')
+    expect(html).not.toContain('fn-footnote--')
+    expect(html).not.toContain('[2]')
+  })
+
+  it('脚注を使わない本文の HTML を変えない', async () => {
+    const html = await render('本文 **強調** と `inline`。\n\n[内部](/blog/a)と[外部](https://example.com)。')
+    expect(html).toBe(
+      '<p>本文 <strong>強調</strong> と <code>inline</code>。</p>\n'
+      + '<p><a href="/blog/a">内部</a>と<a href="https://example.com" target="_blank" rel="noopener noreferrer">外部</a>。</p>\n',
+    )
+  })
+
+  it('対応する定義がない脚注の参照は元の記法のまま残す', async () => {
+    const html = await render('本文[^missing]。')
+    expect(html).toBe('<p>本文[^missing]。</p>\n')
+  })
+})
+
 describe('renderPost', () => {
+  it('見出し内の脚注番号を目次に混ぜず、既存の見出し ID を維持する', async () => {
+    const { html, headings } = await renderPost('## 導入[^note]\n\n### 準備\n\n[^note]: 注釈。', ORIGIN)
+    expect(headings).toEqual([
+      { level: 2, id: '導入', text: '導入' },
+      { level: 3, id: '準備', text: '準備' },
+    ])
+    expect(html).toContain('id="fn-footnote-1"')
+  })
+
   it('drops the [[toc]] placeholder; the outline is built from headings instead', async () => {
     const { html } = await renderPost('[[toc]]\n\n## Intro\n\nbody', ORIGIN)
     expect(html).not.toContain('[[toc]]')
